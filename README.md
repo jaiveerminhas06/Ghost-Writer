@@ -39,9 +39,17 @@ Balanced dataset containing:
 
 ## Visualizations
 
-- PCA Projection
-- Confusion Matrix
-- Embedding Comparison
+### PCA Projection
+
+![PCA Projection](images/pca_visualization.png)
+
+### Confusion Matrix
+
+![Confusion Matrix](images/confusion_matrix.png)
+
+### Embedding Comparison
+
+![Embedding Comparison](images/embedding_comparison.png)
 
 ## Author
 
