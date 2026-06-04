@@ -39,7 +39,7 @@ Balanced dataset containing:
 
 ### PCA Projection
 
-![PCA Projection](images/PCA_visualisation_of_TF-IDF_features.png)
+![Test](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png)
 
 ### Confusion Matrix
 
