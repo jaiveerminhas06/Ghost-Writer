@@ -37,8 +37,6 @@ Balanced dataset containing:
 | Word2Vec | SVM | 100% |
 | Word2Vec | Random Forest | 96.49% |
 
-### Visualizations
-
 ### PCA Projection
 
 ![PCA Projection](images/PCA_visualisation_of_TF-IDF_features.png)
