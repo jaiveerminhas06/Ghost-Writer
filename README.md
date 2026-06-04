@@ -1,8 +1,14 @@
 # Detection of AI-Generated Text Using Machine Learning
 
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-ML-orange)
+![NLP](https://img.shields.io/badge/NLP-Text%20Classification-green)
+
 ## Project Overview
 
 This project detects whether a text is human-written or AI-generated using NLP and Machine Learning techniques.
+
+
 
 ## Techniques Used
 
