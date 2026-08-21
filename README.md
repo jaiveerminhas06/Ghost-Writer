@@ -43,11 +43,12 @@ Balanced dataset containing:
 | Word2Vec | SVM | 100% |
 | Word2Vec | Random Forest | 96.49% |
 
-![PCA Projection](images/PCA_visualisation%20_of_TF-IDF_features.png)
+![PCA Projection](Archive/images/PCA_visualisation%20_of_TF-IDF_features.png)
 
-![Confusion Matrix](images/Confusion%20_matrix.png)
+![Confusion Matrix](Archive/images/Confusion%20_matrix.png)
 
-![Embedding Comparison](images/Embedding%20_technique_comparison.png)
+![Embedding Comparison](Archive/images/Embedding%20_technique_comparison.png)
+
 
 ## Author
 
