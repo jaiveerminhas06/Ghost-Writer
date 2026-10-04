@@ -45,7 +45,8 @@ Ghost_Writer/
 │   ├── 03_split.ipynb          leakage-safe split + held-out slices
 │   ├── 04_baseline.ipynb       reference models + TF-IDF LogReg/SVM, leakage sanity checks
 │   ├── 05_embeddings.ipynb     Word2Vec CBOW/Skip-gram vs GloVe, PCA/t-SNE, averaged-embedding classifier
-│   └── 06_topic_check.ipynb    on_topic flag for off-topic AI essays; Weeks 1–2 re-scored on the fair subset
+│   ├── 06_topic_check.ipynb    on_topic flag for off-topic AI essays; Weeks 1–2 re-scored on the fair subset
+│   └── 07_bilstm.ipynb         BiLSTM / BiGRU classifiers (CPU), Skip-gram vs random embedding init
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -53,13 +54,13 @@ Ghost_Writer/
 │       ├── splits.csv          row_id → split (44,864 rows)
 │       ├── on_topic.csv        row_id → topic_sim, on_topic (evaluation only)
 │       └── DATA_CARD.md
-├── results/                  04_baseline, 05_embeddings, 06_on_topic CSVs: metrics, one row per model
+├── results/                  04_baseline, 05_embeddings, 06_on_topic, 07_bilstm CSVs: metrics, one row per model
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
 ├── src/evaluate.py           evaluate(): shared scoring for every model
 ├── models/                   trained vectors/weights — git-ignored
 ├── images/                   plots saved by the notebooks
 ├── README.md                 still the OLD readme with the 100% table
-└── requirements .txt         note the space in the filename
+└── requirements.txt          (renamed from `requirements .txt` on 2026-10-04)
 ```
 
 Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/train.csv`.
@@ -82,7 +83,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–2 are done (split, baseline, embeddings, off-topic flag). Week 3 (BiLSTM) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–3 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU). Week 4 (BERT) is next and needs a GPU. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -122,6 +123,11 @@ Weeks 1–2 are done (split, baseline, embeddings, off-topic flag). Week 3 (BiLS
   - 50.0% of AI essays (8,747) are off-topic vs 0.9% of human. Six sources cause it (chat_gpt_moth 18% on-topic, mistral v1/v2, llama2_chat, ~half of falcon/llama_70b).
   - On-topic only: TF-IDF SVM unchanged (test AUC 0.9996, held-out prompts 0.997), so it learns style. Averaged GloVe falls to chance on held-out prompts (AUC 0.48); CBOW 0.84; Skip-gram 0.94.
   - On-topic `test` has only 473 AI essays: small differences there are noise.
+- 2026-10-04 — `07_bilstm.ipynb` + `results/07_bilstm.csv` (both `all` and `on_topic` rows) + weights in `models/` (git-ignored):
+  - BiLSTM/BiGRU (100-d embeddings, 64 units each way, max-pool, 384 tokens, 3 epochs, CPU). Masking instead of packing: packing was 12× slower on CPU; padding is 0.10% with bucketing.
+  - On-topic held-out prompts AUC: TF-IDF 0.997 > BiLSTM random-init 0.957 ≈ BiLSTM Skip-gram 0.953 > BiGRU 0.934. On-topic held-out generator detection: BiGRU 95.5% > BiLSTM 90.8% > TF-IDF 88.0%.
+  - Skip-gram init gave no head start over random init. GRU was ~2.6× slower than LSTM on CPU. Val AUC still rising at epoch 3.
+  - Shared failure cases: formal human essays flagged as AI (fairness point); a few student-like `mistral7binstruct_v2` essays missed by every model (likely label noise).
 
 **Not done**
 
@@ -129,9 +135,9 @@ Weeks 1–2 are done (split, baseline, embeddings, off-topic flag). Week 3 (BiLS
 
 ## Next up
 
-### `Notebooks/07_bilstm.ipynb` — Week 3, syllabus unit III
+### `Notebooks/08_bert.ipynb` — Week 4, syllabus unit V (the core model)
 
-BiLSTM/GRU classifier that keeps word order, with the embedding layer initialised from `models/w2v_skipgram.kv`. Needs `torch` (add it to requirements).
+Fine-tune BERT/RoBERTa (HuggingFace `transformers`; add it to requirements). **Needs a GPU:** the laptop has an RTX 3050 Mobile (4 GB), but on 2026-10-04 no NVIDIA driver was loaded (kernel 7.0), so `torch.cuda.is_available()` is False. Options: Jaiveer fixes the driver (`sudo ubuntu-drivers install`, reboot, check `nvidia-smi`), or run this one notebook on Kaggle/Colab. With 4 GB VRAM, use DistilRoBERTa/DistilBERT or a base model with 256–512 tokens, small batches + gradient accumulation, fp16.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
@@ -157,7 +163,7 @@ The plan can compress to 8 weeks. Full version with the demo mockup: https://cla
 ## Housekeeping still open
 
 - `README.md` still shows the old 100% results table. The full rewrite is planned for Week 9, but the table is misleading until then.
-- `requirements .txt` is missing `datasketch` (used by notebook 02) and has a space in its name. It will also need `torch` and `transformers` from Week 3 onward.
+- `requirements.txt` will need `transformers` for Week 4. (Renamed and given `datasketch` + `torch` on 2026-10-04.)
 - `data/processed/train_deduped.csv` is about 98 MB and is committed to the public repo. Only `data/raw/` is git-ignored. GitHub rejects files over 100 MB, so any larger processed file will fail to push.
 - `data/raw/.ipynb_checkpoints/train-checkpoint.csv` is a stray 100 MB copy of the raw data (ignored by git, but wasting disk).
 - `01_eda_baseline.ipynb` contains no baseline; consider renaming it to `01_eda.ipynb`.

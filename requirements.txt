@@ -6,3 +6,5 @@ gensim
 matplotlib
 seaborn
 jupyter
+datasketch
+torch
