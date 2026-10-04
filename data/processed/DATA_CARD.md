@@ -30,6 +30,10 @@ Student essays written for 15 prompts, labelled `0` = human, `1` = AI.
    `persuade_corpus` and `train_essays`. No cluster spans two prompts.
 3. **Dropped 2 mislabelled "AI" essays** (`03`, row_ids 33338 and 36311, `mistral7binstruct_v2`): each
    is a word-for-word prefix of a human Persuade essay, truncated mid-sentence. They contain no AI text.
+   **Known residual noise:** `04_baseline` found one more echo of this kind (row_id 38107,
+   99.8% copied from human row 23962), missed by MinHash because the copy is only 62% of the
+   human essay. Both are in `train`, so nothing crosses a split; left in as 1 noisy label in ~9,700.
+   13 other AI essays share only their first sentence with a human essay (~7% of the text).
 4. **Stripped leading/trailing whitespace** (`03`, applied by `src/data.py` at load time). Raw text
    leaks the label: 0% of human essays start with whitespace, while 100% of four AI sources do;
    50% of human essays end with whitespace vs 0.8% of AI ones.

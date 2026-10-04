@@ -42,13 +42,15 @@ Ghost_Writer/
 ├── Notebooks/
 │   ├── 01_eda_baseline.ipynb   EDA of DAIGT-V2 (no model in it, despite the name)
 │   ├── 02_dedup.ipynb          near-duplicate detection (MinHash + LSH)
-│   └── 03_split.ipynb          leakage-safe split + held-out slices
+│   ├── 03_split.ipynb          leakage-safe split + held-out slices
+│   └── 04_baseline.ipynb       reference models + TF-IDF LogReg/SVM, leakage sanity checks
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
 │       ├── train_deduped.csv   44,866 rows + n_words + dup_cluster — committed
 │       ├── splits.csv          row_id → split (44,864 rows)
 │       └── DATA_CARD.md
+├── results/04_baseline.csv   metrics table, one row per model
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
 ├── images/                   empty
 ├── README.md                 still the OLD readme with the 100% table
@@ -75,7 +77,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Week 1 of 10: split done, baseline next. Last commit was 2026-09-09. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Week 1 of 10 is done (split + baseline). Week 2 is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -96,22 +98,27 @@ Week 1 of 10: split done, baseline next. Last commit was 2026-09-09. The plan st
   - Held out: prompts "Does the electoral college work?" + "Summer projects"; generators Claude (v6, v7) + Falcon-180B.
   - Rest split 80/10/10 with StratifiedGroupKFold(10, seed 42) on `dup_cluster`: train 28,006 / val 3,501 / test 3,501, each 34.6% AI (65/35, not 61/39, because the generator slice is all AI). Held-out prompt 7,135; held-out generator 2,721.
   - Only `splits.csv` (row_id → split, 0.6 MB) is saved; no second copy of the text.
+- 2026-10-03 — `04_baseline.ipynb` + `results/04_baseline.csv`:
+  - TF-IDF (1–2 grams, fit on train only) + LinearSVM C=1: test F1 0.995 / AUC 1.000; held-out prompts F1 0.973 / AUC 0.997; held-out generators 90.9% detected, paired AUC 1.000. LogReg C=10 slightly behind.
+  - References: always-human acc 0.654 / F1 0; length-only AUC 0.72; prompt-only AUC 0.76 (0.5 on unseen prompts).
+  - The ~1.0 was checked and is not leakage: no echo or character shortcut explains it, and 2,000 training essays already give val AUC 0.997. DAIGT-V2 is really "student vs LLM" and easy in-distribution.
+  - Real weakness is threshold calibration under shift: unseen Claude ranks perfectly but only ~85% clear 0.5; "Summer projects" humans are flagged 4.8% vs 0.1% on test.
+  - Topic words (venus, nasa, car) are top human features.
+  - Found a 3rd echo-mislabel (row 38107, train); documented, not dropped.
 
 **Not done**
 
-- Honest classical baseline.
 - Everything in Weeks 2–10. There is still no neural network anywhere in the repo.
 
 ## Next up
 
-### `Notebooks/04_baseline.ipynb` — honest classical baseline
+### `Notebooks/05_embeddings.ipynb` — Week 2, syllabus unit II
 
-TF-IDF + Logistic Regression/SVM on the new split, reported on the normal test set and on both held-out slices. This is the number that replaces the fake 100%.
+Word2Vec (CBOW vs Skip-gram, trained on `train` only) and pretrained GloVe; PCA/t-SNE plots of human vs AI vocabulary; averaged-embedding classifier compared against `results/04_baseline.csv`.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
-- Tune on `val` only. Report precision/recall/F1/ROC-AUC, not just accuracy (always guessing "human" gets 65%).
-- Held-out generator slice is AI-only: report detection rate, or AUC paired with `test`'s human essays.
-- Compare against a length-only and a prompt-only model, to show how much of the score the surface signals in the data card explain.
+- Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), reusing the `evaluate` function and table columns from `04`.
+- Planned robustness check for later weeks: typo injection (Kaggle's hidden test used character noise), plus the Week 6 paraphrase attack.
 
 ## Roadmap after Week 1
 
