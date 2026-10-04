@@ -24,7 +24,7 @@ The rebuild keeps the same repo and topic, replaces the data with DAIGT-V2, and 
 
 1. Keep this repo and theme; do not start a new project. The old work stays in `Archive/` as the "before" for the viva.
 2. Dataset is **DAIGT-V2**.
-3. Splits **stratify on label at about 61/39**. Do not force-balance to 50/50.
+3. Splits **stratify on label**, keeping the natural ratio. Do not force-balance. The full dataset is 61/39 human/AI, but train/val/test are 65/35 because the held-out generator slice removes only AI essays from the pool (see `03_split.ipynb`).
 4. Near-duplicates are **kept, not dropped**. Each essay carries a `dup_cluster` id, and no cluster may be divided across train/val/test.
 5. The two essays under 20 words are dropped (both are broken AI generations).
 6. The final demo shows more than a yes/no label:
@@ -43,16 +43,21 @@ Ghost_Writer/
 │   ├── 01_eda_baseline.ipynb   EDA of DAIGT-V2 (no model in it, despite the name)
 │   ├── 02_dedup.ipynb          near-duplicate detection (MinHash + LSH)
 │   ├── 03_split.ipynb          leakage-safe split + held-out slices
-│   └── 04_baseline.ipynb       reference models + TF-IDF LogReg/SVM, leakage sanity checks
+│   ├── 04_baseline.ipynb       reference models + TF-IDF LogReg/SVM, leakage sanity checks
+│   ├── 05_embeddings.ipynb     Word2Vec CBOW/Skip-gram vs GloVe, PCA/t-SNE, averaged-embedding classifier
+│   └── 06_topic_check.ipynb    on_topic flag for off-topic AI essays; Weeks 1–2 re-scored on the fair subset
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
 │       ├── train_deduped.csv   44,866 rows + n_words + dup_cluster — committed
 │       ├── splits.csv          row_id → split (44,864 rows)
+│       ├── on_topic.csv        row_id → topic_sim, on_topic (evaluation only)
 │       └── DATA_CARD.md
-├── results/04_baseline.csv   metrics table, one row per model
+├── results/                  04_baseline, 05_embeddings, 06_on_topic CSVs: metrics, one row per model
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
-├── images/                   empty
+├── src/evaluate.py           evaluate(): shared scoring for every model
+├── models/                   trained vectors/weights — git-ignored
+├── images/                   plots saved by the notebooks
 ├── README.md                 still the OLD readme with the 100% table
 └── requirements .txt         note the space in the filename
 ```
@@ -77,7 +82,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Week 1 of 10 is done (split + baseline). Week 2 is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–2 are done (split, baseline, embeddings, off-topic flag). Week 3 (BiLSTM) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -105,19 +110,32 @@ Week 1 of 10 is done (split + baseline). Week 2 is next. The plan started on 202
   - Real weakness is threshold calibration under shift: unseen Claude ranks perfectly but only ~85% clear 0.5; "Summer projects" humans are flagged 4.8% vs 0.1% on test.
   - Topic words (venus, nasa, car) are top human features.
   - Found a 3rd echo-mislabel (row 38107, train); documented, not dropped.
+- 2026-10-04 — `05_embeddings.ipynb` + `src/evaluate.py` + `results/05_embeddings.csv` + 3 plots in `images/`:
+  - Word2Vec CBOW and Skip-gram (100-d, train only, saved to git-ignored `models/`) vs GloVe-100 (in `~/gensim-data`).
+  - Averaged embeddings + LogReg are worse than TF-IDF: test AUC 0.986–0.995; held-out prompts AUC Skip-gram 0.95, CBOW 0.88, GloVe 0.61. Averages mostly encode topic.
+  - Held-out-prompt numbers vary run to run (multithreaded Word2Vec).
+  - **Found: 43% of AI essays (7,570) are off-topic for their `prompt_name`**: generated from other prompts and filed under the nearest Persuade prompt. Topic is a big label shortcut. Recorded in the data card; how to handle it is still open.
+  - `src/evaluate.py` holds the shared `evaluate()` (same logic as inline in `04`); use it from now on.
+- 2026-10-04 — decision: off-topic AI essays are **flagged, not dropped**; splits unchanged; every model is also scored on on-topic essays.
+- 2026-10-04 — `06_topic_check.ipynb` + `data/processed/on_topic.csv` + `results/06_on_topic.csv`:
+  - `topic_sim` = content-word TF-IDF cosine to the prompt's human-essay centre ÷ that prompt's human median; `on_topic` = `topic_sim >= 0.5` (valley of a two-peaked AI distribution; robust at 0.4/0.6).
+  - 50.0% of AI essays (8,747) are off-topic vs 0.9% of human. Six sources cause it (chat_gpt_moth 18% on-topic, mistral v1/v2, llama2_chat, ~half of falcon/llama_70b).
+  - On-topic only: TF-IDF SVM unchanged (test AUC 0.9996, held-out prompts 0.997), so it learns style. Averaged GloVe falls to chance on held-out prompts (AUC 0.48); CBOW 0.84; Skip-gram 0.94.
+  - On-topic `test` has only 473 AI essays: small differences there are noise.
 
 **Not done**
 
-- Everything in Weeks 2–10. There is still no neural network anywhere in the repo.
+- Everything in Weeks 3–10. There is still no neural network anywhere in the repo.
 
 ## Next up
 
-### `Notebooks/05_embeddings.ipynb` — Week 2, syllabus unit II
+### `Notebooks/07_bilstm.ipynb` — Week 3, syllabus unit III
 
-Word2Vec (CBOW vs Skip-gram, trained on `train` only) and pretrained GloVe; PCA/t-SNE plots of human vs AI vocabulary; averaged-embedding classifier compared against `results/04_baseline.csv`.
+BiLSTM/GRU classifier that keeps word order, with the embedding layer initialised from `models/w2v_skipgram.kv`. Needs `torch` (add it to requirements).
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
-- Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), reusing the `evaluate` function and table columns from `04`.
+- Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
+- Report every model twice: `evaluate()` (all essays) and `evaluate_on_topic()`. The on-topic held-out-prompt score is the headline honest number.
 - Planned robustness check for later weeks: typo injection (Kaggle's hidden test used character noise), plus the Week 6 paraphrase attack.
 
 ## Roadmap after Week 1

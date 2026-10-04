@@ -20,6 +20,7 @@ Student essays written for 15 prompts, labelled `0` = human, `1` = AI.
 | `data/raw/train.csv` (git-ignored) | 44,868 | original download |
 | `data/processed/train_deduped.csv` | 44,866 | adds `n_words`, `dup_cluster` |
 | `data/processed/splits.csv` | 44,864 | `row_id` → `split`; `row_id` is the row number in `train_deduped.csv` |
+| `data/processed/on_topic.csv` | 44,864 | `row_id` → `topic_sim`, `on_topic` (evaluation only) |
 
 ## Cleaning, in order
 
@@ -72,6 +73,20 @@ Later notebooks should test against them (e.g. a length-only or prompt-only base
   essays are especially uniform (mean 304, std 51).
 - **Topic:** AI share per prompt ranges from 14% ("Exploring Venus") to 70% ("Seeking multiple
   opinions"), so the topic alone partly predicts the label.
+- **Off-topic AI essays (found in `05_embeddings`):** 7,570 of 17,493 AI essays (43%) never
+  mention their prompt's key word, against ~85–100% of human essays per prompt. Reading them confirms it:
+  several generators (`chat_gpt_moth`, `llama2_chat`, `mistral7binstruct_v1`/`_v2`, `llama_70b_v1`,
+  `falcon_180b_v1`) were also given *other* essay prompts (Churchill quotes, honesty, first
+  impressions, careers…), and each essay was filed under the nearest of the 15 Persuade prompts.
+  So `prompt_name` is unreliable for AI essays, topic is a strong label shortcut, and the
+  catch-all prompts ("Seeking multiple opinions", "Distance learning") look 61–70% AI because of it.
+  The held-out-prompt slice inherits this: part of its AI side is off-topic.
+  **Flagged in `06_topic_check`:** `topic_sim` = cosine similarity (content-word TF-IDF) to the
+  centre of the prompt's human essays, divided by that prompt's human median; `on_topic` =
+  `topic_sim >= 0.5`. Result: 50.0% of AI essays (8,747) and 0.9% of human essays are off-topic.
+  Saved in `data/processed/on_topic.csv` and joined by `load_splits()`. The cut-off sits in a valley
+  of a two-peaked distribution but isn't perfect: some off-topic essays score 0.5–0.6. Used **only for
+  evaluation** (every model is also scored on on-topic essays); no data was dropped.
 - **Whitespace:** neutralised by stripping (see above). Other formatting habits remain per generator,
   e.g. letter openings ("Dear …") and title lines are more common for some sources. Those are
   arguably part of the generator's style, so they were left in.

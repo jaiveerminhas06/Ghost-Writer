@@ -31,6 +31,7 @@ def load_splits(*splits):
     """Return the essays with a `split` column, optionally only the named splits.
 
     Rows dropped in 03_split (they have no entry in splits.csv) are excluded.
+    Once 06_topic_check has run, `topic_sim` and `on_topic` columns are added too.
     Example: train = load_splits("train"); full = load_splits()
     """
     unknown = set(splits) - set(SPLITS)
@@ -39,6 +40,9 @@ def load_splits(*splits):
     df = load_deduped()
     assignment = pd.read_csv(PROCESSED / "splits.csv", index_col="row_id")
     df = df.join(assignment, how="inner")
+    topic_path = PROCESSED / "on_topic.csv"          # written by 06_topic_check.ipynb
+    if topic_path.exists():
+        df = df.join(pd.read_csv(topic_path, index_col="row_id"))
     if splits:
         df = df[df["split"].isin(splits)]
     return df
