@@ -8,3 +8,5 @@ seaborn
 jupyter
 datasketch
 torch
+transformers
+accelerate

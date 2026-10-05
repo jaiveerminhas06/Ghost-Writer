@@ -46,7 +46,8 @@ Ghost_Writer/
 │   ├── 04_baseline.ipynb       reference models + TF-IDF LogReg/SVM, leakage sanity checks
 │   ├── 05_embeddings.ipynb     Word2Vec CBOW/Skip-gram vs GloVe, PCA/t-SNE, averaged-embedding classifier
 │   ├── 06_topic_check.ipynb    on_topic flag for off-topic AI essays; Weeks 1–2 re-scored on the fair subset
-│   └── 07_bilstm.ipynb         BiLSTM / BiGRU classifiers (CPU), Skip-gram vs random embedding init
+│   ├── 07_bilstm.ipynb         BiLSTM / BiGRU classifiers (CPU), Skip-gram vs random embedding init
+│   └── 08_bert.ipynb           DistilRoBERTa fine-tuned vs frozen (GPU), curly-quote shortcut check
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -54,7 +55,7 @@ Ghost_Writer/
 │       ├── splits.csv          row_id → split (44,864 rows)
 │       ├── on_topic.csv        row_id → topic_sim, on_topic (evaluation only)
 │       └── DATA_CARD.md
-├── results/                  04_baseline, 05_embeddings, 06_on_topic, 07_bilstm CSVs: metrics, one row per model
+├── results/                  04_baseline … 08_bert CSVs: metrics, one row per model
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
 ├── src/evaluate.py           evaluate(): shared scoring for every model
 ├── models/                   trained vectors/weights — git-ignored
@@ -83,7 +84,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–3 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU). Week 4 (BERT) is next and needs a GPU. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa). Week 5 (GPT-2 perplexity, DetectGPT-lite, attribution) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -129,15 +130,25 @@ Weeks 1–3 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU)
   - Skip-gram init gave no head start over random init. GRU was ~2.6× slower than LSTM on CPU. Val AUC still rising at epoch 3.
   - Shared failure cases: formal human essays flagged as AI (fairness point); a few student-like `mistral7binstruct_v2` essays missed by every model (likely label noise).
 
+- 2026-10-04 — GPU fixed: the 7.0 kernel had no NVIDIA module (driver meta-package was stuck on 6.17). Installed `linux-modules-nvidia-580-open-7.0.0-34-generic`, which upgraded the driver to 580.178.04 and brought kernel 7.0.0-38 with its module. RTX 3050 Laptop, 4 GB, compute 8.6; `torch.cuda.is_available()` True. Matmul ~19× faster than CPU in fp32, ~39× in fp16. If a future kernel update loses the GPU again, install `linux-modules-nvidia-580-open-$(uname -r)`.
+
+- 2026-10-05 — `08_bert.ipynb` + `results/08_bert.csv` + `models/distilroberta_finetuned/` (git-ignored, 317 MB):
+  - DistilRoBERTa fine-tuned 2 epochs on GPU (512 tokens, batch 16, fp16, AdamW 2e-5, 6% warm-up + linear decay); ~15 min. Peak 3.2 GB of 3.68 GB usable. The sanity-check cell must free `loss`/`logits` too, or ~700 MB leaks and training OOMs.
+  - On-topic held-out prompts AUC 0.9998 (best); held-out generators 99.9% detected (best).
+  - Over-flags humans at threshold 0.5: on-topic test precision 0.938, 1.4% of test Persuade flagged, 10.5% of held-out "Summer projects" humans flagged. Threshold calibration (choose on val for a target FPR) is the obvious follow-up.
+  - Frozen encoder + head already gets AUC 0.999 / 99.8%; fine-tuning mostly improves F1/precision.
+  - Curly-quote counterfactual: no systematic shortcut.
+
 **Not done**
 
-- Everything in Weeks 3–10. There is still no neural network anywhere in the repo.
+- Weeks 5–10.
+- Threshold calibration for the transformer (target false-positive rate chosen on val).
 
 ## Next up
 
-### `Notebooks/08_bert.ipynb` — Week 4, syllabus unit V (the core model)
+### Week 5, syllabus unit VI — GPT-2 perplexity detector, DetectGPT-lite, generator attribution
 
-Fine-tune BERT/RoBERTa (HuggingFace `transformers`; add it to requirements). **Needs a GPU:** the laptop has an RTX 3050 Mobile (4 GB), but on 2026-10-04 no NVIDIA driver was loaded (kernel 7.0), so `torch.cuda.is_available()` is False. Options: Jaiveer fixes the driver (`sudo ubuntu-drivers install`, reboot, check `nvidia-smi`), or run this one notebook on Kaggle/Colab. With 4 GB VRAM, use DistilRoBERTa/DistilBERT or a base model with 256–512 tokens, small batches + gradient accumulation, fp16.
+Zero-shot detection: score each essay by GPT-2's perplexity (AI text is more predictable), then a DetectGPT-style perturbation test; plus a classifier for *which* generator family wrote an essay (needs its own split, since Claude/Falcon are held out of the detector's training). Consider doing the threshold calibration of `08` first; it's cheap with the saved model.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
@@ -163,7 +174,6 @@ The plan can compress to 8 weeks. Full version with the demo mockup: https://cla
 ## Housekeeping still open
 
 - `README.md` still shows the old 100% results table. The full rewrite is planned for Week 9, but the table is misleading until then.
-- `requirements.txt` will need `transformers` for Week 4. (Renamed and given `datasketch` + `torch` on 2026-10-04.)
 - `data/processed/train_deduped.csv` is about 98 MB and is committed to the public repo. Only `data/raw/` is git-ignored. GitHub rejects files over 100 MB, so any larger processed file will fail to push.
 - `data/raw/.ipynb_checkpoints/train-checkpoint.csv` is a stray 100 MB copy of the raw data (ignored by git, but wasting disk).
 - `01_eda_baseline.ipynb` contains no baseline; consider renaming it to `01_eda.ipynb`.
