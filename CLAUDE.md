@@ -47,7 +47,8 @@ Ghost_Writer/
 │   ├── 05_embeddings.ipynb     Word2Vec CBOW/Skip-gram vs GloVe, PCA/t-SNE, averaged-embedding classifier
 │   ├── 06_topic_check.ipynb    on_topic flag for off-topic AI essays; Weeks 1–2 re-scored on the fair subset
 │   ├── 07_bilstm.ipynb         BiLSTM / BiGRU classifiers (CPU), Skip-gram vs random embedding init
-│   └── 08_bert.ipynb           DistilRoBERTa fine-tuned vs frozen (GPU), curly-quote shortcut check
+│   ├── 08_bert.ipynb           DistilRoBERTa fine-tuned vs frozen (GPU), curly-quote shortcut check
+│   └── 09_threshold.ipynb      decision thresholds chosen on val for a target false-positive rate
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -84,7 +85,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa). Week 5 (GPT-2 perplexity, DetectGPT-lite, attribution) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, threshold choice). Week 5 (GPT-2 perplexity, DetectGPT-lite, attribution) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -139,16 +140,22 @@ Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU,
   - Frozen encoder + head already gets AUC 0.999 / 99.8%; fine-tuning mostly improves F1/precision.
   - Curly-quote counterfactual: no systematic shortcut.
 
+- 2026-10-05 — `09_threshold.ipynb` + `results/09_thresholds.csv` + `results/09_threshold_rates.csv` + `images/09_val_tradeoff.png`:
+  - Thresholds chosen on val humans for target FPR 5% / 1% / 0.5% (quantiles of human val scores; DistilRoBERTa on the logit scale).
+  - DistilRoBERTa @1% (logit 4.67): test FPR 0.92%, held-out-prompt FPR 3.85% (default 5.61%), unseen generators 99.8% caught. @0.5% (logit 7.80): test 0.40%, held-out prompts 2.31%, generators 99.2%. Best operating point so far; the 0.5% quantile rests on ~12 val essays.
+  - A threshold set on val doesn't guarantee the FPR on new topics ("Summer projects" humans still 7.7% @1%).
+  - TF-IDF: calibrating to 1% *lowers* its threshold and held-out-prompt FPR explodes 2.1% → 33.8%. Its human scores shift heavily on new topics.
+  - Residual false positives are longer, polished human essays (median 489 vs 442 words): the fairness point.
+
 **Not done**
 
 - Weeks 5–10.
-- Threshold calibration for the transformer (target false-positive rate chosen on val).
 
 ## Next up
 
 ### Week 5, syllabus unit VI — GPT-2 perplexity detector, DetectGPT-lite, generator attribution
 
-Zero-shot detection: score each essay by GPT-2's perplexity (AI text is more predictable), then a DetectGPT-style perturbation test; plus a classifier for *which* generator family wrote an essay (needs its own split, since Claude/Falcon are held out of the detector's training). Consider doing the threshold calibration of `08` first; it's cheap with the saved model.
+Zero-shot detection: score each essay by GPT-2's perplexity (AI text is more predictable), then a DetectGPT-style perturbation test; plus a classifier for *which* generator family wrote an essay (needs its own split, since Claude/Falcon are held out of the detector's training). Use the thresholds from `results/09_thresholds.csv`, not 0.5, and report false-positive rates on the held-out prompts.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
