@@ -48,7 +48,8 @@ Ghost_Writer/
 │   ├── 06_topic_check.ipynb    on_topic flag for off-topic AI essays; Weeks 1–2 re-scored on the fair subset
 │   ├── 07_bilstm.ipynb         BiLSTM / BiGRU classifiers (CPU), Skip-gram vs random embedding init
 │   ├── 08_bert.ipynb           DistilRoBERTa fine-tuned vs frozen (GPU), curly-quote shortcut check
-│   └── 09_threshold.ipynb      decision thresholds chosen on val for a target false-positive rate
+│   ├── 09_threshold.ipynb      decision thresholds chosen on val for a target false-positive rate
+│   └── 10_zero_shot.ipynb      GPT-2 perplexity / burstiness / log-rank, DetectGPT-lite, spelling confound
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -56,7 +57,7 @@ Ghost_Writer/
 │       ├── splits.csv          row_id → split (44,864 rows)
 │       ├── on_topic.csv        row_id → topic_sim, on_topic (evaluation only)
 │       └── DATA_CARD.md
-├── results/                  04_baseline … 08_bert CSVs: metrics, one row per model
+├── results/                  04_baseline … 10_zero_shot CSVs: metrics per model, thresholds, GPT-2 features
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
 ├── src/evaluate.py           evaluate(): shared scoring for every model
 ├── models/                   trained vectors/weights — git-ignored
@@ -85,7 +86,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, threshold choice). Week 5 (GPT-2 perplexity, DetectGPT-lite, attribution) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, threshold choice). Week 5 is half done (zero-shot GPT-2 detection); generator attribution (`11_attribution.ipynb`) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -147,15 +148,22 @@ Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU,
   - TF-IDF: calibrating to 1% *lowers* its threshold and held-out-prompt FPR explodes 2.1% → 33.8%. Its human scores shift heavily on new topics.
   - Residual false positives are longer, polished human essays (median 489 vs 442 words): the fairness point.
 
+- 2026-10-05 — `10_zero_shot.ipynb` + `results/10_zero_shot.csv` + `results/10_gpt2_features.csv` + `results/10_detectgpt_sample.csv` + `images/10_gpt2_signals.png`:
+  - GPT-2 small scores every essay (first 512 tokens): log-perplexity, burstiness, mean log-rank. ~24 min for 44,864 essays.
+  - Zero-shot perplexity: on-topic test AUC 0.978, held-out prompts 0.939, but held-out generators only 18% detected (paired AUC 0.65). Per-source perplexity: PaLM 5.5, Mistral 6.5 … GPT-4 23.5, Claude 26, human 29.
+  - DetectGPT-lite (distilroberta-base fills 15% of tokens, original token excluded; 10 perturbations; 256 tokens; 800-essay sample): AUC 0.705, worse than plain perplexity (0.978). Generator ≠ scoring model.
+  - Perplexity correlates with misspellings among humans (Spearman 0.58); best-spelled humans flagged 1.9% vs 0.8%.
+  - Tooling: the first GPT-2 download hung on finalising (`hf_xet`); redownloaded with `HF_HUB_DISABLE_XET=1`. Run notebooks with `HF_HUB_OFFLINE=1` once models are cached.
+
 **Not done**
 
-- Weeks 5–10.
+- Week 5 generator attribution; Weeks 6–10.
 
 ## Next up
 
-### Week 5, syllabus unit VI — GPT-2 perplexity detector, DetectGPT-lite, generator attribution
+### `Notebooks/11_attribution.ipynb` — Week 5, generator attribution
 
-Zero-shot detection: score each essay by GPT-2's perplexity (AI text is more predictable), then a DetectGPT-style perturbation test; plus a classifier for *which* generator family wrote an essay (needs its own split, since Claude/Falcon are held out of the detector's training). Use the thresholds from `results/09_thresholds.csv`, not 0.5, and report false-positive rates on the held-out prompts.
+Classify *which model family* wrote an AI essay (GPT-3.5, GPT-4, Claude, PaLM, Cohere, Llama 2, Mistral, Falcon). Needs its own split over AI essays only, since Claude/Falcon are held out of the detector's training; keep `dup_cluster` grouping and watch the off-topic sources (they're concentrated in a few families, so topic could leak the family). GPT-2 features are in `results/10_gpt2_features.csv`. For any human-vs-AI decisions, use `results/09_thresholds.csv`, not 0.5.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
