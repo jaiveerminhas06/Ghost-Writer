@@ -1,0 +1,9 @@
+held-out source,model,true family,essays,% correct family,most common wrong family
+radek_500,TF-IDF + LinearSVM,GPT-3.5,500,0.0,GPT-4 (99%)
+radek_500,DistilRoBERTa,GPT-3.5,500,0.0,PaLM (44%)
+palm-text-bison1,TF-IDF + LinearSVM,PaLM,349,28.08,Cohere (43%)
+palm-text-bison1,DistilRoBERTa,PaLM,349,24.64,Llama 2 (40%)
+NousResearch/Llama-2-7b-chat-hf,TF-IDF + LinearSVM,Llama 2,400,17.5,GPT-4 (73%)
+NousResearch/Llama-2-7b-chat-hf,DistilRoBERTa,Llama 2,400,0.25,Cohere (63%)
+mistralai/Mistral-7B-Instruct-v0.1,TF-IDF + LinearSVM,Mistral,399,1.75,GPT-4 (52%)
+mistralai/Mistral-7B-Instruct-v0.1,DistilRoBERTa,Mistral,399,0.0,PaLM (79%)

@@ -1,0 +1,4 @@
+,accuracy,macro_F1
+GPT-2 features (3 numbers),0.4389,0.4063
+TF-IDF + LinearSVM,0.9817,0.976
+DistilRoBERTa (fine-tuned),0.9651,0.9428

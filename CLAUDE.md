@@ -49,7 +49,8 @@ Ghost_Writer/
 │   ├── 07_bilstm.ipynb         BiLSTM / BiGRU classifiers (CPU), Skip-gram vs random embedding init
 │   ├── 08_bert.ipynb           DistilRoBERTa fine-tuned vs frozen (GPU), curly-quote shortcut check
 │   ├── 09_threshold.ipynb      decision thresholds chosen on val for a target false-positive rate
-│   └── 10_zero_shot.ipynb      GPT-2 perplexity / burstiness / log-rank, DetectGPT-lite, spelling confound
+│   ├── 10_zero_shot.ipynb      GPT-2 perplexity / burstiness / log-rank, DetectGPT-lite, spelling confound
+│   └── 11_attribution.ipynb    which model family wrote it: random split vs leave-one-source-out
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -57,7 +58,7 @@ Ghost_Writer/
 │       ├── splits.csv          row_id → split (44,864 rows)
 │       ├── on_topic.csv        row_id → topic_sim, on_topic (evaluation only)
 │       └── DATA_CARD.md
-├── results/                  04_baseline … 10_zero_shot CSVs: metrics per model, thresholds, GPT-2 features
+├── results/                  04_baseline … 11_attribution CSVs: metrics per model, thresholds, GPT-2 features
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
 ├── src/evaluate.py           evaluate(): shared scoring for every model
 ├── models/                   trained vectors/weights — git-ignored
@@ -86,7 +87,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, threshold choice). Week 5 is half done (zero-shot GPT-2 detection); generator attribution (`11_attribution.ipynb`) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, threshold choice). Week 5 is done (zero-shot GPT-2 detection, generator attribution). Open: how the demo's attribution panel should behave (see 2026-10-07 entry). Week 6 (paraphrase attack) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -155,15 +156,23 @@ Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU,
   - Perplexity correlates with misspellings among humans (Spearman 0.58); best-spelled humans flagged 1.9% vs 0.8%.
   - Tooling: the first GPT-2 download hung on finalising (`hf_xet`); redownloaded with `HF_HUB_DISABLE_XET=1`. Run notebooks with `HF_HUB_OFFLINE=1` once models are cached.
 
+- 2026-10-07 — `11_attribution.ipynb` + `results/11_attribution.csv` + `results/11_attribution_loso.csv` + `images/11_attribution_confusion.png`:
+  - 8 families from 15 sources (`radek_500` assumed GPT-3.5 from its name, not verified); 17,490 AI essays; own 80/10/10 StratifiedGroupKFold split on `dup_cluster`, stratified by family.
+  - Random split: TF-IDF + LinearSVM (C=3, balanced) macro-F1 0.976 (on-topic 0.981); DistilRoBERTa 8-way 0.943; GPT-2 features 0.41.
+  - **Leave-one-source-out collapses:** unseen sources get the right family 0–28% of the time (TF-IDF), 0–25% (DistilRoBERTa), at or below chance (12.5%). The models learn the source/pipeline, not the family. `radek_500` → GPT-4 99% (same author as `radekgpt4`).
+  - Confidence doesn't help: unseen-source essays with top prob ≥ 0.9 are only 10% correct.
+  - Implication: the demo's "which model wrote it" panel (decision 6) would mislead; needs a decision.
+
 **Not done**
 
-- Week 5 generator attribution; Weeks 6–10.
+- Decide how (or whether) the demo shows generator attribution.
+- Weeks 6–10.
 
 ## Next up
 
-### `Notebooks/11_attribution.ipynb` — Week 5, generator attribution
+### Week 6, syllabus unit IV — seq2seq + attention paraphraser to attack the detector
 
-Classify *which model family* wrote an AI essay (GPT-3.5, GPT-4, Claude, PaLM, Cohere, Llama 2, Mistral, Falcon). Needs its own split over AI essays only, since Claude/Falcon are held out of the detector's training; keep `dup_cluster` grouping and watch the off-topic sources (they're concentrated in a few families, so topic could leak the family). GPT-2 features are in `results/10_gpt2_features.csv`. For any human-vs-AI decisions, use `results/09_thresholds.csv`, not 0.5.
+Build a small encoder–decoder with attention, train it to paraphrase, and use it (plus simple typo injection) to see how far the fine-tuned DistilRoBERTa's detection drops. Use thresholds from `results/09_thresholds.csv`. The saved detector is in `models/distilroberta_finetuned/`.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
