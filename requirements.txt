@@ -10,3 +10,4 @@ datasketch
 torch
 transformers
 accelerate
+sentencepiece

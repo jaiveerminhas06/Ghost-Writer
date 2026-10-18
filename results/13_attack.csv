@@ -1,0 +1,9 @@
+attack,DistilRoBERTa: % AI caught (test),DistilRoBERTa: % AI caught (held-out gen),DistilRoBERTa: % humans flagged,TF-IDF: % AI caught (test),TF-IDF: % AI caught (held-out gen),TF-IDF: % humans flagged,% words changed (AI essays),GPT-2 log-ppl (AI essays)
+original,99.58,100.0,0.67,98.73,87.0,0.0,0.0,2.3
+typos 2%,99.37,100.0,0.33,98.52,85.33,0.0,1.62,2.59
+typos 5%,99.37,99.33,0.0,98.73,84.67,0.0,4.05,3.0
+typos 10%,98.94,98.33,0.0,98.52,85.0,0.0,8.2,3.54
+"seq2seq (ours, sampled)",67.86,48.33,0.0,89.64,40.33,0.0,60.65,3.84
+T5 paraphrase (T=1.0),99.58,99.67,2.67,98.31,85.0,0.0,15.33,2.47
+T5 paraphrase (T=1.5),96.41,96.0,0.33,94.71,74.67,0.0,42.55,3.11
+T5 (T=1.0) + typos 5%,98.94,98.67,0.33,97.89,83.67,0.0,18.98,3.14

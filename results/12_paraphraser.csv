@@ -1,0 +1,4 @@
+decoder,BLEU vs reference,self-BLEU vs source,copy rate %
+copy the input (baseline),39.2,99.99,100.0
+greedy,33.27,68.19,35.7
+"sampled (T=0.8, top-10)",26.89,51.29,19.7

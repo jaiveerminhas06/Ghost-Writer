@@ -220,3 +220,6 @@ data/raw/
 
 # Trained model weights/vectors (regenerate from the notebooks)
 models/
+
+# Downloaded third-party corpora (paraphrase pairs etc.)
+data/external/

@@ -50,7 +50,9 @@ Ghost_Writer/
 │   ├── 08_bert.ipynb           DistilRoBERTa fine-tuned vs frozen (GPU), curly-quote shortcut check
 │   ├── 09_threshold.ipynb      decision thresholds chosen on val for a target false-positive rate
 │   ├── 10_zero_shot.ipynb      GPT-2 perplexity / burstiness / log-rank, DetectGPT-lite, spelling confound
-│   └── 11_attribution.ipynb    which model family wrote it: random split vs leave-one-source-out
+│   ├── 11_attribution.ipynb    which model family wrote it: random split vs leave-one-source-out
+│   ├── 12_paraphraser.ipynb    seq2seq + Bahdanau attention paraphraser trained from scratch (Quora + Simple-Wiki)
+│   └── 13_attack.ipynb         typo and paraphrase attacks (our seq2seq + pretrained T5) on the detector
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -58,12 +60,14 @@ Ghost_Writer/
 │       ├── splits.csv          row_id → split (44,864 rows)
 │       ├── on_topic.csv        row_id → topic_sim, on_topic (evaluation only)
 │       └── DATA_CARD.md
-├── results/                  04_baseline … 11_attribution CSVs: metrics per model, thresholds, GPT-2 features
+├── results/                  04_baseline … 13_attack CSVs: metrics per model, thresholds, GPT-2 features
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
 ├── src/evaluate.py           evaluate(): shared scoring for every model
+├── src/detector.py           Detector: fine-tuned DistilRoBERTa + 09 thresholds (for attacks and the demo)
+├── src/paraphraser.py        Seq2SeqParaphraser (from 12), T5Paraphraser, inject_typos, sentence split/join
 ├── models/                   trained vectors/weights — git-ignored
 ├── images/                   plots saved by the notebooks
-├── README.md                 still the OLD readme with the 100% table
+├── README.md                 public overview: honest results through Week 6 (rewritten 2026-10-18)
 └── requirements.txt          (renamed from `requirements .txt` on 2026-10-04)
 ```
 
@@ -87,7 +91,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, threshold choice). Week 5 is done (zero-shot GPT-2 detection, generator attribution). Open: how the demo's attribution panel should behave (see 2026-10-07 entry). Week 6 (paraphrase attack) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–6 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks). Week 7 (explainability, sentence-level flags, error analysis, ethics) is next. Open: how the demo's attribution panel should behave (see 2026-10-07 entry). The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -163,16 +167,31 @@ Weeks 1–4 are done (split, baseline, embeddings, off-topic flag, BiLSTM/BiGRU,
   - Confidence doesn't help: unseen-source essays with top prob ≥ 0.9 are only 10% correct.
   - Implication: the demo's "which model wrote it" panel (decision 6) would mislead; needs a decision.
 
+- 2026-10-16 — `12_paraphraser.ipynb` + `results/12_paraphraser.csv` + `images/12_attention.png` + `models/paraphraser_gru.pt` (272 MB) + `models/paraphraser_vocab.json` (both git-ignored):
+  - Data: Quora duplicate questions (149k) + Simple-Wiki pairs (102k, minus 9.4k with encoding damage and 4.5k "commune" boilerplate), both directions, ≤48 GPT-2 tokens → 449k training pairs. Downloaded to git-ignored `data/external/`.
+  - Model: shared embedding 256, BiGRU encoder 256×2, GRUCell decoder 512 with Bahdanau attention, vocab = GPT-2 BPE tokens seen ≥3 times (41,915). 68M params. Teacher forcing, label smoothing 0.1, loss summed per decoding step (the full B×T×V fp32 tensor OOMed). 4 epochs, ~105 min.
+  - Result: attention aligns cleanly (diagonal heatmap), but the model mostly copies: greedy copy rate 36%, self-BLEU 68; BLEU vs reference 33.3 (greedy) / 26.9 (sampled) < 39.2 for copying the input. Its edits often damage meaning. A light noisy editor, not a real paraphraser.
+
+- 2026-10-18 — `README.md` rewritten: replaces the fake 100% table with the honest results of Weeks 1–6 (headline: DistilRoBERTa, on-topic unseen prompts AUC 0.9998, unseen generators 99.2% @0.5%-FPR threshold, 2.3% unseen-prompt humans flagged), limitations, structure and how to reproduce. Week 9 still plans the final version.
+- 2026-10-16 — decision: attack with **both** our seq2seq and a pretrained paraphraser; the demo's "try to fool it" uses the pretrained one.
+- 2026-10-16 — `13_attack.ipynb` + `results/13_attack.csv` + `images/13_attack.png` + `src/paraphraser.py` + `src/detector.py`:
+  - Pretrained paraphraser: `Vamsi/T5_Paraphrase_Paws` (T5-base on PAWS, not ChatGPT-trained; needs `sentencepiece`). It's also a light editor; its output has spacing artefacts ("monkey .") that `clean_spacing` removes before scoring.
+  - On-topic test AI (473), held-out-generator AI (300), test humans (300); DistilRoBERTa at the 1%-FPR threshold, TF-IDF at default.
+  - Typos 2/5/10%: detection 99.6 → 98.9% (test). T5 T=1.0 (15% words changed): 99.6%. T5 T=1.5 (43% changed): 96.4%. Our seq2seq: 67.9% but 61% of words changed and least fluent (meaning destroyed).
+  - Human FPR after T5 paraphrase: 0.7% → 2.7% (small sample). TF-IDF degrades more on held-out generators under paraphrase (87 → 75%).
+  - Not tested: LLM "humaniser" rewriting, too big for the GPU.
+  - Tooling: GPT-2 scoring must `del` each batch's logits (OOM otherwise). Run nbconvert with its own exit code logged: `| tail` hid two failed runs.
+
 **Not done**
 
 - Decide how (or whether) the demo shows generator attribution.
-- Weeks 6–10.
+- Weeks 7–10.
 
 ## Next up
 
-### Week 6, syllabus unit IV — seq2seq + attention paraphraser to attack the detector
+### Week 7 — explainability, sentence-level flags, error analysis, ethics and limitations
 
-Build a small encoder–decoder with attention, train it to paraphrase, and use it (plus simple typo injection) to see how far the fine-tuned DistilRoBERTa's detection drops. Use thresholds from `results/09_thresholds.csv`. The saved detector is in `models/distilroberta_finetuned/`.
+Sentence-level highlighting for the demo (score each sentence, or attribute the essay score to tokens with SHAP/integrated gradients/attention), plus a written error analysis and ethics/limitations section that pulls together the findings so far: topic shortcut, threshold shift on new topics, false positives on polished human writing, attribution not generalising, paraphrase/typo robustness limits. Use `src/detector.py` (it applies the `09` thresholds).
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
@@ -197,7 +216,6 @@ The plan can compress to 8 weeks. Full version with the demo mockup: https://cla
 
 ## Housekeeping still open
 
-- `README.md` still shows the old 100% results table. The full rewrite is planned for Week 9, but the table is misleading until then.
 - `data/processed/train_deduped.csv` is about 98 MB and is committed to the public repo. Only `data/raw/` is git-ignored. GitHub rejects files over 100 MB, so any larger processed file will fail to push.
 - `data/raw/.ipynb_checkpoints/train-checkpoint.csv` is a stray 100 MB copy of the raw data (ignored by git, but wasting disk).
 - `01_eda_baseline.ipynb` contains no baseline; consider renaming it to `01_eda.ipynb`.
