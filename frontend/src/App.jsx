@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import * as api from './api'
 import { SAMPLE_META } from './samples'
-import { fmt, words } from './lib/format'
+import { fmt, reduceMotion, words } from './lib/format'
 import Icon from './components/Icon'
 import AnalysisLog from './components/AnalysisLog'
 import Verdict from './components/Verdict'
 import Spectrum from './components/Spectrum'
+import Fingerprint from './components/Fingerprint'
+import AnnotatedEssay from './components/AnnotatedEssay'
 
 const MIN_WORDS = 40
 const STEP_TEXT = {
@@ -27,10 +29,18 @@ export default function App() {
   const [result, setResult] = useState(null)           // { verdict, highlights, attribution }
   const [steps, setSteps] = useState(null)             // the analysis log
   const [elapsed, setElapsed] = useState(0)
+  const [active, setActive] = useState(null)           // sentence under the pointer / focus (shared by bars and essay)
+  const [lit, setLit] = useState(false)                // true once highlights may fade in
+  const [sweep, setSweep] = useState(0)                // bump to replay the lamp sweep
+  const sentenceRefs = useRef([])
+  const bodyRef = useRef(null)
+  const booted = useRef(false)                         // React runs effects twice in development; analyse the first example only once
   const runId = useRef(0)                              // each run gets a number; stale runs are ignored
 
   // Open in a working state: ?sample=0|1|2 picks an example, otherwise example 3 (the false alarm) is analysed.
   useEffect(() => {
+    if (booted.current) return
+    booted.current = true
     api.getSamples().then((s) => {
       setSamples(s)
       const params = new URLSearchParams(window.location.search)
@@ -53,7 +63,7 @@ export default function App() {
   async function analyse(t = text, s = strictness) {
     const run = ++runId.current
     const mark = (key, state, ms) => setSteps((st) => st && st.map((x) => (x.key === key ? { ...x, state, ms } : x)))
-    setErr(''); setResult(null); setMode('read')
+    setErr(''); setResult(null); setLit(false); setActive(null); setMode('read')
     setSteps(['read', 'score', 'explain', 'attrib'].map((key) => ({ key, text: STEP_TEXT[key], state: 'pending' })))
     try {
       mark('read', 'done', 0); mark('score', 'active')
@@ -70,6 +80,10 @@ export default function App() {
       ])
       if (run !== runId.current) return
       setResult({ verdict, highlights, attribution })
+      requestAnimationFrame(() => {   // one lamp sweep down the paper, then the highlights fade in
+        if (bodyRef.current) bodyRef.current.style.setProperty('--sweep-to', `${bodyRef.current.offsetHeight}px`)
+        setSweep((x) => x + 1); setLit(true)
+      })
     } catch (e) {
       if (run !== runId.current) return
       setErr(e.message); setSteps(null); setMode('edit')
@@ -89,6 +103,12 @@ export default function App() {
   }
   function edit() { runId.current++; setResult(null); setSteps(null); setMode('edit') }
   function changeStrictness(next) { setStrictness(next); if (result || working) analyse(text, next) }
+
+  function jump(i) {   // bar clicked: bring its sentence into view
+    const el = sentenceRefs.current[i]
+    if (el) el.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' })
+    setActive(i)
+  }
 
   const v = result && result.verdict
 
@@ -142,7 +162,14 @@ export default function App() {
                 )}
                 {mode === 'read' && <button className="ghost-btn" onClick={edit}><span className="row" style={{ gap: 6 }}><Icon name="edit" size={14} />Edit text</span></button>}
               </div>
-              <div className="sheet-body">
+              {mode === 'read' && result && result.highlights && (
+                <Fingerprint data={result.highlights} active={active} setActive={setActive} onPick={jump} />
+              )}
+              {mode === 'read' && v && !v.flagged && (
+                <div className="print"><p className="print-note">No sentence shading: highlights are only computed for flagged essays, because explanations of a “not flagged” score were unreliable in testing.</p></div>
+              )}
+              <div className="sheet-body" ref={bodyRef}>
+                <div key={sweep} className={`lamp-sweep${sweep ? ' go' : ''}`} aria-hidden="true" />
                 {mode === 'edit' ? (
                   <>
                     <label htmlFor="essay" className="sr-only">Essay text</label>
@@ -150,6 +177,8 @@ export default function App() {
                               placeholder="Paste an essay here. English, at least 40 words."
                               onChange={(e) => { setText(e.target.value); if (pick >= 0) setPick(-1) }} />
                   </>
+                ) : result && result.highlights ? (
+                  <AnnotatedEssay text={text} data={result.highlights} active={active} lit={lit} sentenceRefs={sentenceRefs} />
                 ) : (
                   <p className="essay">{text}</p>
                 )}
