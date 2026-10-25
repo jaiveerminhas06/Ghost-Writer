@@ -13,6 +13,7 @@ section { border-top: 1px solid var(--line); padding: 20px 0; }
 details { border-top: 1px solid var(--line); padding: 20px 0; }
 summary { cursor: pointer; font-weight: 600; }
 textarea { width: 100%; box-sizing: border-box; margin: 12px 0; padding: 12px; font: inherit; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 6px; resize: vertical; }
+select { max-width: 100%; }
 select, button { font: inherit; padding: 6px 10px; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 6px; }
 button { background: var(--accent); border-color: var(--accent); color: #fff; cursor: pointer; }
 button:disabled { opacity: .5; cursor: default; }

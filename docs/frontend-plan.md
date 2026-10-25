@@ -31,7 +31,8 @@ as the polished face of the project; the Streamlit app stays as the working fall
 - `frontend/` is a Vite + React app: one page, all panels (examples, strictness, verdict, highlights, attribution, try to fool it).
   Run: `uvicorn api.main:app --port 8000` from the repo root, then `npm run dev` in `frontend/` (http://localhost:5173).
 - Tested end to end in headless Chromium (analyse, highlights, typo attack). First score takes ~10 s while models load.
-- Not done: visual design pass, mobile check, checking the not-flagged path in the browser.
+- Not-flagged path and a 390 px phone width checked (fixed a sideways scroll caused by long example names).
+- Not done: visual design pass.
 
 ## Owner's answers
 (to be filled in)
