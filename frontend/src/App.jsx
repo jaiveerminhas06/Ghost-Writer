@@ -6,6 +6,8 @@ import Icon from './components/Icon'
 import AnalysisLog from './components/AnalysisLog'
 import Verdict from './components/Verdict'
 import Spectrum from './components/Spectrum'
+import Attribution from './components/Attribution'
+import FoolIt from './components/FoolIt'
 import Fingerprint from './components/Fingerprint'
 import AnnotatedEssay from './components/AnnotatedEssay'
 
@@ -203,6 +205,8 @@ export default function App() {
             )}
             {v && <Verdict v={v} text={text} highlights={result.highlights} strictness={strictness} />}
             {v && !working && steps && <p className="done-line">Analysed in {(((steps[1].ms || 0) + Math.max(steps[2].ms || 0, steps[3].ms || 0)) / 1000).toFixed(1)} s · {v.tokens_read} of {v.tokens} tokens read</p>}
+            {result && result.attribution && <Attribution data={result.attribution} />}
+            {v && !working && <FoolIt text={text} strictness={strictness} before={v} />}
             {!steps && (
               <section className="card idle">
                 <h2>How to read the result</h2>
