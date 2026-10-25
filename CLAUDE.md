@@ -205,7 +205,7 @@ Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
   - Observation (one essay, one seed, not a finding): 5% typos took the wrongly flagged human essay from +9.1 to +3.3, below the threshold. Typo robustness in `13` may hold mainly for clearly AI essays.
   - Tooling: Streamlit does not hot-reload the main script reliably in headless mode: restart the server after editing `demo/app.py`. Snap Chromium cannot write to `/tmp`. `playwright` was pip-installed for screenshots only (not in `requirements.txt`; the system Chromium is used via `executable_path`). Do not use `pkill -f` with a pattern that appears in your own command line.
 
-- 2026-10-25 — `frontend` branch: `api/main.py` (FastAPI over the detector, explainer, attribution, paraphraser) and `frontend/` (Vite + React, one page with every demo panel). Node comes from nvm. See `docs/frontend-plan.md` for run steps and what is left (design pass). Do not run the API and Streamlit together (4 GB GPU).
+- 2026-10-25 — `frontend` branch: `api/main.py` (FastAPI over the detector, explainer, attribution, paraphraser) and `frontend/` (Vite + React, one page with every demo panel). Node comes from nvm. See `docs/frontend-plan.md` for run steps and what is left (done: design pass). Do not run the API and Streamlit together (4 GB GPU).
 - 2026-10-25 — hosting prep for Hugging Face Spaces (academic, free CPU): CPU support in `src/`, rate limit + serialised model calls in the API, API serves `frontend/dist`, `deploy/` (Dockerfile, requirements, upload and push scripts). Docker image untested; not pushed. Details and the steps that need the owner's account: `docs/frontend-plan.md`.
 
 **Not done**

@@ -32,7 +32,7 @@ as the polished face of the project; the Streamlit app stays as the working fall
   Run: `uvicorn api.main:app --port 8000` from the repo root, then `npm run dev` in `frontend/` (http://localhost:5173).
 - Tested end to end in headless Chromium (analyse, highlights, typo attack). First score takes ~10 s while models load.
 - Not-flagged path and a 390 px phone width checked (fixed a sideways scroll caused by long example names).
-- Not done: visual design pass.
+- Design pass done (restrained, paper-and-highlighter look; score meter with threshold marker; two columns on wide screens; light and dark; checked at 1280 and 390 px). `PRODUCT.md` holds the product record.
 
 ## Hosting on Hugging Face Spaces (Docker, free CPU)
 Code is ready; the Docker image has NOT been built or run (no Docker on this machine), and nothing is pushed.
