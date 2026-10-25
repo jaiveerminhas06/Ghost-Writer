@@ -71,11 +71,11 @@ def integrated_gradients(det, text, steps=128, chunk=16):
     grad_sum = torch.zeros_like(x)
     for a in alphas.split(chunk):
         inp = (b + a.view(-1, 1, 1) * (x - b)).requires_grad_(True)
-        with torch.autocast("cuda", dtype=torch.float16):
+        with torch.autocast("cuda", dtype=torch.float16, enabled=dev == "cuda"):
             logit = model(inputs_embeds=inp, attention_mask=mask.expand(len(a), -1)).logits.squeeze(-1)
         grad_sum += torch.autograd.grad(logit.float().sum(), inp)[0].sum(0, keepdim=True)
     token_attr = ((x - b) * grad_sum / steps).sum(-1).squeeze(0).detach().cpu().numpy()
-    with torch.no_grad(), torch.autocast("cuda", dtype=torch.float16):
+    with torch.no_grad(), torch.autocast("cuda", dtype=torch.float16, enabled=dev == "cuda"):
         f_x = model(inputs_embeds=x, attention_mask=mask).logits.float().item()
         f_b = model(inputs_embeds=b, attention_mask=mask).logits.float().item()
 

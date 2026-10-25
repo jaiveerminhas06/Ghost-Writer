@@ -34,5 +34,18 @@ as the polished face of the project; the Streamlit app stays as the working fall
 - Not-flagged path and a 390 px phone width checked (fixed a sideways scroll caused by long example names).
 - Not done: visual design pass.
 
+## Hosting on Hugging Face Spaces (Docker, free CPU)
+Code is ready; the Docker image has NOT been built or run (no Docker on this machine), and nothing is pushed.
+- CPU support: `Detector`, `explain.py` and T5 pick GPU or CPU automatically. Measured on this laptop with the GPU hidden:
+  score 0.5 s, attribution 3 s, typo attack 0.5 s, T5 paraphrase 17 s, highlights 43 s (integrated gradients, 32 steps).
+  A 2-vCPU Space will likely be slower.
+- `GW_IG_STEPS=32` on the host (128 locally). Sentence ranking matched 128 steps on 3 essays (Spearman 1.0): a small check.
+- Weights live in a Hub model repo named by `GW_MODEL_REPO`; `model_path()` downloads them on first start.
+- API guards: 20 POSTs/min per visitor (429 after), one model call at a time, 30,000-character cap. Essay text is not logged.
+- The page shows the verdict at once and fills in highlights when ready.
+- Steps (the account and token are yours): 1) create a Hugging Face account and a write token; 2) `python deploy/upload_models.py <you>/ghost-writer-models`;
+  3) create a Docker Space and set the variable `GW_MODEL_REPO`; 4) `bash deploy/push_space.sh https://huggingface.co/spaces/<you>/<name>`.
+- Still to check before going public: the DAIGT-V2 licence (the repo already publishes `train_deduped.csv`), and the real speed on the Space.
+
 ## Owner's answers
 (to be filled in)

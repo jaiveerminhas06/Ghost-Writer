@@ -1,5 +1,6 @@
 // All calls to the Python backend live here, so the components never build URLs themselves.
-const BASE = 'http://localhost:8000/api'
+// In the hosted build the page and API share one address, so a relative path works; in development the API is on port 8000.
+const BASE = import.meta.env.DEV ? 'http://localhost:8000/api' : '/api'
 
 async function call(path, body) {
   const res = await fetch(BASE + path, {

@@ -162,10 +162,13 @@ class Seq2SeqParaphraser(_SentenceParaphraser):
 class T5Paraphraser(_SentenceParaphraser):
     NAME = "Vamsi/T5_Paraphrase_Paws"
 
-    def __init__(self, device="cuda"):
+    def __init__(self, device=None):
         from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+        device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.tok = AutoTokenizer.from_pretrained(self.NAME)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.NAME, dtype=torch.float16).to(device).eval()
+        # half precision only on the GPU: it is slow and less accurate on CPU
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(
+            self.NAME, dtype=torch.float16 if device == "cuda" else torch.float32).to(device).eval()
         self.device = device
 
     @torch.no_grad()

@@ -105,6 +105,7 @@ export default function App() {
   const [strictness, setStrictness] = useState('strict')
   const [result, setResult] = useState(null)   // { verdict, highlights, attribution }
   const [busy, setBusy] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)   // highlights still being computed
   const [err, setErr] = useState('')
 
   useEffect(() => { api.getSamples().then(setSamples).catch(() => setErr('Cannot reach the API. Start it with: uvicorn api.main:app --port 8000')) }, [])
@@ -113,13 +114,16 @@ export default function App() {
     setBusy(true); setErr(''); setResult(null)
     try {
       const verdict = await api.score(text, strictness)
-      // Highlights and attribution are only shown for flagged essays.
-      const [highlights, attribution] = verdict.flagged
-        ? await Promise.all([api.explain(text, strictness), api.attribution(text, strictness)])
-        : [null, null]
-      setResult({ verdict, highlights, attribution })
+      setResult({ verdict, highlights: null, attribution: null })   // show the verdict at once
+      setBusy(false)
+      if (verdict.flagged) {
+        // Highlights are slow on a CPU host, so they fill in when ready. Only flagged essays get them.
+        setLoadingMore(true)
+        const [highlights, attribution] = await Promise.all([api.explain(text, strictness), api.attribution(text, strictness)])
+        setResult({ verdict, highlights, attribution })
+      }
     } catch (e) { setErr(e.message) }
-    setBusy(false)
+    setBusy(false); setLoadingMore(false)
   }
 
   return (
@@ -132,6 +136,7 @@ export default function App() {
         {Object.keys(samples).map((k) => <option key={k} value={k}>{k}</option>)}
       </select>
       <textarea value={text} onChange={(e) => { setText(e.target.value); setResult(null) }} rows={12} placeholder="Paste an essay (at least 40 words)" />
+      <p className="muted">Your text is sent to the server only to be scored. It is not saved or logged.</p>
 
       <div className="row">
         <label>
@@ -148,6 +153,7 @@ export default function App() {
       {result && (
         <>
           <Verdict v={result.verdict} />
+          {loadingMore && !result.highlights && <p className="muted">Working out which sentences drove the score. This can take up to a minute…</p>}
           {result.highlights && <Highlights data={result.highlights} />}
           {result.attribution && <Attribution data={result.attribution} />}
           <Fool text={text} strictness={strictness} before={result.verdict} />
