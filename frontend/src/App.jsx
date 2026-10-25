@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as api from './api'
 import { SAMPLE_META } from './samples'
 import { fmt, reduceMotion, words } from './lib/format'
+import Wordmark from './components/Wordmark'
 import Icon from './components/Icon'
 import AnalysisLog from './components/AnalysisLog'
 import Verdict from './components/Verdict'
@@ -127,7 +128,7 @@ export default function App() {
         </header>
 
         <section className="hero" aria-label="Introduction">
-          <div className="wordmark"><h1 className="wm-text">Ghost Writer</h1></div>
+          <Wordmark />
           <div className="thesis">
             <p className="lede">Did a student write this essay, or a language model? Paste one. The detector gives its verdict, shows which sentences moved it, and <em>lists its reasons to doubt itself.</em></p>
             <div className="facts">
@@ -221,8 +222,38 @@ export default function App() {
       </div>
 
       <section className="method" id="method" aria-labelledby="method-h">
-        <div className="wrap"><h2 id="method-h">How the verdict is made</h2></div>
+        <div className="wrap" style={{ display: 'grid', gap: 36 }}>
+          <div>
+            <h2 id="method-h">How the verdict is made</h2>
+            <p className="intro">One fine-tuned transformer, one score per essay, and a flag line chosen on held-out human essays. Every number here was measured on essays the model could not have memorised.</p>
+          </div>
+          <ol className="pipeline">
+            <li><b>Read</b><span>The first 512 tokens of the essay. Longer essays are cut.</span></li>
+            <li><b>Score</b><span>DistilRoBERTa, fine-tuned on 28,006 DAIGT-V2 essays, gives one number: higher is more AI-like.</span></li>
+            <li><b>Flag</b><span>Compare with a line set so only 0.5% (strict) or 1% (standard) of validation human essays cross it.</span></li>
+            <li><b>Explain</b><span>Remove each sentence and re-score (occlusion). If nothing moves, use integrated gradients.</span></li>
+          </ol>
+          <div>
+            <p className="label" style={{ marginBottom: 16 }}>What looked good and wasn’t</p>
+            <div className="numbers">
+              <div className="number caveat"><b>0.976 → 0–28%</b><span>“Which model wrote it”: macro-F1 on a random split, then the right family for a data source it never saw. At or below chance.</span></div>
+              <div className="number caveat"><b>50%</b><span>of AI essays were off-topic for their prompt label, a topic shortcut. Every model is also scored on on-topic essays only.</span></div>
+              <div className="number caveat"><b>18%</b><span>of essays from unseen AI models caught by GPT-2 perplexity alone. Claude and GPT-4 surprise it almost as much as students do.</span></div>
+            </div>
+          </div>
+          <div className="before-after">
+            <div className="ba old"><span className="label">Version 1</span><p className="claim">100% accuracy</p><p>282 essays, AI essays from one generated batch, a 57-essay test set. TF-IDF learned that batch’s style. Kept in Archive/ as the “before”.</p></div>
+            <div className="ba"><span className="label">This version</span><p className="claim">Honest numbers, shown failures</p><p>44,868 essays, near-duplicates grouped, two prompts and two model families held out, shortcuts hunted down (leading spaces, off-topic AI essays, spelling).</p></div>
+          </div>
+        </div>
       </section>
+
+      <div className="wrap">
+        <footer>
+          <p>Course project for CSE472. Do not use it to judge real students: it separates 2023-era AI essays from US student essays and has not been tested on other writing.</p>
+          <p><a href={REPO}>Source, notebooks and model card</a></p>
+        </footer>
+      </div>
     </>
   )
 }
