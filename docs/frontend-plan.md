@@ -32,7 +32,10 @@ as the polished face of the project; the Streamlit app stays as the working fall
   Run: `uvicorn api.main:app --port 8000` from the repo root, then `npm run dev` in `frontend/` (http://localhost:5173).
 - Tested end to end in headless Chromium (analyse, highlights, typo attack). First score takes ~10 s while models load.
 - Not-flagged path and a 390 px phone width checked (fixed a sideways scroll caused by long example names).
-- Design pass done (restrained, paper-and-highlighter look; score meter with threshold marker; two columns on wide screens; light and dark; checked at 1280 and 390 px). `PRODUCT.md` holds the product record.
+- Redesign done (2026-10-25), following `FRONTEND_REDESIGN.md` and the prototype `docs/redesign/ghost-writer-demo.html`: "examination bench" layout (essay left, sticky readout right), dark-first with a light theme, essay painted with sentence highlights plus a per-sentence fingerprint strip, spectrum with the real threshold, per-essay "before you trust this" list, closed attribution drawer, try-to-fool-it with a word diff, WebGL ghost-ink wordmark (plain h1 fallback). `frontend/src/` is now `App.jsx`, `api.js`, `samples.js`, `components/*`, `lib/*`.
+- Checked: examples 1-3 show the right panels; switching examples mid-run never shows the old result; 390 px has no sideways scroll; keyboard reaches the bars; highlight text contrast 5.46:1 (dark, strongest paint) and 11.7:1 (light); reduced motion gives a still wordmark; production build served by FastAPI at :8000 works.
+- Known: the rate-limit middleware in `api/main.py` sits outside the CORS middleware, so a 429 has no CORS headers and a cross-origin page (Vite dev) sees a network error. The page shows a friendly message for it. A one-line fix (add the CORS middleware after the rate limiter) is waiting for approval.
+- Not done: replacing `images/demo_screenshot.png` (needs the owner's OK); `/impeccable critique` and `review-animations` passes.
 
 ## Hosting on Hugging Face Spaces (Docker, free CPU)
 Code is ready; the Docker image has NOT been built or run (no Docker on this machine), and nothing is pushed.

@@ -3,11 +3,17 @@
 const BASE = import.meta.env.DEV ? 'http://localhost:8000/api' : '/api'
 
 async function call(path, body) {
-  const res = await fetch(BASE + path, {
-    method: body ? 'POST' : 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  let res
+  try {
+    res = await fetch(BASE + path, {
+      method: body ? 'POST' : 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  } catch {
+    // No response at all: the server is down, or (in development) it answered 429 without CORS headers.
+    throw new Error('Could not reach the server. If you have been trying many essays, wait a minute (there is a request limit) and try again.')
+  }
   const data = await res.json()
   if (!res.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Request failed')
   return data

@@ -1,0 +1,1206 @@
+<title>Ghost Writer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Design prototype for the Ghost Writer frontend: an AI-essay detector that shows its evidence and its limits.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap">
+<style>
+/* ==========================================================================
+   GHOST WRITER — design prototype ("the examination bench")
+   Concept: a forensic document examiner's bench under a UV lamp.
+   The essay is the questioned document (left, large); the lab readout sits
+   beside it (right, sticky). Ink-violet ground, AI-like signal glows amber
+   like UV-reactive ink, student-like signal is cool blue (blue/orange pair is
+   colour-blind safe). Dark-first; light theme is "daylight" on cool paper.
+
+   Layout: hero wordmark → [document | readout] bench → method → footer.
+   Port: copy these tokens + rules into frontend/src/index.css as they are.
+   ========================================================================== */
+:root {
+  /* colour — dark (default) */
+  --ground: #11101d;      /* page */
+  --surface: #181727;     /* raised panels */
+  --sheet: #1c1b2e;       /* the essay paper */
+  --sheet-edge: #2d2b47;
+  --ink: #ecebf6;         /* primary text */
+  --muted: #a7a4c3;       /* secondary text (≥ 7:1 on ground) */
+  --faint: #5d5a7c;       /* rules, ticks — never text */
+  --line: #2a2840;
+  --lamp: #a493ff;        /* UV lamp: focus, links, wordmark sheen */
+  --glow: #ffb547;        /* AI-like signal (highlighter ink) */
+  --glow-text: #ffc875;   /* AI-like signal as text */
+  --cool: #7db4ff;        /* student-like signal */
+  --cool-text: #a3c9ff;
+  --zone-human: #1d2944;
+  --zone-ai: #3b2b18;
+  --btn-bg: #ecebf6;
+  --btn-fg: #11101d;
+  --hl-max: 40%;          /* strongest highlight opacity (contrast-checked) */
+  --shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 24px 60px -30px rgba(0,0,0,.7);
+
+  /* type */
+  --display: 'Gloock', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --read: 'Literata', 'Iowan Old Style', Georgia, serif;
+  --ui: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  /* scale: 12 / 13 / 15 / 17 / 21 / 28 / 40 */
+  --t-xs: .75rem; --t-sm: .8125rem; --t-md: .9375rem; --t-lg: 1.0625rem;
+  --t-xl: 1.3125rem; --t-2xl: 1.75rem; --t-3xl: 2.5rem;
+
+  /* motion */
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --fast: 160ms; --mid: 320ms; --slow: 650ms;
+
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ground: #eceef5; --surface: #f5f6fa; --sheet: #fdfdff; --sheet-edge: #d7d9e6;
+    --ink: #1a1930; --muted: #4f4d6b; --faint: #a9abc0; --line: #d8dae6;
+    --lamp: #5541d0; --glow: #f29a12; --glow-text: #8f4c00; --cool: #2f63c8; --cool-text: #2353ad;
+    --zone-human: #dbe5f8; --zone-ai: #fbe4c4; --btn-bg: #1a1930; --btn-fg: #fdfdff;
+    --hl-max: 46%; --shadow: 0 1px 2px rgba(26,25,48,.06), 0 18px 40px -24px rgba(26,25,48,.28);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --ground: #eceef5; --surface: #f5f6fa; --sheet: #fdfdff; --sheet-edge: #d7d9e6;
+  --ink: #1a1930; --muted: #4f4d6b; --faint: #a9abc0; --line: #d8dae6;
+  --lamp: #5541d0; --glow: #f29a12; --glow-text: #8f4c00; --cool: #2f63c8; --cool-text: #2353ad;
+  --zone-human: #dbe5f8; --zone-ai: #fbe4c4; --btn-bg: #1a1930; --btn-fg: #fdfdff;
+  --hl-max: 46%; --shadow: 0 1px 2px rgba(26,25,48,.06), 0 18px 40px -24px rgba(26,25,48,.28);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: var(--ui); font-size: var(--t-md); line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: color-mix(in oklab, var(--lamp) 40%, transparent); }
+:focus-visible { outline: 2px solid var(--lamp); outline-offset: 3px; border-radius: 4px; }
+a { color: var(--lamp); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+button { font: inherit; color: inherit; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.label {
+  font-family: var(--mono); font-size: var(--t-xs); letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+.wrap {
+  max-width: 1240px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- top bar ---------- */
+.topbar { padding-block: 18px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.topbar .course { flex: 1 1 auto; min-width: 0; }
+.topbar nav { display: flex; gap: 20px; flex-wrap: wrap; font-size: var(--t-sm); }
+.topbar nav a { color: var(--muted); text-decoration: none; }
+.topbar nav a:hover { color: var(--ink); }
+.proto-badge {
+  font-family: var(--mono); font-size: var(--t-xs); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--glow-text); border: 1px solid color-mix(in oklab, var(--glow) 45%, transparent);
+  padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+}
+
+/* ---------- hero ---------- */
+.hero { padding-block: 8px 36px; display: grid; gap: 20px; }
+.wordmark { position: relative; width: 100%; max-width: 860px; }
+.wordmark canvas { display: block; width: 100%; height: auto; aspect-ratio: 5.1 / 1; max-width: 100%; touch-action: pan-y; }
+.wordmark .wm-text {
+  font-family: var(--display); font-weight: 400; font-size: clamp(3rem, 11vw, 8.6rem);
+  line-height: .95; letter-spacing: -.02em;
+}
+.thesis { display: flex; gap: 28px 48px; flex-wrap: wrap; align-items: end; }
+.thesis p.lede { font-family: var(--read); font-size: var(--t-xl); line-height: 1.45; max-width: 36ch; }
+.thesis p.lede em { font-style: italic; color: var(--muted); }
+.facts { display: flex; gap: 28px; flex-wrap: wrap; }
+.fact { display: grid; gap: 2px; }
+.fact b { font-family: var(--mono); font-weight: 500; font-size: var(--t-lg); font-variant-numeric: tabular-nums; }
+.fact span { font-size: var(--t-sm); color: var(--muted); max-width: 18ch; line-height: 1.35; }
+
+/* ---------- the bench ---------- */
+.bench { display: grid; gap: 28px; align-items: start; padding-block: 8px 64px; }
+@media (min-width: 1000px) {
+  .bench { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 36px; }
+  .readout { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+}
+.doc, .readout { min-width: 0; }
+
+/* specimen picker */
+.specimens { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.specimen {
+  text-align: left; cursor: pointer; background: transparent; border: 1px solid var(--line);
+  border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; min-height: 64px;
+  transition: border-color var(--fast) var(--ease-out), background-color var(--fast) var(--ease-out);
+}
+.specimen:hover { border-color: var(--faint); }
+.specimen[aria-pressed="true"] { border-color: var(--lamp); background: color-mix(in oklab, var(--lamp) 9%, transparent); }
+.specimen .kind { font-family: var(--mono); font-size: var(--t-xs); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.specimen .name { font-weight: 500; font-size: var(--t-sm); line-height: 1.3; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.dot.ai { background: var(--glow); } .dot.human { background: var(--cool); } .dot.own { border: 1.5px solid var(--muted); }
+
+/* the paper */
+.sheet {
+  position: relative; background: var(--sheet); border: 1px solid var(--sheet-edge);
+  border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;
+}
+.sheet-head {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 14px 20px; border-bottom: 1px solid var(--line);
+}
+.sheet-head .label { flex: 1 1 auto; }
+.mini-verdict { display: none; align-items: center; gap: 8px; font-size: var(--t-sm); color: var(--muted); text-decoration: none; }
+.mini-verdict .mono { color: var(--ink); }
+@media (max-width: 999px) { .mini-verdict { display: inline-flex; } }
+.ghost-btn {
+  background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px;
+  font-size: var(--t-sm); cursor: pointer; color: var(--ink); min-height: 34px;
+  transition: border-color var(--fast) var(--ease-out);
+}
+.ghost-btn:hover { border-color: var(--faint); }
+.ghost-btn:disabled { opacity: .5; cursor: not-allowed; }
+.sheet-body { position: relative; padding: 26px 28px 30px 56px; }
+/* exam-paper margin rule */
+.sheet-body::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 38px; width: 1px;
+  background: color-mix(in oklab, var(--lamp) 35%, transparent);
+}
+@media (max-width: 560px) {
+  .sheet-body { padding: 20px 18px 24px 30px; }
+  .sheet-body::before { left: 16px; }
+}
+.essay-input, .essay {
+  font-family: var(--read); font-size: 1.0625rem; line-height: 1.8; color: var(--ink);
+  max-width: 68ch;
+}
+.essay-input {
+  display: block; width: 100%; min-height: 420px; resize: vertical; border: 0; outline: none;
+  background: transparent; padding: 0; caret-color: var(--lamp);
+}
+.essay-input::placeholder { color: var(--muted); font-style: italic; }
+.sheet-body:focus-within::before { background: var(--lamp); }
+.essay { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.essay .s {
+  border-radius: 3px; padding: 1px 0; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  background-color: color-mix(in oklab, var(--glow) calc(var(--w, 0) * var(--hl-max)), transparent);
+  transition: background-color var(--slow) var(--ease-out), box-shadow var(--fast) var(--ease-out);
+  transition-delay: var(--d, 0ms), 0ms;
+}
+.essay:not(.lit) .s { background-color: transparent; }
+.essay .s.beyond { text-decoration: underline dotted var(--faint) 2px; text-underline-offset: 4px; }
+.essay .s.active { box-shadow: 0 0 0 2px var(--lamp); }
+/* the lamp pass: one sweep down the paper when the explanation arrives */
+.lamp-sweep {
+  position: absolute; left: 0; right: 0; top: 0; height: 140px; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--lamp) 16%, transparent) 70%, color-mix(in oklab, var(--lamp) 45%, transparent) 98%, transparent);
+  transform: translateY(-140px); opacity: 0;
+}
+.lamp-sweep.go { animation: sweep 1.3s var(--ease-out) forwards; }
+@keyframes sweep {
+  0% { transform: translateY(-140px); opacity: 1; }
+  85% { opacity: .9; }
+  100% { transform: translateY(var(--sweep-to, 900px)); opacity: 0; }
+}
+
+.sheet-foot {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 14px 20px; border-top: 1px solid var(--line); background: var(--surface);
+}
+.count { font-size: var(--t-sm); color: var(--muted); flex: 1 1 200px; }
+.count.warn { color: var(--glow-text); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 3px; }
+.seg button {
+  border: 0; background: transparent; border-radius: 6px; padding: 6px 10px; cursor: pointer;
+  font-size: var(--t-sm); color: var(--muted); min-height: 32px;
+  transition: background-color var(--fast) var(--ease-out), color var(--fast) var(--ease-out);
+}
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+.seg button small { font-family: var(--mono); font-size: var(--t-xs); opacity: .8; margin-left: 4px; }
+.primary {
+  border: 0; border-radius: 9px; padding: 10px 18px; cursor: pointer; min-height: 42px;
+  background: var(--btn-bg); color: var(--btn-fg); font-weight: 600;
+  transition: transform var(--fast) var(--ease-out), opacity var(--fast) var(--ease-out);
+}
+.primary:hover:not(:disabled) { opacity: .92; }
+.primary:active:not(:disabled) { transform: scale(.97); }
+.primary:disabled { opacity: .4; cursor: not-allowed; }
+
+/* fingerprint strip: one bar per sentence */
+.print { padding: 16px 20px 6px; border-bottom: 1px solid var(--line); }
+.print-top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.print-note { font-size: var(--t-sm); color: var(--muted); max-width: 60ch; }
+.bars { display: flex; align-items: stretch; gap: 4px; height: 72px; position: relative; overflow-x: auto; }
+.bars::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); pointer-events: none; }
+.bar-btn {
+  flex: 1 0 8px; max-width: 34px; border: 0; padding: 0; background: transparent; cursor: pointer;
+  position: relative; border-radius: 3px;
+}
+.bar-btn:hover, .bar-btn.active { background: color-mix(in oklab, var(--lamp) 14%, transparent); }
+.bar-btn i { position: absolute; left: 2px; right: 2px; border-radius: 2px; transition: height var(--slow) var(--ease-out); }
+.bar-btn i.up { bottom: 50%; background: var(--glow); }
+.bar-btn i.down { top: 50%; background: var(--cool); }
+.bar-btn i.none { top: calc(50% - 1px); height: 2px; background: var(--faint); }
+.print-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: var(--t-xs); color: var(--muted); padding: 8px 0 6px; }
+.print-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.table-wrap { overflow-x: auto; margin-top: 8px; }
+table.nums { border-collapse: collapse; width: 100%; font-size: var(--t-sm); }
+table.nums th, table.nums td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+table.nums td.n { font-family: var(--mono); text-align: right; white-space: nowrap; }
+table.nums th { color: var(--muted); font-weight: 500; }
+
+/* ---------- readout ---------- */
+.readout { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.card h2 { font-family: var(--ui); font-size: var(--t-sm); font-weight: 600; letter-spacing: .01em; }
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+
+.verdict { display: grid; gap: 14px; }
+.verdict-word { font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 4.4vw, 2.75rem); line-height: 1.02; letter-spacing: -.01em; }
+.verdict-word .ai { color: var(--glow-text); }
+.verdict-word .human { color: var(--cool-text); }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: var(--t-xs);
+  letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; border: 1px solid;
+}
+.chip.ai { color: var(--glow-text); border-color: color-mix(in oklab, var(--glow) 55%, transparent); background: color-mix(in oklab, var(--glow) 10%, transparent); }
+.chip.human { color: var(--cool-text); border-color: color-mix(in oklab, var(--cool) 55%, transparent); background: color-mix(in oklab, var(--cool) 10%, transparent); }
+.chip.neutral { color: var(--muted); border-color: var(--line); }
+.verdict-sub { font-size: var(--t-sm); color: var(--muted); }
+.verdict-sub b { color: var(--ink); font-weight: 500; font-family: var(--mono); }
+
+svg.spectrum { width: 100%; height: auto; display: block; overflow: visible; }
+.spectrum .zone-h { fill: var(--zone-human); }
+.spectrum .zone-a { fill: var(--zone-ai); }
+.spectrum .zone-txt { fill: var(--muted); font-family: var(--mono); font-size: 8.5px; letter-spacing: .08em; }
+.spectrum .tick { stroke: var(--faint); stroke-width: 1; }
+.spectrum .axis { fill: var(--muted); font-family: var(--mono); font-size: 10px; }
+.spectrum .flagline { stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.spectrum .flagtxt { fill: var(--ink); font-family: var(--mono); font-size: 10.5px; }
+.spectrum .pin { transition: transform var(--slow) var(--ease-out); }
+.spectrum .pin circle { fill: var(--ink); stroke: var(--surface); stroke-width: 3; }
+.spectrum .pin line { stroke: var(--ink); stroke-width: 1.5; }
+.spectrum .pin text { fill: var(--ink); font-family: var(--mono); font-size: 12.5px; font-weight: 500; }
+.spectrum .pin.before circle { fill: var(--surface); stroke: var(--muted); stroke-width: 2; }
+.spectrum .pin.before text { fill: var(--muted); font-size: 10.5px; font-weight: 400; }
+
+.doubts { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.doubts li { display: grid; grid-template-columns: 18px minmax(0,1fr); gap: 10px; font-size: var(--t-sm); line-height: 1.5; }
+.doubts li svg { margin-top: 3px; color: var(--lamp); }
+.doubts li b { font-weight: 600; }
+
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.log li { display: grid; grid-template-columns: 16px minmax(0,1fr) auto; gap: 10px; align-items: baseline; font-size: var(--t-sm); }
+.log li .t { font-family: var(--mono); font-size: var(--t-xs); color: var(--muted); }
+.log li.pending { color: var(--muted); }
+.log li.skipped { color: var(--muted); }
+.log .mark { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--faint); align-self: center; }
+.log li.done .mark { background: var(--lamp); border-color: var(--lamp); }
+.log li.active .mark { border-color: var(--lamp); animation: pulse 1.1s ease-in-out infinite; }
+.log li.skipped .mark { border-style: dashed; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 5px color-mix(in oklab, var(--lamp) 25%, transparent); } }
+.done-line { font-size: var(--t-xs); color: var(--muted); font-family: var(--mono); }
+
+/* attribution drawer */
+details.drawer { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+details.drawer summary {
+  list-style: none; cursor: pointer; padding: 16px 20px; display: flex; align-items: center; gap: 10px;
+  font-size: var(--t-sm); font-weight: 600;
+}
+details.drawer summary::-webkit-details-marker { display: none; }
+details.drawer summary .chev { margin-left: auto; transition: transform var(--fast) var(--ease-out); color: var(--muted); }
+details.drawer[open] summary .chev { transform: rotate(180deg); }
+.drawer-body { padding: 0 20px 20px; display: grid; gap: 14px; }
+.warn-box { border: 1px solid color-mix(in oklab, var(--glow) 40%, transparent); border-radius: 10px; padding: 12px 14px; font-size: var(--t-sm); background: color-mix(in oklab, var(--glow) 7%, transparent); }
+.warn-box b { color: var(--glow-text); }
+.fam { display: grid; grid-template-columns: 6.5rem minmax(0,1fr) 3rem; gap: 12px; align-items: center; font-size: var(--t-sm); }
+.fam .track { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.fam .track i { display: block; height: 100%; background: var(--muted); border-radius: 3px; transition: width var(--slow) var(--ease-out); }
+.fam .pct { font-family: var(--mono); text-align: right; color: var(--muted); }
+
+/* try to fool it */
+.attacks { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+.attack {
+  text-align: left; border: 1px solid var(--line); background: transparent; border-radius: 10px; padding: 10px 12px; cursor: pointer;
+  display: grid; gap: 2px; min-height: 58px; transition: border-color var(--fast) var(--ease-out), background-color var(--fast) var(--ease-out);
+}
+.attack:hover:not(:disabled) { border-color: var(--faint); }
+.attack[aria-pressed="true"] { border-color: var(--lamp); background: color-mix(in oklab, var(--lamp) 9%, transparent); }
+.attack:disabled { opacity: .5; cursor: not-allowed; }
+.attack b { font-size: var(--t-sm); font-weight: 500; }
+.attack span { font-size: var(--t-xs); color: var(--muted); font-family: var(--mono); }
+.fool-out { display: grid; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.delta { display: flex; gap: 18px; flex-wrap: wrap; align-items: baseline; }
+.delta .big { font-family: var(--mono); font-size: var(--t-xl); font-variant-numeric: tabular-nums; }
+.delta .small { font-size: var(--t-sm); color: var(--muted); }
+.outcome { font-size: var(--t-sm); }
+.diff { font-family: var(--read); font-size: var(--t-md); line-height: 1.75; max-height: 280px; overflow: auto; padding: 12px 14px; background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff ins { text-decoration: none; background: color-mix(in oklab, var(--lamp) 22%, transparent); border-radius: 2px; box-shadow: 0 1.5px 0 var(--lamp); }
+.diff del { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.err { color: var(--glow-text); font-size: var(--t-sm); }
+
+.idle { display: grid; gap: 12px; }
+.idle p { color: var(--muted); font-size: var(--t-sm); max-width: 48ch; }
+
+/* skeleton */
+.skel { height: 12px; border-radius: 4px; background: var(--line); animation: fade 1.4s ease-in-out infinite; }
+@keyframes fade { 50% { opacity: .45; } }
+
+/* ---------- method ---------- */
+.method { border-top: 1px solid var(--line); padding-block: 56px 40px; }
+.method h2 { font-family: var(--display); font-weight: 400; font-size: var(--t-3xl); line-height: 1.05; }
+.method .intro { font-family: var(--read); font-size: var(--t-lg); color: var(--muted); max-width: 60ch; margin-top: 10px; }
+.pipeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0; counter-reset: step; }
+.pipeline li { padding: 16px 18px 18px 0; border-top: 2px solid var(--line); position: relative; display: grid; gap: 6px; counter-increment: step; }
+.pipeline li::before { content: counter(step, decimal-leading-zero); font-family: var(--mono); font-size: var(--t-xs); color: var(--lamp); }
+.pipeline li b { font-weight: 600; font-size: var(--t-md); }
+.pipeline li span { font-size: var(--t-sm); color: var(--muted); max-width: 30ch; }
+.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.number b { display: block; font-family: var(--display); font-weight: 400; font-size: 3rem; line-height: 1; letter-spacing: -.01em; }
+.number span { display: block; font-size: var(--t-sm); color: var(--muted); margin-top: 8px; max-width: 32ch; }
+.number.caveat b { color: var(--glow-text); }
+.before-after { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.ba { border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; gap: 8px; }
+.ba .label { color: var(--muted); }
+.ba .claim { font-family: var(--display); font-size: var(--t-2xl); line-height: 1.1; }
+.ba.old .claim { text-decoration: line-through; text-decoration-color: var(--glow); text-decoration-thickness: 2px; color: var(--muted); }
+.ba p { font-size: var(--t-sm); color: var(--muted); }
+
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; font-size: var(--t-sm); color: var(--muted); display: flex; gap: 12px 28px; flex-wrap: wrap; justify-content: space-between; }
+footer p { max-width: 70ch; }
+
+@media (max-width: 420px) {
+  .attacks { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 5.5rem minmax(0,1fr) 2.6rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div id="root"><p style="padding:24px;font-family:system-ui;color:#a7a4c3">Loading the Ghost Writer prototype…</p></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+/* =============================================================================
+   GHOST WRITER — prototype components
+   Every component below maps 1:1 to a file in frontend/src/components/.
+   Only `mockApi` is fake: in the real app, delete it and import * as api
+   from './api' (same five functions, same response shapes as api/main.py).
+   ============================================================================= */
+const { useState, useEffect, useRef, useMemo, useId, useCallback } = React;
+
+/* ---------- data: the three built-in examples (demo/samples.json) ---------- */
+const SAMPLES = {
+ "AI essay (Claude, a model family the detector never saw in training)": "Limiting car usage has several benefits for both individuals and society as a whole. One of the major advantages is improved air quality and environmental health. As passage 1 notes, vehicles are a leading source of air pollution in many cities. They emit a variety of harmful gases and particles that can cause respiratory problems like asthma. By driving less and using alternatives like public transportation, biking, or walking, cities would see lowered emissions and clearer air. This would significantly boost public health outcomes over time. \n\nA second advantage outlined in passage 2 is reduced traffic congestion. Traffic jams waste everyone's time and cause unnecessary stress. They also release more pollutants into the busy city air. If fewer private vehicles clogged up roads and more people switched to other modes, there would be less congestion for those who still need to drive. Commutes and goods delivery could be more efficient. People may also save money on gas by avoiding slow traffic. Public transportation could move more reliably too with less competition on the streets.\n\nPassage 3 discusses the economic and infrastructure benefits. Parking spaces and roads are extremely expensive for cities to build and maintain. With fewer cars needing accommodations, municipalities could allocate those funds elsewhere to improve transit, bike lanes, or public services. Individuals may save substantial costs in the long run without owning a private vehicle for every trip. Financial resources are better spent on more sustainable options. \n\nIn conclusion, limiting car usage through behavioral changes, urban design, and policy would lead to an array of ecological, social, and economic advantages according to the sources. Improved public health and reduced congestion are compelling outcomes. By raising awareness of these benefits, more citizens may be motivated to adopt multi-modal transportation habits for the betterment of communities overall. A shift away from complete car dependence can deliver positive results if implemented thoughtfully and progressively over time.",
+ "Human essay (a student)": "Dear Principal\n\nI've heard of the new cell phone policies, one where we get to use our phones during lunch and free time, or don't use our phones at all. I think policy 1 is better than policy 2, not just because I'm a student but because i think it's better. Policy 1 states: allow students to bring phones to school and use them during lunch periods and other free times, as long as the phones are turned off during class time. I think that sounds way better that not having phones at all. just think about it, what if something happens to a students mom and she cant take her son home, and if she tries to contact him, he wont be able to know because you chose policy 2. But if you chose policy 1, the student would call his mom back during lunch or free time and find out what happened. See, that makes policy 1 sound way better than policy 2. Now, what if their are some sneaky students and want to text in class? Well, tell the teachers to have a box and collect all of the student phones in the begging of class and return them back to the students at the end. It's that simple! This is just my opinion, but if you like it then thank you and i hope you choose policy 1.",
+ "Human essay the detector wrongly flags (careful, fluent writing)": "A driverless car is a scary concept. Some say that it is completely insane, but that is what they said when Neil Armstrong came up with the idea of walking on the moon, and now walking on the moon is no big deal. In my opinion, with a lot of hard work and problem solving, driverless cars could become the next big thing.\n\nThere are many things that have been done to make this idea become reality. For example, Google's modified Toyota Prius uses position-estimating sensors on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, and a GPS receiver. With modifications on these resources, they could potentually work. Of course, the driverless car will not be 100% driverless. The driver would need to be alert and ready to take control when needed. GM has developed ways to alert the driver. For example, they have made driver's seats that vibrate when the vehicle is in danger of backing into an object. Google and GM have taken great precautions in developing the driverless car.\n\nIn conclusion, driverless cars may seem scary at first, but I believe that with hard work and dedication, driverless cars will one day be no big deal."
+};
+const SAMPLE_META = [
+  { kind: 'ai', tag: 'AI · Claude', note: 'Model family never seen in training' },
+  { kind: 'human', tag: 'Human · student', note: 'An ordinary student essay' },
+  { kind: 'human', tag: 'Human · false alarm', note: 'Careful, fluent writing the detector wrongly flags' },
+];
+
+/* =============================================================================
+   MOCK API — mirrors frontend/src/api.js + api/main.py response shapes.
+   DEMO VALUES ONLY. The third example's score (+9.1), its attribution
+   (Mistral 37% / Llama 2 18% / GPT-3.5 13%) and its 5%-typo result (+3.3)
+   are copied from images/demo_screenshot.png; everything else is invented so
+   the prototype runs without the model.
+   ============================================================================= */
+const THRESHOLDS = { strict: 7.80, standard: 4.67 };   // real, from notebook 09
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const words = (t) => t.trim().split(/\s+/).filter(Boolean);
+const AI_MARKERS = /\b(additionally|furthermore|moreover|overall|significant(ly)?|particularly|finally|conclusion|essay|ultimately|crucial|various|numerous|enhance|ensure|potential|benefits?)\b/gi;
+const HUMAN_MARKERS = /\b(dont|cant|wont|isnt|im|alot|gonna|kinda|really|very|stuff|lot|thing|nasa|paragraph)\b|\bi\b/g;
+
+function mulberry32(seed) { return () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+function sampleIndex(text) { return Object.values(SAMPLES).findIndex((t) => t.trim() === text.trim()); }
+
+function heuristicScore(text) {   // stand-in for DistilRoBERTa in the prototype only
+  const n = Math.max(1, words(text).length);
+  const ai = (text.match(AI_MARKERS) || []).length / n * 100;
+  const hu = (text.match(HUMAN_MARKERS) || []).length / n * 100;
+  return Math.max(-9.6, Math.min(9.8, 9.8 * Math.tanh((ai * 1.4 - hu * 0.55 - 0.4) / 2.2)));
+}
+const CANNED_SCORE = [9.62, -7.35, 9.1];
+
+function splitSentences(text) {     // same idea as src/explain.py: spans into the original text
+  const out = []; const re = /[^.!?\n]+(?:[.!?]+["')\]]*|\n|$)/g; let m;
+  while ((m = re.exec(text))) {
+    const raw = m[0]; const lead = raw.length - raw.trimStart().length; const body = raw.trim();
+    if (!body) continue;
+    out.push({ start: m.index + lead, end: m.index + lead + body.length, text: body });
+  }
+  return out;
+}
+
+const mockApi = {
+  async getSamples() { await sleep(150); return SAMPLES; },
+
+  async score(text, strictness) {
+    await sleep(700);
+    if (words(text).length < 40) throw new Error('Enter at least 40 words.');
+    const i = sampleIndex(text);
+    const score = i >= 0 ? CANNED_SCORE[i] : heuristicScore(text);
+    const threshold = THRESHOLDS[strictness];
+    const tokens = Math.round(words(text).length * 1.31);
+    return { score, threshold, flagged: score >= threshold, tokens, tokens_read: Math.min(tokens, 512) };
+  },
+
+  async explain(text) {
+    await sleep(2600);
+    const sents = splitSentences(text).slice(0, 80);
+    const score = sampleIndex(text) >= 0 ? CANNED_SCORE[sampleIndex(text)] : heuristicScore(text);
+    const method = score > 9.4 ? 'integrated_gradients' : 'occlusion';
+    const rnd = mulberry32(hashStr(text));
+    let tokenSoFar = 0;
+    const sentences = sents.map((s) => {
+      tokenSoFar += words(s.text).length * 1.31;
+      const ai = (s.text.match(AI_MARKERS) || []).length;
+      const hu = (s.text.match(HUMAN_MARKERS) || []).length;
+      const opener = /^(in conclusion|additionally|furthermore|overall|for example|in my opinion|finally|moreover)/i.test(s.text) ? 1 : 0;
+      let c = ai * 0.75 + opener * 0.9 + (words(s.text).length > 24 ? 0.25 : 0) - hu * 0.35 + (rnd() - 0.45) * 0.5;
+      if (method === 'integrated_gradients') c = c * 0.18 + 0.05;
+      return { ...s, contribution: tokenSoFar > 512 ? null : +c.toFixed(3) };
+    });
+    return { method, truncated: splitSentences(text).length > 80, sentences };
+  },
+
+  async attribution(text) {
+    await sleep(1100);
+    const i = sampleIndex(text);
+    const families = i === 2 ? [['Mistral', .37], ['Llama 2', .18], ['GPT-3.5', .13]]
+      : i === 0 ? [['Claude', .58], ['GPT-3.5', .14], ['PaLM', .09]]
+      : [['GPT-3.5', .31], ['Mistral', .22], ['Cohere', .12]];
+    return { families: families.map(([family, probability]) => ({ family, probability })), heldout_accuracy: '0–28%' };
+  },
+
+  async rewrite(text, strictness, attack) {
+    const kind = attack.startsWith('typos') ? 'typos' : 'paraphrase';
+    await sleep(kind === 'typos' ? 900 : 3200);
+    const edited = kind === 'typos' ? injectTypos(text, attack === 'typos_5' ? 0.05 : 0.10)
+                                    : mockParaphrase(text, attack === 'paraphrase_heavy' ? 0.9 : 0.4);
+    const i = sampleIndex(text);
+    const before = i >= 0 ? CANNED_SCORE[i] : heuristicScore(text);
+    const shift = {   // invented, but in the direction notebook 13 found
+      typos_5:          before > 9.3 ? -0.2 : before > 0 ? -5.8 : -0.8,
+      typos_10:         before > 9.3 ? -0.5 : before > 0 ? -7.9 : -1.4,
+      paraphrase_light: before > 9.3 ? -0.3 : before > 0 ? -1.1 : +1.6,
+      paraphrase_heavy: before > 9.3 ? -1.2 : before > 0 ? -2.6 : +3.3,
+    }[attack];
+    const score = Math.max(-9.6, Math.min(9.8, before + shift));
+    const threshold = THRESHOLDS[strictness];
+    const tokens = Math.round(words(edited).length * 1.31);
+    return { edited, words_changed: wordsChanged(text, edited), score, threshold, flagged: score >= threshold, tokens, tokens_read: Math.min(tokens, 512) };
+  },
+};
+
+function injectTypos(text, rate) {   // like src/paraphraser.inject_typos: swap / drop / double one letter
+  const rnd = mulberry32(42);
+  return text.replace(/[A-Za-z]{4,}/g, (w) => {
+    if (rnd() > rate) return w;
+    const i = 1 + Math.floor(rnd() * (w.length - 2)); const op = rnd();
+    if (op < 0.4) return w.slice(0, i) + w[i + 1] + w[i] + w.slice(i + 2);
+    if (op < 0.7) return w.slice(0, i) + w.slice(i + 1);
+    return w.slice(0, i) + w[i] + w.slice(i);
+  });
+}
+const SYN = { significant: 'considerable', significantly: 'considerably', benefits: 'advantages', however: 'but', many: 'numerous', people: 'individuals', help: 'assist', important: 'crucial', use: 'employ', also: 'as well', think: 'believe', because: 'since', big: 'large', show: 'demonstrate', very: 'quite', get: 'obtain', make: 'create', reduce: 'lower', improve: 'enhance', cities: 'urban areas', cars: 'vehicles', car: 'vehicle', idea: 'notion', problem: 'issue', scary: 'frightening', thing: 'matter', example: 'instance', developed: 'created', ways: 'methods', ready: 'prepared', great: 'substantial', save: 'conserve', money: 'funds', time: 'hours', alert: 'attentive', driver: 'motorist' };
+function mockParaphrase(text, p) {
+  const rnd = mulberry32(7);
+  return text.replace(/[A-Za-z]+/g, (w) => {
+    const r = SYN[w.toLowerCase()]; if (!r || rnd() > p) return w;
+    return w[0] === w[0].toUpperCase() ? r[0].toUpperCase() + r.slice(1) : r;
+  }).replace(/In conclusion,/g, p > 0.5 ? 'To sum up,' : 'In conclusion,');
+}
+
+/* ---------- word diff (LCS) — used by the "try to fool it" panel ---------- */
+function diffWords(a, b) {
+  const A = a.split(/\s+/).filter(Boolean), B = b.split(/\s+/).filter(Boolean);
+  const n = A.length, m = B.length, L = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const ops = []; let i = 0, j = 0;
+  while (i < n && j < m) { if (A[i] === B[j]) { ops.push(['=', B[j]]); i++; j++; } else if (L[i + 1][j] >= L[i][j + 1]) ops.push(['-', A[i++]]); else ops.push(['+', B[j++]]); }
+  while (i < n) ops.push(['-', A[i++]]); while (j < m) ops.push(['+', B[j++]]);
+  return ops;
+}
+function wordsChanged(a, b) { const ops = diffWords(a, b); const ch = ops.filter((o) => o[0] === '+').length; return ch / Math.max(1, words(a).length); }
+function diffByParagraph(a, b) {
+  const pa = a.split(/\n\s*\n/), pb = b.split(/\n\s*\n/);
+  return pa.length === pb.length ? pa.map((p, k) => diffWords(p, pb[k])) : [diffWords(a, b)];
+}
+
+const api = mockApi;   // ← real app: import * as api from './api'
+
+/* =============================================================================
+   UI helpers
+   ============================================================================= */
+const fmt = (x) => (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(1);
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function Icon({ name, size = 16 }) {
+  const p = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true };
+  if (name === 'eye') return <svg {...p}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>;
+  if (name === 'chev') return <svg {...p}><path d="M6 9l6 6 6-6" /></svg>;
+  if (name === 'edit') return <svg {...p}><path d="M4 20h4L19 9l-4-4L4 16v4z" /></svg>;
+  return <svg {...p}><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>;
+}
+
+/* =============================================================================
+   <Wordmark/> — signature moment. WebGL "ghost ink": the wordmark is drawn to
+   a texture, then a fragment shader moves it with slow fbm noise, edges catch
+   a violet→amber sheen, and a faint displaced copy drifts behind it like a
+   ghost. Pointer stirs the ink. Inspired by collidingScopes/liquid-logo (MIT):
+   edge detection + noise flow + metallic sheen, rewritten small for text.
+   Falls back to the plain <h1> with no WebGL or reduced motion.
+   ============================================================================= */
+const VERT = `attribute vec2 p; varying vec2 uv; void main(){ uv = p*0.5+0.5; gl_Position = vec4(p,0.,1.); }`;
+const FRAG = `
+precision mediump float;
+uniform sampler2D tex; uniform float time; uniform vec2 res; uniform vec2 mouse; uniform float stir;
+uniform vec3 ink; uniform vec3 lamp; uniform vec3 glow;
+varying vec2 uv;
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1.,0.)),u.x), mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),u.x), u.y); }
+float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<4;i++){ v+=a*noise(p); p*=2.03; a*=.5; } return v; }
+void main(){
+  vec2 asp = vec2(res.x/res.y, 1.);
+  float d = distance(uv*asp, mouse*asp);
+  float push = exp(-d*d*6.) * stir;
+  vec2 flow = vec2(fbm(uv*vec2(7.,3.) + time*.12), fbm(uv*vec2(7.,3.) - time*.10 + 9.)) - .5;
+  vec2 duv = uv + flow * (.005 + push*.035);
+  float a = texture2D(tex, duv).a;
+  vec2 guv = uv + flow*.05 + vec2(-.018, .05) * (.7 + .3*sin(time*.4));
+  float g = texture2D(tex, guv).a;
+  float e = 1.6 / res.y;
+  float gx = texture2D(tex, duv+vec2(e/asp.x,0.)).a - texture2D(tex, duv-vec2(e/asp.x,0.)).a;
+  float gy = texture2D(tex, duv+vec2(0.,e)).a - texture2D(tex, duv-vec2(0.,e)).a;
+  float edge = clamp(length(vec2(gx,gy))*1.4, 0., 1.);
+  float band = fbm(uv*vec2(2.6,1.2) + vec2(time*.18, 0.));
+  vec3 sheen = mix(lamp, glow, smoothstep(.38, .68, band));
+  vec3 letter = mix(ink, sheen, clamp(edge*.95 + push*.6, 0., 1.));
+  float ga = g * .16 * (1. - a);
+  float alpha = a + ga;
+  vec3 col = (letter*a + sheen*ga) / max(alpha, 1e-4);
+  gl_FragColor = vec4(col*alpha, alpha);
+}`;
+
+function cssColor(name) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const h = v.replace('#', ''); const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+  return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+}
+
+function Wordmark() {
+  const canvasRef = useRef(null);
+  const [fallback, setFallback] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const gl = canvas && canvas.getContext('webgl', { premultipliedAlpha: true, antialias: true });
+    if (!gl) { setFallback(true); return; }
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; };
+    const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) { setFallback(true); return; }
+    const prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); gl.useProgram(prog);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = (n) => gl.getUniformLocation(prog, n);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    ['TEXTURE_MIN_FILTER', 'TEXTURE_MAG_FILTER'].forEach((k) => gl.texParameteri(gl.TEXTURE_2D, gl[k], gl.LINEAR));
+    ['TEXTURE_WRAP_S', 'TEXTURE_WRAP_T'].forEach((k) => gl.texParameteri(gl.TEXTURE_2D, gl[k], gl.CLAMP_TO_EDGE));
+
+    let w = 0, h = 0, raf = 0, visible = true, t0 = performance.now();
+    const mouse = { x: .5, y: .5, stir: 0, target: 0 };
+    const still = reduceMotion();
+    const paintTexture = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = Math.round(canvas.clientWidth * dpr); h = Math.round(canvas.clientHeight * dpr);
+      if (!w || !h) return;
+      canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h);
+      const off = document.createElement('canvas'); off.width = w; off.height = h;
+      const c = off.getContext('2d'); let px = h * 0.78;
+      c.font = `400 ${px}px Gloock, 'Iowan Old Style', Georgia, serif`;
+      const tw = c.measureText('Ghost Writer').width; if (tw > w * 0.94) px *= (w * 0.94) / tw;
+      c.font = `400 ${px}px Gloock, 'Iowan Old Style', Georgia, serif`;
+      c.fillStyle = '#fff'; c.textBaseline = 'alphabetic'; c.fillText('Ghost Writer', w * 0.012, h * 0.74);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, off);
+    };
+    const colors = () => { gl.uniform3fv(U('ink'), cssColor('--ink')); gl.uniform3fv(U('lamp'), cssColor('--lamp')); gl.uniform3fv(U('glow'), cssColor('--glow')); };
+    const frame = (now) => {
+      mouse.stir += (mouse.target - mouse.stir) * 0.06;
+      gl.uniform1f(U('time'), still ? 4.0 : (now - t0) / 1000);
+      gl.uniform2f(U('res'), w, h); gl.uniform2f(U('mouse'), mouse.x, mouse.y); gl.uniform1f(U('stir'), mouse.stir);
+      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      if (!still && visible && !document.hidden) raf = requestAnimationFrame(frame);
+    };
+    const start = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); };
+
+    const fontReady = document.fonts ? document.fonts.load("400 80px Gloock").catch(() => {}) : Promise.resolve();
+    fontReady.then(() => { paintTexture(); colors(); start(); });
+
+    const ro = new ResizeObserver(() => { paintTexture(); start(); }); ro.observe(canvas);
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }); io.observe(canvas);
+    const onVis = () => { if (!document.hidden) start(); };
+    document.addEventListener('visibilitychange', onVis);
+    const onMove = (e) => { const r = canvas.getBoundingClientRect(); mouse.x = (e.clientX - r.left) / r.width; mouse.y = 1 - (e.clientY - r.top) / r.height; mouse.target = 1; };
+    const onLeave = () => { mouse.target = 0; };
+    canvas.addEventListener('pointermove', onMove); canvas.addEventListener('pointerleave', onLeave);
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onTheme = () => { colors(); start(); };
+    mq.addEventListener('change', onTheme);
+    const mo = new MutationObserver(onTheme); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); mo.disconnect(); mq.removeEventListener('change', onTheme); document.removeEventListener('visibilitychange', onVis); };
+  }, []);
+
+  return (
+    <div className="wordmark">
+      <h1 className={fallback ? 'wm-text' : 'wm-text sr-only'}>Ghost Writer</h1>
+      {!fallback && <canvas ref={canvasRef} aria-hidden="true" />}
+    </div>
+  );
+}
+
+/* =============================================================================
+   <Spectrum/> — the detector's real scale: a logit from −10 to +10 with the
+   flag line chosen on validation human essays. Optional hollow "before" pin
+   for the try-to-fool-it panel.
+   ============================================================================= */
+function Spectrum({ score, threshold, before, label = 'Score' }) {
+  const id = useId();
+  // the pin starts at the centre (or at "before") and glides to the score
+  const [shown, setShown] = useState(before ?? 0);
+  useEffect(() => { const r = requestAnimationFrame(() => setShown(score)); return () => cancelAnimationFrame(r); }, [score]);
+  const L = 18, R = 302;                                     // drawn in a 320-wide box: text stays ~1:1 in the readout column
+  const X = (v) => L + ((clamp(v, -10, 10) + 10) / 20) * (R - L);
+  const tx = X(threshold);
+  const labelDx = (x, half) => clamp(x, L + half, R - half) - x;   // keep a label inside the box, the pin stays true
+  const showBeforeLabel = before != null && Math.abs(X(before) - X(score)) > 62;
+  const desc = `${label} ${fmt(score)} on a scale from −10 (student-like) to +10 (AI-like). Flag line at ${fmt(threshold)}: ${score >= threshold ? 'above it, flagged' : 'below it, not flagged'}.`;
+  return (
+    <svg className="spectrum" viewBox="0 0 320 112" role="img" aria-label={desc}>
+      <defs><clipPath id={id}><rect x={L} y="44" width={R - L} height="20" rx="10" /></clipPath></defs>
+      <g clipPath={`url(#${id})`}>
+        <rect className="zone-h" x={L} y="44" width={tx - L} height="20" />
+        <rect className="zone-a" x={tx} y="44" width={R - tx} height="20" />
+      </g>
+      <text className="zone-txt" x={L + 10} y="57.5">STUDENT-LIKE</text>
+      {R - tx > 54 && <text className="zone-txt" x={R - 10} y="57.5" textAnchor="end">AI-LIKE</text>}
+      {[-10, -5, 0, 5, 10].map((v) => (
+        <g key={v}>
+          <line className="tick" x1={X(v)} x2={X(v)} y1="68" y2="73" />
+          <text className="axis" x={X(v)} y="86" textAnchor="middle">{v > 0 ? `+${v}` : v < 0 ? `−${-v}` : '0'}</text>
+        </g>
+      ))}
+      <line className="flagline" x1={tx} x2={tx} y1="36" y2="76" />
+      <text className="flagtxt" x={clamp(tx, 58, 262)} y="106" textAnchor="middle">flag line {fmt(threshold)}</text>
+      {before != null && (
+        <g className="pin before" style={{ transform: `translateX(${X(before)}px)` }}>
+          <circle cx="0" cy="54" r="6.5" />
+          {showBeforeLabel && <text x={labelDx(X(before), 30)} y="22" textAnchor="middle">before {fmt(before)}</text>}
+        </g>
+      )}
+      <g className="pin" style={{ transform: `translateX(${X(shown)}px)` }}>
+        <line x1="0" x2="0" y1="28" y2="46" />
+        <circle cx="0" cy="54" r="7.5" />
+        <text x={labelDx(X(shown), 16)} y="22" textAnchor="middle">{fmt(score)}</text>
+      </g>
+    </svg>
+  );
+}
+
+/* =============================================================================
+   <Readout/> pieces
+   ============================================================================= */
+function AnalysisLog({ steps, elapsed }) {
+  return (
+    <ul className="log" aria-label="Analysis progress">
+      {steps.map((s) => (
+        <li key={s.key} className={s.state}>
+          <span className="mark" aria-hidden="true" />
+          <span>{s.text}{s.state === 'skipped' && ' · skipped, only for flagged essays'}</span>
+          <span className="t">{s.state === 'done' && s.ms != null ? `${(s.ms / 1000).toFixed(1)} s` : s.state === 'active' ? `${(elapsed / 1000).toFixed(1)} s` : ''}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function doubtsFor(v, text, highlights, strictness) {
+  const out = [];
+  const margin = v.score - v.threshold;
+  const n = words(text).length;
+  if (v.flagged && margin < 2) out.push(<><b>Borderline.</b> The score is only {fmt(margin)} above the flag line. Small edits can move it under (try the typo rewrite below).</>);
+  if (!v.flagged && margin > -2) out.push(<><b>Close call.</b> The score is {Math.abs(margin).toFixed(1)} below the flag line.</>);
+  if (v.flagged && n > 420) out.push(<><b>Long, polished essay.</b> The human essays this detector wrongly flags tend to be long and nearly free of spelling mistakes (median 489 words).</>);
+  if (highlights && highlights.method === 'integrated_gradients') out.push(<><b>No single sentence decides it.</b> The style runs through the whole essay, so the shading spreads thin.</>);
+  if (v.tokens > v.tokens_read) out.push(<><b>Only part was read.</b> The detector reads the first {v.tokens_read} of {v.tokens} tokens.</>);
+  if (v.flagged) out.push(<><b>Topics shift the error rate.</b> This setting flags {strictness === 'strict' ? '0.5%' : '1%'} of human essays on familiar prompts, but {strictness === 'strict' ? '2.3%' : '3.9%'} on prompts it never saw.</>);
+  if (!v.flagged) out.push(<><b>Not flagged is not proof.</b> It means the style is closer to the 2023 student essays it trained on.</>);
+  return out.slice(0, 4);
+}
+
+function Verdict({ v, text, highlights, strictness }) {
+  const doubts = doubtsFor(v, text, highlights, strictness);
+  return (
+    <section className="card verdict" aria-labelledby="verdict-h">
+      <div className="card-head">
+        <h2 id="verdict-h">Verdict</h2>
+        <span className={`chip ${v.flagged ? 'ai' : 'human'}`}>{v.flagged ? 'Flagged' : 'Not flagged'}</span>
+      </div>
+      <p className="verdict-word">
+        {v.flagged ? <>Reads as <span className="ai">AI-written</span></> : <>Reads as <span className="human">student-written</span></>}
+      </p>
+      <Spectrum score={v.score} threshold={v.threshold} />
+      <p className="verdict-sub">
+        Score <b>{fmt(v.score)}</b> against a flag line of <b>{fmt(v.threshold)}</b>, set so {strictness === 'strict' ? '0.5%' : '1%'} of
+        validation human essays cross it. A statistical hint about style, never proof of who wrote it.
+      </p>
+      <div>
+        <p className="label" style={{ marginBottom: 10 }}>Before you trust this</p>
+        <ul className="doubts">
+          {doubts.map((d, i) => (
+            <li key={i}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 8v4.5M12 16h.01" strokeLinecap="round" /></svg><span>{d}</span></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function Attribution({ data }) {
+  return (
+    <details className="drawer">
+      <summary>
+        Which training sources does it resemble?
+        <span className="chip neutral">Not authorship</span>
+        <span className="chev"><Icon name="chev" /></span>
+      </summary>
+      <div className="drawer-body">
+        <p className="warn-box">
+          <b>This cannot tell you which model wrote the essay.</b> When a whole data source was hidden from training, the right
+          family came up only {data.heldout_accuracy} of the time, at or below chance. It recognises how the training essays were
+          generated, not the model. If the flag is a false alarm, this panel means nothing.
+        </p>
+        <div style={{ display: 'grid', gap: 10 }}>
+          {data.families.map((f) => (
+            <div className="fam" key={f.family}>
+              <span>{f.family}</span>
+              <span className="track"><i style={{ width: `${f.probability * 100}%` }} /></span>
+              <span className="pct">{Math.round(f.probability * 100)}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </details>
+  );
+}
+
+const ATTACKS = [
+  { key: 'typos_5', name: 'Typos', detail: '5% of words' },
+  { key: 'typos_10', name: 'Typos', detail: '10% of words' },
+  { key: 'paraphrase_light', name: 'Paraphrase, light', detail: 'T5 · temp 1.0' },
+  { key: 'paraphrase_heavy', name: 'Paraphrase, heavy', detail: 'T5 · temp 1.5' },
+];
+
+function FoolIt({ text, strictness, before }) {
+  const [attack, setAttack] = useState(null);
+  const [out, setOut] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [showChanges, setShowChanges] = useState(true);
+  useEffect(() => { setOut(null); setAttack(null); setErr(''); }, [text, strictness]);
+
+  async function run(key) {
+    setAttack(key); setBusy(true); setErr('');
+    try { setOut({ ...(await api.rewrite(text, strictness, key)), attack: key }); }
+    catch (e) { setErr(e.message); }
+    setBusy(false);
+  }
+  const diff = useMemo(() => (out ? diffByParagraph(text, out.edited) : null), [out, text]);
+
+  let outcome = '';
+  if (out) {
+    if (before.flagged && !out.flagged) outcome = 'The rewrite got past the detector. Read the rewritten text: does it still make sense?';
+    else if (before.flagged && out.flagged) outcome = 'Still flagged. In the tests, typos and paraphrasing rarely changed a confident verdict unless they rewrote about half the words.';
+    else if (!before.flagged && out.flagged) outcome = 'Now flagged. Running honest work through a paraphraser can make it look machine-written.';
+    else outcome = out.score > before.score ? 'Still not flagged, but the rewrite moved it toward AI-like.' : 'Still not flagged.';
+  }
+
+  return (
+    <section className="card" aria-labelledby="fool-h">
+      <div className="card-head">
+        <h2 id="fool-h">Try to fool it</h2>
+        <span className="label">Rewrite, then re-score</span>
+      </div>
+      <div className="attacks" role="group" aria-label="Kind of rewrite">
+        {ATTACKS.map((a) => (
+          <button key={a.key} className="attack" aria-pressed={attack === a.key} disabled={busy} onClick={() => run(a.key)}>
+            <b>{a.name}</b><span>{a.detail}</span>
+          </button>
+        ))}
+      </div>
+      {busy && <div className="fool-out" aria-busy="true"><p className="verdict-sub">{attack && attack.startsWith('para') ? 'Paraphrasing with T5… about 15 s on a CPU.' : 'Adding typos…'}</p><div className="skel" /><div className="skel" style={{ width: '70%' }} /></div>}
+      {err && <p className="err" role="alert">{err}</p>}
+      {out && !busy && (
+        <div className="fool-out" aria-live="polite">
+          <Spectrum score={out.score} threshold={out.threshold} before={before.score} label="Score after rewrite" />
+          <div className="delta">
+            <span className="big">{fmt(before.score)} → {fmt(out.score)}</span>
+            <span className="small">{Math.round(out.words_changed * 100)}% of words changed</span>
+            <span className={`chip ${out.flagged ? 'ai' : 'human'}`}>{out.flagged ? 'Flagged' : 'Not flagged'}</span>
+          </div>
+          <p className="outcome">{outcome}</p>
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <span className="label">Rewritten text</span>
+            <button className="ghost-btn" onClick={() => setShowChanges((s) => !s)} aria-pressed={showChanges}>{showChanges ? 'Hide changes' : 'Show changes'}</button>
+          </div>
+          <div className="diff" tabIndex={0} aria-label="Rewritten text">
+            {showChanges
+              ? diff.map((ops, k) => (
+                <React.Fragment key={k}>
+                  {k > 0 && '\n\n'}
+                  {ops.map(([op, w], i) => op === '=' ? <span key={i}>{w}</span> : op === '+' ? <ins key={i}>{w}</ins> : <del key={i}>{w}</del>).reduce((acc, el, i) => (i ? [...acc, ' ', el] : [el]), [])}
+                </React.Fragment>
+              ))
+              : out.edited}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* =============================================================================
+   <Document/> — the questioned document: specimen picker, the paper (edit or
+   read mode), sentence fingerprint, controls.
+   ============================================================================= */
+function Fingerprint({ data, active, setActive, onPick }) {
+  const [asTable, setAsTable] = useState(false);
+  const vals = data.sentences.map((s) => s.contribution);
+  const max = Math.max(1e-6, ...vals.map((c) => Math.abs(c ?? 0)));
+  return (
+    <div className="print">
+      <div className="print-top">
+        <p className="print-note">
+          {data.method === 'occlusion'
+            ? 'Each bar is one sentence: how much the score drops when that sentence is removed.'
+            : 'Each bar is one sentence, scored with integrated gradients: removing any single sentence barely changes this score.'}
+        </p>
+        <button className="ghost-btn" onClick={() => setAsTable((x) => !x)} aria-pressed={asTable}>{asTable ? 'Show bars' : 'Show numbers'}</button>
+      </div>
+      {!asTable ? (
+        <>
+          <div className="bars" role="group" aria-label="Contribution of each sentence">
+            {data.sentences.map((s, i) => {
+              const c = s.contribution; const hgt = c == null ? 0 : (Math.abs(c) / max) * 48;
+              return (
+                <button key={i} className={`bar-btn${active === i ? ' active' : ''}`}
+                        aria-label={`Sentence ${i + 1}: ${c == null ? 'not read' : `contribution ${c >= 0 ? '+' : '−'}${Math.abs(c).toFixed(2)}`}`}
+                        onMouseEnter={() => setActive(i)} onMouseLeave={() => setActive(null)} onFocus={() => setActive(i)} onBlur={() => setActive(null)} onClick={() => onPick(i)}>
+                  {c == null ? <i className="none" /> : <i className={c >= 0 ? 'up' : 'down'} style={{ height: `${Math.max(2, hgt)}%` }} />}
+                </button>
+              );
+            })}
+          </div>
+          <div className="print-legend">
+            <span><i className="dot ai" />pushes toward AI-like</span>
+            <span><i className="dot human" />pushes toward student-like</span>
+            <span>Hover or tab to a bar to find its sentence</span>
+          </div>
+        </>
+      ) : (
+        <div className="table-wrap">
+          <table className="nums">
+            <thead><tr><th>#</th><th>Sentence</th><th style={{ textAlign: 'right' }}>Contribution</th></tr></thead>
+            <tbody>
+              {data.sentences.map((s, i) => (
+                <tr key={i}><td className="n">{i + 1}</td><td>{s.text}</td><td className="n">{s.contribution == null ? 'not read' : (s.contribution >= 0 ? '+' : '−') + Math.abs(s.contribution).toFixed(2)}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AnnotatedEssay({ text, data, active, lit, sentenceRefs }) {
+  const pos = data.sentences.map((s) => Math.max(0, s.contribution ?? 0));
+  const max = Math.max(1e-6, ...pos);
+  const pieces = []; let last = 0;
+  data.sentences.forEach((s, i) => {
+    pieces.push(text.slice(last, s.start));
+    const share = (s.contribution ?? 0) / max;
+    const w = share < 0.1 ? 0 : (share - 0.1) / 0.9 * 0.85 + 0.15;   // under 10% of the strongest: no paint
+    pieces.push(
+      <span key={i} ref={(el) => (sentenceRefs.current[i] = el)}
+            className={`s${s.contribution == null ? ' beyond' : ''}${active === i ? ' active' : ''}`}
+            style={{ '--w': w, '--d': `${Math.min(i * 45, 1300)}ms` }}
+            title={s.contribution == null ? 'Beyond the 512 tokens the detector reads' : `Contribution ${(s.contribution >= 0 ? '+' : '−') + Math.abs(s.contribution).toFixed(2)}`}>
+        {text.slice(s.start, s.end)}
+      </span>
+    );
+    last = s.end;
+  });
+  pieces.push(text.slice(last));
+  return <p className={`essay${lit ? ' lit' : ''}`}>{pieces}</p>;
+}
+
+/* =============================================================================
+   <App/>
+   ============================================================================= */
+const MIN_WORDS = 40;
+const STEP_TEXT = {
+  read: 'Reading the essay',
+  score: 'Scoring with fine-tuned DistilRoBERTa',
+  explain: 'Tracing which sentences moved the score (up to a minute on CPU)',
+  attrib: 'Comparing with training sources',
+};
+
+function App() {
+  const [samples, setSamples] = useState(SAMPLES);
+  const [pick, setPick] = useState(2);                 // which specimen is loaded; -1 = your own
+  const [text, setText] = useState(Object.values(SAMPLES)[2] || '');
+  const [strictness, setStrictness] = useState('strict');
+  const [mode, setMode] = useState('edit');            // 'edit' | 'read'
+  const [result, setResult] = useState(null);          // { verdict, highlights, attribution }
+  const [steps, setSteps] = useState(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [err, setErr] = useState('');
+  const [active, setActive] = useState(null);
+  const [lit, setLit] = useState(false);
+  const [sweep, setSweep] = useState(0);
+  const runId = useRef(0);
+  const sentenceRefs = useRef([]);
+  const bodyRef = useRef(null);
+
+  useEffect(() => { api.getSamples().then(setSamples).catch(() => setErr('Cannot reach the API. Start it with: uvicorn api.main:app --port 8000')); }, []);
+
+  const n = words(text).length;
+  const ready = n >= MIN_WORDS;
+  const working = steps && steps.some((s) => s.state === 'active');
+
+  useEffect(() => {   // live timer for the active step
+    if (!working) return;
+    const t0 = performance.now(); const id = setInterval(() => setElapsed(performance.now() - t0), 100);
+    return () => clearInterval(id);
+  }, [working, steps && steps.findIndex((s) => s.state === 'active')]);
+
+  const analyse = useCallback(async (t = text, s = strictness) => {
+    const run = ++runId.current;
+    const mark = (key, state, ms) => setSteps((st) => st.map((x) => (x.key === key ? { ...x, state, ms } : x)));
+    setErr(''); setResult(null); setLit(false); setActive(null); setMode('read');
+    setSteps(['read', 'score', 'explain', 'attrib'].map((key, i) => ({ key, text: STEP_TEXT[key], state: i === 0 ? 'active' : 'pending' })));
+    try {
+      let t0 = performance.now();
+      await sleep(250); if (run !== runId.current) return;
+      mark('read', 'done', performance.now() - t0); mark('score', 'active'); t0 = performance.now();
+      const verdict = await api.score(t, s); if (run !== runId.current) return;
+      mark('score', 'done', performance.now() - t0);
+      setResult({ verdict, highlights: null, attribution: null });
+      if (!verdict.flagged) { mark('explain', 'skipped'); mark('attrib', 'skipped'); return; }
+      mark('explain', 'active'); mark('attrib', 'active'); t0 = performance.now();
+      const [highlights, attribution] = await Promise.all([
+        api.explain(t, s).then((h) => { if (run === runId.current) mark('explain', 'done', performance.now() - t0); return h; }),
+        api.attribution(t, s).then((a) => { if (run === runId.current) mark('attrib', 'done', performance.now() - t0); return a; }),
+      ]);
+      if (run !== runId.current) return;
+      setResult({ verdict, highlights, attribution });
+      requestAnimationFrame(() => {
+        const h = bodyRef.current ? bodyRef.current.offsetHeight : 900;
+        if (bodyRef.current) bodyRef.current.style.setProperty('--sweep-to', `${h}px`);
+        setSweep((x) => x + 1); setLit(true);
+      });
+    } catch (e) {
+      if (run !== runId.current) return;
+      setErr(e.message); setSteps(null); setMode('edit');
+    }
+  }, [text, strictness]);
+
+  useEffect(() => { analyse(); }, []);   // open in a working state: example 3 analysed
+
+  function load(i) {           // an example is analysed straight away; "your own" opens an empty sheet
+    runId.current++;
+    const t = i >= 0 ? Object.values(samples)[i] : '';
+    setPick(i); setText(t); setResult(null); setSteps(null); setErr(''); setMode('edit');
+    if (i >= 0) analyse(t, strictness);
+  }
+  function edit() { runId.current++; setResult(null); setSteps(null); setMode('edit'); }
+  function changeStrictness(s) { setStrictness(s); if (result || working) analyse(text, s); }
+  function jump(i) { const el = sentenceRefs.current[i]; if (el) el.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' }); setActive(i); }
+
+  const v = result && result.verdict;
+  const specimenNames = Object.keys(samples);
+
+  return (
+    <>
+      <div className="wrap">
+        <header className="topbar">
+          <p className="course label">CSE472 · Deep Learning for NLP</p>
+          <span className="proto-badge" title="Scores in this prototype are demo values; the real app calls the API">Prototype · demo scores</span>
+          <nav aria-label="Project links">
+            <a href="#method">How it works</a>
+            <a href="https://github.com/jaiveerminhas06/Ghost-Writer/blob/main/MODEL_CARD.md">Model card</a>
+            <a href="https://github.com/jaiveerminhas06/Ghost-Writer">GitHub</a>
+          </nav>
+        </header>
+
+        <section className="hero" aria-label="Introduction">
+          <Wordmark />
+          <div className="thesis">
+            <p className="lede">Did a student write this essay, or a language model? Paste one. The detector gives its verdict, shows which sentences moved it, and <em>lists its reasons to doubt itself.</em></p>
+            <div className="facts">
+              <div className="fact"><b>0.9998</b><span>AUC on essay topics it never saw</span></div>
+              <div className="fact"><b>99.2%</b><span>of essays by unseen AI models caught</span></div>
+              <div className="fact"><b>2.3%</b><span>of human essays on new topics wrongly flagged</span></div>
+            </div>
+          </div>
+        </section>
+
+        <main className="bench">
+          <div className="doc">
+            <div className="specimens" role="group" aria-label="Load an essay">
+              {specimenNames.map((name, i) => (
+                <button key={name} className="specimen" aria-pressed={pick === i} onClick={() => load(i)}>
+                  <span className="kind"><i className={`dot ${SAMPLE_META[i]?.kind || 'own'}`} />{SAMPLE_META[i]?.tag || 'Example'}</span>
+                  <span className="name">{SAMPLE_META[i]?.note || name}</span>
+                </button>
+              ))}
+              <button className="specimen" aria-pressed={pick === -1} onClick={() => load(-1)}>
+                <span className="kind"><i className="dot own" />Your own</span>
+                <span className="name">Paste any essay of 40+ words</span>
+              </button>
+            </div>
+
+            <article className="sheet" aria-label="The essay">
+              <div className="sheet-head">
+                <span className="label">Questioned document{pick >= 0 ? ` · example ${pick + 1}` : ''}</span>
+                {mode === 'read' && v && (
+                  <a className="mini-verdict" href="#verdict-h">
+                    <span className={`chip ${v.flagged ? 'ai' : 'human'}`}>{v.flagged ? 'Flagged' : 'Not flagged'}</span>
+                    <span className="mono">{fmt(v.score)}</span> vs <span className="mono">{fmt(v.threshold)}</span> ↓
+                  </a>
+                )}
+                {mode === 'read' && <button className="ghost-btn" onClick={edit}><span className="row" style={{ gap: 6 }}><Icon name="edit" size={14} />Edit text</span></button>}
+              </div>
+
+              {mode === 'read' && result && result.highlights && (
+                <Fingerprint data={result.highlights} active={active} setActive={setActive} onPick={jump} />
+              )}
+              {mode === 'read' && v && !v.flagged && (
+                <div className="print"><p className="print-note">No sentence shading: highlights are only computed for flagged essays, because explanations of a “not flagged” score were unreliable in testing.</p></div>
+              )}
+
+              <div className="sheet-body" ref={bodyRef}>
+                <div key={sweep} className={`lamp-sweep${sweep ? ' go' : ''}`} aria-hidden="true" />
+                {mode === 'edit' ? (
+                  <>
+                    <label htmlFor="essay" className="sr-only">Essay text</label>
+                    <textarea id="essay" className="essay-input" value={text} spellCheck="false"
+                              placeholder="Paste an essay here. English, at least 40 words."
+                              onChange={(e) => { setText(e.target.value); if (pick >= 0) setPick(-1); }} />
+                  </>
+                ) : result && result.highlights ? (
+                  <AnnotatedEssay text={text} data={result.highlights} active={active} lit={lit} sentenceRefs={sentenceRefs} />
+                ) : (
+                  <p className="essay">{text}</p>
+                )}
+              </div>
+
+              <div className="sheet-foot">
+                <p className={`count${!ready && text ? ' warn' : ''}`} aria-live="polite">
+                  <span className="mono">{n}</span> words{!ready && ` · at least ${MIN_WORDS} needed`} · not stored or logged
+                </p>
+                <div className="seg" role="group" aria-label="Strictness">
+                  <button aria-pressed={strictness === 'strict'} onClick={() => changeStrictness('strict')}>Strict<small>0.5%</small></button>
+                  <button aria-pressed={strictness === 'standard'} onClick={() => changeStrictness('standard')}>Standard<small>1%</small></button>
+                </div>
+                <button className="primary" disabled={!ready || working} onClick={() => analyse()}>{working ? 'Analysing…' : 'Analyse essay'}</button>
+              </div>
+            </article>
+            {err && <p className="err" role="alert" style={{ marginTop: 10 }}>{err}</p>}
+          </div>
+
+          <aside className="readout" aria-label="Results" aria-live="polite">
+            {steps && (working || !v) && (
+              <section className="card"><div className="card-head"><h2>Analysis</h2><span className="label">{working ? 'running' : ''}</span></div><AnalysisLog steps={steps} elapsed={elapsed} /></section>
+            )}
+            {v && <Verdict v={v} text={text} highlights={result.highlights} strictness={strictness} />}
+            {v && !working && steps && <p className="done-line">Analysed in {(((steps[0].ms || 0) + (steps[1].ms || 0) + Math.max(steps[2].ms || 0, steps[3].ms || 0)) / 1000).toFixed(1)} s · {v.tokens_read} of {v.tokens} tokens read</p>}
+            {result && result.attribution && <Attribution data={result.attribution} />}
+            {v && !working && <FoolIt text={text} strictness={strictness} before={v} />}
+            {!steps && (
+              <section className="card idle">
+                <h2>How to read the result</h2>
+                <Spectrum score={-6} threshold={THRESHOLDS[strictness]} label="Example score" />
+                <p>Every essay gets one score on this scale. Above the dashed flag line it is flagged as AI-like. The line is set on
+                  human essays the model never trained on, so that only {strictness === 'strict' ? '0.5%' : '1%'} of them cross it.</p>
+                <p>Choose an example or paste an essay, then press <b>Analyse essay</b>.</p>
+              </section>
+            )}
+          </aside>
+        </main>
+      </div>
+
+      <section className="method" id="method" aria-labelledby="method-h">
+        <div className="wrap" style={{ display: 'grid', gap: 36 }}>
+          <div>
+            <h2 id="method-h">How the verdict is made</h2>
+            <p className="intro">One fine-tuned transformer, one score per essay, and a flag line chosen on held-out human essays. Every number here was measured on essays the model could not have memorised.</p>
+          </div>
+          <ol className="pipeline">
+            <li><b>Read</b><span>The first 512 tokens of the essay. Longer essays are cut.</span></li>
+            <li><b>Score</b><span>DistilRoBERTa, fine-tuned on 28,006 DAIGT-V2 essays, gives one number: higher is more AI-like.</span></li>
+            <li><b>Flag</b><span>Compare with a line set so only 0.5% (strict) or 1% (standard) of validation human essays cross it.</span></li>
+            <li><b>Explain</b><span>Remove each sentence and re-score (occlusion). If nothing moves, use integrated gradients.</span></li>
+          </ol>
+          <div>
+            <p className="label" style={{ marginBottom: 16 }}>What looked good and wasn’t</p>
+            <div className="numbers">
+              <div className="number caveat"><b>0.976 → 0–28%</b><span>“Which model wrote it”: macro-F1 on a random split, then the right family for a data source it never saw. At or below chance.</span></div>
+              <div className="number caveat"><b>50%</b><span>of AI essays were off-topic for their prompt label, a topic shortcut. Every model is also scored on on-topic essays only.</span></div>
+              <div className="number caveat"><b>18%</b><span>of essays from unseen AI models caught by GPT-2 perplexity alone. Claude and GPT-4 surprise it almost as much as students do.</span></div>
+            </div>
+          </div>
+          <div className="before-after">
+            <div className="ba old"><span className="label">Version 1</span><p className="claim">100% accuracy</p><p>282 essays, AI essays from one generated batch, a 57-essay test set. TF-IDF learned that batch’s style. Kept in Archive/ as the “before”.</p></div>
+            <div className="ba"><span className="label">This version</span><p className="claim">Honest numbers, shown failures</p><p>44,868 essays, near-duplicates grouped, two prompts and two model families held out, shortcuts hunted down (leading spaces, off-topic AI essays, spelling).</p></div>
+          </div>
+        </div>
+      </section>
+
+      <div className="wrap">
+        <footer>
+          <p>Course project for CSE472 (ISEP Paris). Do not use it to judge real students: it separates 2023-era AI essays from US student essays and has not been tested on other writing.</p>
+          <p><a href="https://github.com/jaiveerminhas06/Ghost-Writer">Source, notebooks and model card</a></p>
+        </footer>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
