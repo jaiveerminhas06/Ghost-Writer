@@ -178,6 +178,14 @@ class T5Paraphraser(_SentenceParaphraser):
         return self.tok.batch_decode(out, skip_special_tokens=True)
 
 
+def words_changed(original, edited):
+    """Share of the original's words that were inserted, deleted or replaced (word-level diff, as in 13_attack)."""
+    import difflib
+    wa, wb = original.split(), edited.split()
+    ops = difflib.SequenceMatcher(None, wa, wb, autojunk=False).get_opcodes()
+    return sum(max(i2 - i1, j2 - j1) for op, i1, i2, j1, j2 in ops if op != "equal") / max(len(wa), 1)
+
+
 def inject_typos(text, rate, seed=0):
     """Corrupt a share `rate` of words (letters only, length >= 3) with one random character edit:
     swap two adjacent letters, delete a letter, or double a letter."""

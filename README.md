@@ -7,7 +7,7 @@
 
 Given an essay, decide whether a student or a large language model wrote it, and measure honestly how far that decision can be trusted.
 
-Course project for **CSE472: Deep Learning for NLP** (ISEP Paris), built one syllabus unit at a time: classical baselines, word embeddings, recurrent networks, a fine-tuned transformer, zero-shot detection with GPT-2, and a seq2seq paraphraser used to attack the detector.
+Course project for **CSE472: Deep Learning for NLP** (ISEP Paris), built one syllabus unit at a time: classical baselines, word embeddings, recurrent networks, a fine-tuned transformer, zero-shot detection with GPT-2, a seq2seq paraphraser used to attack the detector, and explanations of its decisions. There is an [interactive demo](#demo) and a [model card](MODEL_CARD.md).
 
 ## Headline result
 
@@ -90,20 +90,35 @@ Paraphrasing *human* essays with T5 raised their false-positive rate from 0.7% t
 
 Generator attribution ([11](Notebooks/11_attribution.ipynb)) looks excellent on a random split (macro-F1 **0.976** over 8 model families). It **does not generalise**: when a whole data source is held out, its essays are assigned to the right family only 0–28% of the time, at or below chance. The models recognise *who generated the essays and how they prompted them*, not the model family.
 
+## Demo
+
+```
+streamlit run demo/app.py
+```
+
+Paste an essay or load an example. The demo shows the detector's score against the validation-chosen threshold, which sentences pushed the score up, a clearly-warned "most similar training sources" panel (flagged essays only), and a **"try to fool it"** button that adds typos or paraphrases the essay with T5 and scores it again. It also works on human essays, where it shows that paraphrasing honest work can make it look machine-written. (`?sample=0`, `1` or `2` in the address opens a built-in example.)
+
+![The demo on a human essay the detector wrongly flags](images/demo_screenshot.png)
+
+The screenshot is the third built-in example: a careful, fluent *human* essay that the detector flags. Its highlighting shows where the score comes from, the attribution panel states that it cannot identify the model, and 5% typos are enough to push this borderline essay below the threshold.
+
 ## Limitations
 
 - **"Human" means student essay** (grades 6–12, US, Persuade corpus). Fluent adult writing was never seen as human, and polished student essays are the ones most often flagged.
 - **A threshold set on one set of topics does not hold its false-positive rate on new ones.**
 - **The AI essays are from 2023-era models** and the prompting styles of the dataset's contributors. Newer models and other genres are untested.
 - **Robustness is shown only against the attacks tried here**, not against LLM rewriting.
-- **This is a course project.** It must not be used to make decisions about real students.
+- **Explanations are approximate.** Sentence highlights show what the model reacted to, not how the student wrote; the verdict is about the whole essay ([14](Notebooks/14_explain.ipynb)).
+- **This is a course project.** It must not be used to make decisions about real students. More in the [model card](MODEL_CARD.md).
 
 ## Project structure
 
 ```
-Notebooks/   01–13, one topic each, run in order (each opens with its goal and ends with key takeaways)
+Notebooks/   01–14, one topic each, run in order (each opens with its goal and ends with key takeaways)
 src/         data.py (the one way to load data), evaluate.py (shared scoring),
-             detector.py (fine-tuned detector + thresholds), paraphraser.py (attack tools)
+             detector.py (fine-tuned detector + thresholds), paraphraser.py (attack tools),
+             explain.py (sentence highlighting), attribution.py (demo's source-similarity panel)
+demo/        app.py (Streamlit demo) and samples.json (three built-in examples)
 data/        processed/: deduplicated essays, splits, on-topic flags, data card (raw data not committed)
 results/     metrics for every model, as CSV
 images/      plots produced by the notebooks
@@ -125,16 +140,18 @@ Archive/     the original, flawed 100%-accuracy version
 | 11 | `11_attribution` | Which model family wrote it |
 | 12 | `12_paraphraser` | Seq2seq + Bahdanau attention paraphraser, from scratch |
 | 13 | `13_attack` | Typo and paraphrase attacks on the detector |
+| 14 | `14_explain` | Sentence-level explanations, error analysis, ethics and limitations |
 
 ## Reproducing
 
 1. `pip install -r requirements.txt`
 2. Download the [DAIGT-V2 train dataset](https://www.kaggle.com/datasets/thedrcat/daigt-v2-train-dataset) and save it as `data/raw/train.csv`.
 3. Run the notebooks in order from inside `Notebooks/`. Notebooks 01–07 run on CPU. 08 onward need a CUDA GPU (developed on an RTX 3050 Laptop, 4 GB). Pretrained models (DistilRoBERTa, GPT-2, T5) download from Hugging Face on first use, and trained weights are saved to the git-ignored `models/`.
+4. Start the demo with `streamlit run demo/app.py` (needs notebooks 08 and 09 first, for the detector and its thresholds).
 
 ## Status
 
-Weeks 1–6 of the plan are done. Still to come: sentence-level explanations of the detector's decisions, an interactive demo (highlighting, "try to fool it"), and the written report.
+Weeks 1–8 of the plan are done: all the modelling, the explanations, the demo and the model card. Still to come: the written report and slides, then final polish.
 
 ## Author
 

@@ -67,9 +67,12 @@ Ghost_Writer/
 ├── src/detector.py           Detector: fine-tuned DistilRoBERTa + 09 thresholds (for attacks and the demo)
 ├── src/paraphraser.py        Seq2SeqParaphraser (from 12), T5Paraphraser, inject_typos, sentence split/join
 ├── src/explain.py            sentence occlusion + integrated gradients (128 steps) for highlights
+├── src/attribution.py        demo's 'most similar training sources' model (TF-IDF + LogReg)
 ├── models/                   trained vectors/weights — git-ignored
 ├── images/                   plots saved by the notebooks
-├── README.md                 public overview: honest results through Week 6 (rewritten 2026-10-18)
+├── README.md                 public overview, results, demo, limitations (rewritten 2026-10-18, updated 2026-10-25)
+├── MODEL_CARD.md             what the detector is, how it was evaluated, failure modes, intended use (2026-10-25)
+├── demo/                     app.py (Streamlit) + samples.json
 └── requirements.txt          (renamed from `requirements .txt` on 2026-10-04)
 ```
 
@@ -93,7 +96,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–7 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics). Week 8 (interactive demo + model card) is next. Open: how the demo's attribution panel should behave (see 2026-10-07 entry). The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics, demo, model card). Week 9 (report + slides) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -184,6 +187,7 @@ Weeks 1–7 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
   - Not tested: LLM "humaniser" rewriting, too big for the GPU.
   - Tooling: GPT-2 scoring must `del` each batch's logits (OOM otherwise). Run nbconvert with its own exit code logged: `| tail` hid two failed runs.
 
+- 2026-10-25 — decision (attribution in the demo): **keep the panel, relabelled and with its failure shown.** Only for essays flagged as AI; collapsed by default; worded as "most similar to essays from these training sources", with a fixed warning that held-out-source attribution was right only 0–28% of the time (`11`). Never presented as "model X wrote this".
 - 2026-10-25 — `14_explain.ipynb` + `src/explain.py` + `results/14_{deletion_test,splice_test,global_tokens,errors}.csv`:
   - Methods: sentence occlusion (logit drop when a sentence is removed) and integrated gradients (all-`<pad>` baseline; **128 steps needed**: 16/32 steps give 68%/21% completeness error, 128 gives 0.06%; fp16 vs fp32 makes no difference).
   - The logit saturates near 9.8 (`tanh` in the classification head): confident AI essays stay flagged even after deleting 75% of sentences. Occlusion is flat (≈0) on such essays; IG still separates sentences.
@@ -193,16 +197,23 @@ Weeks 1–7 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
   - Errors at 1% threshold (on-topic test + held-out): FP 191/6,692 (2.85%; Summer projects 7.7%), FN 7/4,502 (0.16%). FPs: longer (489 vs 441 words), 0.00% vs 0.56% misspellings, log-ppl 2.92 vs 3.29.
   - Demo plan: occlusion for highlights; if flagged and occlusion is flat, use IG and say the style is throughout. Ethics & limitations section written at the end of `14`.
 
+- 2026-10-25 — Week 8: `demo/app.py` (Streamlit; run `streamlit run demo/app.py` from the repo root) + `demo/samples.json` + `src/attribution.py` + `MODEL_CARD.md` + `images/demo_screenshot.png`; `words_changed` moved into `src/paraphraser.py`; README updated (Demo section, structure, status):
+  - Panels: verdict (strict 0.5%-FPR threshold by default, standard 1% in the sidebar); sentence highlights (occlusion, integrated gradients when occlusion is flat; only for flagged essays); attribution (flagged essays only, collapsed, with the 0–28% warning); "try to fool it" (typos 5/10%, T5 light/heavy) with before/after score and words changed.
+  - Attribution model: TF-IDF + LogReg on all 17,490 family-labelled AI essays, saved to `models/attribution_tfidf_logreg.joblib` (retrained automatically if missing).
+  - Three built-in examples (Claude essay, ordinary student essay, a human essay wrongly flagged); `?sample=0|1|2` preloads one.
+  - Tested headlessly with `streamlit.testing.v1.AppTest` (no exceptions through every panel, attacks and the threshold switch) and rendered with Playwright + system Chromium in light and dark themes. Dark theme caught white highlight boxes on near-zero sentences: fixed by giving sentences below 10% of the strongest contribution no background and starting the ramp at pale orange (text contrast 7.3–14:1).
+  - Observation (one essay, one seed, not a finding): 5% typos took the wrongly flagged human essay from +9.1 to +3.3, below the threshold. Typo robustness in `13` may hold mainly for clearly AI essays.
+  - Tooling: Streamlit does not hot-reload the main script reliably in headless mode: restart the server after editing `demo/app.py`. Snap Chromium cannot write to `/tmp`. `playwright` was pip-installed for screenshots only (not in `requirements.txt`; the system Chromium is used via `executable_path`). Do not use `pkill -f` with a pattern that appears in your own command line.
+
 **Not done**
 
-- Decide how (or whether) the demo shows generator attribution.
-- Weeks 8–10.
+- Weeks 9–10: written report, slides, polish, viva rehearsal.
 
 ## Next up
 
-### Week 8 — interactive demo and model card
+### Week 9 — short report and slides
 
-Local demo (e.g. Gradio or Streamlit) on top of `src/detector.py` (1% or 0.5% threshold from `09`), `src/explain.py` (occlusion highlights, IG fallback when occlusion is flat) and `src/paraphraser.py` (T5 "try to fool it", also on human text). The attribution panel still needs a decision (see 2026-10-07). Model card: draw on the ethics & limitations section at the end of `14`.
+Report and slides for the course, built from the README, `MODEL_CARD.md` and the Key takeaways of each notebook. Suggested storyline for the viva: the fake 100% → leakage-safe split → each model's honest score → what looked good but wasn't (topic shortcut, attribution, threshold shift) → the demo. Nothing further is needed from the modelling side. Possible extras if time allows: confirm that `radek_500` is GPT-3.5 (not verified), and the professor's answer on the BiLSTM-NER practical (decision 8).
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
