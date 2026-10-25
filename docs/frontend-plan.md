@@ -25,9 +25,13 @@ as the polished face of the project; the Streamlit app stays as the working fall
 | POST /rewrite | text, attack -> edited text, new score, words changed | `src/paraphraser.py` |
 | GET /samples | the 3 built-in examples | `demo/samples.json` |
 
-## Blockers
-- Node.js / npm are not installed on this machine.
-- A web API layer (FastAPI) must be added before any frontend can talk to the models.
+## Status (2026-10-25)
+- FastAPI layer exists (`api/main.py`, `uvicorn api.main:app --port 8000`); the five endpoints above are live under `/api`.
+- Node is available through nvm (v24); the earlier blocker was stale.
+- `frontend/` is a Vite + React app: one page, all panels (examples, strictness, verdict, highlights, attribution, try to fool it).
+  Run: `uvicorn api.main:app --port 8000` from the repo root, then `npm run dev` in `frontend/` (http://localhost:5173).
+- Tested end to end in headless Chromium (analyse, highlights, typo attack). First score takes ~10 s while models load.
+- Not done: visual design pass, mobile check, checking the not-flagged path in the browser.
 
 ## Owner's answers
 (to be filled in)
