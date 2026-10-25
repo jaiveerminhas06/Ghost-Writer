@@ -52,7 +52,8 @@ Ghost_Writer/
 │   ├── 10_zero_shot.ipynb      GPT-2 perplexity / burstiness / log-rank, DetectGPT-lite, spelling confound
 │   ├── 11_attribution.ipynb    which model family wrote it: random split vs leave-one-source-out
 │   ├── 12_paraphraser.ipynb    seq2seq + Bahdanau attention paraphraser trained from scratch (Quora + Simple-Wiki)
-│   └── 13_attack.ipynb         typo and paraphrase attacks (our seq2seq + pretrained T5) on the detector
+│   ├── 13_attack.ipynb         typo and paraphrase attacks (our seq2seq + pretrained T5) on the detector
+│   └── 14_explain.ipynb        occlusion + integrated gradients, faithfulness tests, error analysis, ethics
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -60,11 +61,12 @@ Ghost_Writer/
 │       ├── splits.csv          row_id → split (44,864 rows)
 │       ├── on_topic.csv        row_id → topic_sim, on_topic (evaluation only)
 │       └── DATA_CARD.md
-├── results/                  04_baseline … 13_attack CSVs: metrics per model, thresholds, GPT-2 features
+├── results/                  04_baseline … 14_* CSVs: metrics per model, thresholds, GPT-2 features, explanation tests
 ├── src/data.py               load_splits(): the one way to load data from 03 onward
 ├── src/evaluate.py           evaluate(): shared scoring for every model
 ├── src/detector.py           Detector: fine-tuned DistilRoBERTa + 09 thresholds (for attacks and the demo)
 ├── src/paraphraser.py        Seq2SeqParaphraser (from 12), T5Paraphraser, inject_typos, sentence split/join
+├── src/explain.py            sentence occlusion + integrated gradients (128 steps) for highlights
 ├── models/                   trained vectors/weights — git-ignored
 ├── images/                   plots saved by the notebooks
 ├── README.md                 public overview: honest results through Week 6 (rewritten 2026-10-18)
@@ -91,7 +93,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–6 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks). Week 7 (explainability, sentence-level flags, error analysis, ethics) is next. Open: how the demo's attribution panel should behave (see 2026-10-07 entry). The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–7 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics). Week 8 (interactive demo + model card) is next. Open: how the demo's attribution panel should behave (see 2026-10-07 entry). The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -182,16 +184,25 @@ Weeks 1–6 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
   - Not tested: LLM "humaniser" rewriting, too big for the GPU.
   - Tooling: GPT-2 scoring must `del` each batch's logits (OOM otherwise). Run nbconvert with its own exit code logged: `| tail` hid two failed runs.
 
+- 2026-10-25 — `14_explain.ipynb` + `src/explain.py` + `results/14_{deletion_test,splice_test,global_tokens,errors}.csv`:
+  - Methods: sentence occlusion (logit drop when a sentence is removed) and integrated gradients (all-`<pad>` baseline; **128 steps needed**: 16/32 steps give 68%/21% completeness error, 128 gives 0.06%; fp16 vs fp32 makes no difference).
+  - The logit saturates near 9.8 (`tanh` in the classification head): confident AI essays stay flagged even after deleting 75% of sentences. Occlusion is flat (≈0) on such essays; IG still separates sentences.
+  - IG is blind on human-looking essays (baseline already scores human): splice-test precision@3 14.5% < random 22.8%. Occlusion finds 3 spliced AI sentences at 64%. Only 3% of spliced essays are flagged.
+  - Deletion test (149 flagged AI essays): logit drop at 75% deleted: IG 0.26, occlusion 0.20, random 0.10.
+  - Global IG tokens: AI = essay, conclusion, particularly, finally, additionally, furthermore, overall, significant…; human = very, dont, isn/nt, text, paragraph, nasa, misspelling fragments.
+  - Errors at 1% threshold (on-topic test + held-out): FP 191/6,692 (2.85%; Summer projects 7.7%), FN 7/4,502 (0.16%). FPs: longer (489 vs 441 words), 0.00% vs 0.56% misspellings, log-ppl 2.92 vs 3.29.
+  - Demo plan: occlusion for highlights; if flagged and occlusion is flat, use IG and say the style is throughout. Ethics & limitations section written at the end of `14`.
+
 **Not done**
 
 - Decide how (or whether) the demo shows generator attribution.
-- Weeks 7–10.
+- Weeks 8–10.
 
 ## Next up
 
-### Week 7 — explainability, sentence-level flags, error analysis, ethics and limitations
+### Week 8 — interactive demo and model card
 
-Sentence-level highlighting for the demo (score each sentence, or attribute the essay score to tokens with SHAP/integrated gradients/attention), plus a written error analysis and ethics/limitations section that pulls together the findings so far: topic shortcut, threshold shift on new topics, false positives on polished human writing, attribution not generalising, paraphrase/typo robustness limits. Use `src/detector.py` (it applies the `09` thresholds).
+Local demo (e.g. Gradio or Streamlit) on top of `src/detector.py` (1% or 0.5% threshold from `09`), `src/explain.py` (occlusion highlights, IG fallback when occlusion is flat) and `src/paraphraser.py` (T5 "try to fool it", also on human text). The attribution panel still needs a decision (see 2026-10-07). Model card: draw on the ethics & limitations section at the end of `14`.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.

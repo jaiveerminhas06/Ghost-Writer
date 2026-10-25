@@ -1,0 +1,10 @@
+method,share of sentences deleted,mean_logit_drop,still_flagged_pct
+integrated gradients,0.25,0.033,100.0
+integrated gradients,0.5,0.065,100.0
+integrated gradients,0.75,0.256,100.0
+occlusion,0.25,0.05,100.0
+occlusion,0.5,0.092,100.0
+occlusion,0.75,0.199,100.0
+random,0.25,0.024,100.0
+random,0.5,0.041,100.0
+random,0.75,0.099,100.0
