@@ -1,6 +1,6 @@
 # Model card: Ghost Writer detector
 
-A fine-tuned DistilRoBERTa that scores how much a student essay resembles the AI-written essays in the DAIGT-V2 dataset. It is a **course project (CSE472, ISEP Paris)**, not a product. Every number below comes from the notebooks in this repository; the notebook is named next to each claim.
+A fine-tuned DistilRoBERTa that scores how much a student essay resembles the AI-written essays in the DAIGT-V2 dataset. It is a **course project (CSE472)**, not a product. Every number below comes from the notebooks in this repository; the notebook is named next to each claim.
 
 ## Model
 
@@ -66,4 +66,4 @@ Sentence highlights use occlusion (remove a sentence, re-score) or integrated gr
 
 ## Contact
 
-Jaiveer Singh Minhas, ISEP Paris. Source: <https://github.com/jaiveerminhas06/Ghost-Writer>
+Jaiveer Singh Minhas. Source: <https://github.com/jaiveerminhas06/Ghost-Writer>

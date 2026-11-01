@@ -11,7 +11,6 @@ import { ToastView } from '../components/Toast'
 import { useToast } from '../lib/toast'
 import { Copy, Check, Info } from '../components/Icons'
 import { wordCountText } from '../lib/format'
-import PenCompare from './PenCompare'
 
 /* The /components page: every component in every state it can be in, next to the others, so it can be compared with
    design/artboards/Components.dc.html. The sample values here are for drawing states; they do not come from the model. */
@@ -54,8 +53,6 @@ export default function ComponentsSheet() {
         <h1 className="t-display">Components</h1>
         <p>Each state is drawn, not described. Hover exists only on pointer devices; on touch, the pressed state shows while the finger is down. Every target is at least 44 px tall, including icon buttons whose glyph is 18 px. Sample values on this page are for drawing states; they do not come from the model.</p>
       </div>
-
-      <PenCompare />
 
       <Section id="buttons" title="Buttons">
         <div className={styles.scroll}>

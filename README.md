@@ -7,7 +7,7 @@
 
 Given an essay, decide whether a student or a large language model wrote it, and measure honestly how far that decision can be trusted.
 
-Course project for **CSE472: Deep Learning for NLP** (ISEP Paris), built one syllabus unit at a time: classical baselines, word embeddings, recurrent networks, a fine-tuned transformer, zero-shot detection with GPT-2, a seq2seq paraphraser used to attack the detector, and explanations of its decisions. There is an [interactive demo](#demo) and a [model card](MODEL_CARD.md).
+Course project for **CSE472: Deep Learning for NLP**, built one syllabus unit at a time: classical baselines, word embeddings, recurrent networks, a fine-tuned transformer, zero-shot detection with GPT-2, a seq2seq paraphraser used to attack the detector, and explanations of its decisions. There is an [interactive demo](#demo) and a [model card](MODEL_CARD.md).
 
 ## Headline result
 
@@ -155,4 +155,4 @@ Weeks 1–8 of the plan are done: all the modelling, the explanations, the demo 
 
 ## Author
 
-Jaiveer Singh Minhas, ISEP Paris
+Jaiveer Singh Minhas

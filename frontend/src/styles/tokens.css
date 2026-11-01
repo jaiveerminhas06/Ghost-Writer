@@ -12,7 +12,7 @@
   --line-2: oklch(0.30 0.03 265 / 0.28);   /* strong hairline */
 
   /* the detector's voice */
-  --pen:        oklch(0.45 0.17 265);
+  --pen:        oklch(0.45 0.148 255);   /* ballpoint blue: hue 255, chroma 0.148 is the most saturated blue at that hue that stays inside sRGB */
   --pen-hover:  oklch(from var(--pen) calc(l - 0.05) c h);
   --pen-active: oklch(from var(--pen) calc(l - 0.09) calc(c - 0.01) h);
   --pen-tint:   oklch(from var(--pen) 0.94 0.035 h);    /* selected rows, drop target */
