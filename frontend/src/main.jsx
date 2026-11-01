@@ -10,13 +10,14 @@ import './styles/base.css'
 import App from './App.jsx'
 import ComponentsSheet from './pages/ComponentsSheet.jsx'
 import Placeholder from './pages/Placeholder.jsx'
+import CheckEssay from './pages/CheckEssay.jsx'
 
 createRoot(/** @type {HTMLElement} */ (document.getElementById('root'))).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route element={<App />}>
-          <Route index element={<Placeholder title="Did a student or an AI write this essay?" phase={4} />} />
+          <Route index element={<CheckEssay />} />
           <Route path="fool" element={<Placeholder title="Try to fool it" phase={5} />} />
           <Route path="class" element={<Placeholder title="Check a class" phase={6} />} />
           <Route path="components" element={<ComponentsSheet />} />

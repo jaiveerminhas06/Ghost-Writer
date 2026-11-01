@@ -29,7 +29,8 @@ button { -webkit-tap-highlight-color: transparent; }
 .t-caption { font-size: var(--fs-caption); line-height: 1.45; letter-spacing: 0.005em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 
 /* page frame: the same width and gutters as the artboards */
-.wrap { max-width: 1240px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
+/* content-box on purpose: the content is 1240 px wide and the gutters sit outside it, as in the artboards */
+.wrap { box-sizing: content-box; max-width: 1240px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
 
 /* Reduced motion: movement turns into a fade of 120 ms or less. Component CSS supplies the fades; this removes the rest. */
 @media (prefers-reduced-motion: reduce) {
@@ -40,3 +41,8 @@ button { -webkit-tap-highlight-color: transparent; }
 @keyframes gw-spin { to { transform: rotate(360deg); } }
 .gw-spin { animation: gw-spin 900ms linear infinite; }
 @media (prefers-reduced-motion: reduce) { .gw-spin { animation: none; } }
+
+/* skeleton: only shown after 300 ms of waiting (see lib/useDelayed.js); still, at 0.7 opacity, under reduced motion */
+@keyframes gw-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+.skel { background: var(--desk-2); border-radius: 6px; animation: gw-pulse 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .skel { animation: none; opacity: 0.7; } }

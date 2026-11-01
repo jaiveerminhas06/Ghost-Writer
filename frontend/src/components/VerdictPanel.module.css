@@ -1,0 +1,38 @@
+.panel {
+  background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2);
+  padding: clamp(24px, 3.5vw, 44px) clamp(20px, 4vw, 52px) clamp(20px, 3vw, 32px); display: flex; flex-direction: column; gap: 32px;
+}
+.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 48px; }
+.headWrap { flex: 999 1 480px; min-width: 0; }
+.headline { max-width: 24ch; }
+.reading { display: flex; align-items: center; gap: 12px; font-size: 1.375rem; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+.reading svg { width: 18px; height: 18px; color: var(--pen); }
+.wrote { flex: 1 1 200px; max-width: 24ch; margin-top: 6px; font-size: var(--fs-heading); line-height: 1.4; }
+.foot { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding-top: 20px; border-top: 1px solid var(--line); }
+.rate { flex: 1 1 420px; max-width: 72ch; font-size: var(--fs-small); color: var(--ink-2); }
+.passNote { font-size: var(--fs-caption); color: var(--ink-2); max-width: 72ch; margin-top: -12px; }
+.popAnchor { position: relative; }
+.phoneSwitch { display: none; }
+.short { display: none; }
+
+/* phone: short sentences, the strictness switch inside the panel (Phone.dc.html) */
+@media (max-width: 639px) {
+  .panel { gap: 16px; padding: 24px 16px 16px; }
+  .long { display: none; } .short { display: inline; }
+  .headline { font-size: 1.625rem; line-height: 1.12; letter-spacing: -0.018em; }
+  .top { gap: 6px; flex-direction: column; }
+  .headWrap, .wrote { flex: none; }                    /* its desktop flex-basis would otherwise become a height in this column */
+  .wrote { margin-top: 0; font-size: var(--fs-small); max-width: none; }
+  .foot { gap: 12px; flex-wrap: nowrap; justify-content: space-between; }
+  .rate { flex: 1 1 auto; font-size: var(--fs-caption); }
+  .phoneSwitch { display: block; flex: none; }
+  .phoneSwitch [aria-pressed] { min-width: 0; padding: 0 10px; font-size: var(--fs-caption); }
+  .popAnchor { display: none; }
+  .passNote { margin-top: 0; }
+}
+
+/* error: same panel, a brick hairline, and the title in the verdict's place */
+.error { box-shadow: var(--sh-2), inset 0 0 0 1px oklch(from var(--brick) l c h / 0.35); gap: 12px; outline: none; }
+.errorTitle { font-size: 1.375rem; font-weight: 650; letter-spacing: -0.01em; }
+.errorBody { font-size: var(--fs-small); color: var(--ink-2); max-width: 64ch; }
+.errorActions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 6px; }
