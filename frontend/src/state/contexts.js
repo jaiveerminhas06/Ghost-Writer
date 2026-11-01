@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 
-/** @typedef {{ status: 'loading' } | { status: 'ready', meta: import('../types').Meta } | { status: 'error', problem: import('../api').ApiProblem }} MetaState */
+/** @typedef {{ status: 'loading' } | { status: 'ready', meta: import('../types').Meta } | { status: 'error', problem: import('../api').ApiProblem } | { status: 'mismatch', kind: 'outdated' | 'newer' }} MetaState */
 /** @typedef {{ status: 'idle' | 'loading' | 'done' | 'error', data: any, problem: import('../api').ApiProblem | null }} Async */
 /** @typedef {object} EssayState
  *  @property {string} text  @property {number | null} exampleId  @property {'strict' | 'standard'} strictness

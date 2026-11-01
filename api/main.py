@@ -28,7 +28,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from . import limiter, results, settings
+from . import limiter, results, settings, uploads
 from .errors import ApiError, api_error_handler, validation_handler
 from .language import english_check
 from .textfiles import extract_text
@@ -36,6 +36,7 @@ from .textfiles import extract_text
 app = FastAPI(title="Ghost Writer API")
 app.add_exception_handler(ApiError, api_error_handler)
 app.add_exception_handler(RequestValidationError, validation_handler)
+app.add_middleware(uploads.BodyLimit)          # added before CORS so that a refusal also carries the CORS headers
 # The React dev server runs on another port, so the browser needs permission to call us.
 app.add_middleware(CORSMiddleware, allow_origins=settings.DEV_ORIGINS + settings.EXTRA_ORIGINS,
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["Retry-After"])

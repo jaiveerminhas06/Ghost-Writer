@@ -22,7 +22,8 @@ def test_meta_reads_thresholds_and_rates_from_the_results_files(client):
     assert m["rates"]["strict"]["worst_topic"] == {"topic": "Summer projects", "percent": 5.2}
     assert m["rates"]["standard"]["worst_topic"]["percent"] == 7.7
     assert m["trained_on"] == 28006
-    assert m["limits"]["min_words"] == 40 and m["limits"]["max_tokens"] == 512
+    assert m["limits"]["min_words"] == 40 and m["limits"]["max_tokens"] == 512 and m["limits"]["max_file_bytes"] == settings.MAX_FILE_BYTES
+    assert m["api_version"] == settings.API_VERSION == 2
     assert m["attacks"]["caught_after"]["t5_heavy"] == 96.41 and m["attacks"]["humans_flagged"]["t5"] == 2.67
     assert m["attacks"]["caught_after"]["original"] == 99.58 and m["attacks"]["caught_after"]["typos5"] == 99.37
     assert m["attacks"]["words_changed_percent"] == {"typos5": 4.05, "typos10": 8.2, "t5": 15.33, "t5_heavy": 42.55}

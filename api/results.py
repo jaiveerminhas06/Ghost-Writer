@@ -94,12 +94,13 @@ def t5_available():
 
 def meta():
     return {
+        "api_version": settings.API_VERSION,
         "thresholds": thresholds(),
         "rates": rates(),
         "attacks": attacks(),
         "trained_on": trained_on(),
         "limits": {"min_words": settings.MIN_WORDS, "max_chars": settings.MAX_CHARS, "max_tokens": 512,
-                   "max_files": settings.MAX_FILES_PER_REQUEST, "file_types": [".docx", ".pdf", ".txt"]},
+                   "max_files": settings.MAX_FILES_PER_REQUEST, "max_file_bytes": settings.MAX_FILE_BYTES, "file_types": [".docx", ".pdf", ".txt"]},
         "t5_available": t5_available(),
         "examples": examples(),
     }

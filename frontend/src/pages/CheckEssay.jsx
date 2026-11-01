@@ -4,9 +4,11 @@ import styles from './CheckEssay.module.css'
 import Button from '../components/Button'
 import { EssayEditor, EssayReader } from '../components/EssayPaper'
 import ExampleList from '../components/ExampleList'
-import VerdictPanel, { ErrorPanel, StrictnessSwitch } from '../components/VerdictPanel'
+import MetaGate from '../components/MetaGate'
+import StrictnessSwitch from '../components/StrictnessSwitch'
+import VerdictPanel, { ErrorPanel } from '../components/VerdictPanel'
 import WhichAi from '../components/WhichAi'
-import { useEssay, useMetaState } from '../state/contexts'
+import { useEssay } from '../state/contexts'
 import { useDelayed } from '../lib/useDelayed'
 import { legend } from '../lib/tiers'
 import { marginNotes } from '../lib/notes'
@@ -18,16 +20,7 @@ const NEEDS_EDIT = new Set(['not_english', 'too_short', 'too_long'])
 
 /** Check an essay: pick an example or paste an essay, read the verdict on the ruler, and see which sentences moved it. */
 export default function CheckEssay() {
-  const { state, retry } = useMetaState()
-  if (state.status === 'loading') return <div className="wrap" style={{ padding: '56px 0' }} aria-busy="true"><div className="skel" style={{ height: 56, width: '50%' }} /></div>
-  if (state.status === 'error') {
-    return (
-      <div className="wrap" style={{ padding: '56px 0' }}>
-        <ErrorPanel problem={state.problem} onRetry={retry} />
-      </div>
-    )
-  }
-  return <Loaded meta={state.meta} />
+  return <MetaGate>{(meta) => <Loaded meta={meta} />}</MetaGate>
 }
 
 /** @param {{ meta: import('../types').Meta }} props */
@@ -42,7 +35,7 @@ function Loaded({ meta }) {
   useEffect(() => {
     if (asked.current) return
     asked.current = true
-    const e = meta.examples.find((x) => String(x.id) === params.get('example'))
+    const e = (meta.examples ?? []).find((x) => String(x.id) === params.get('example'))
     if (e) essay.loadExample(e)
   }, [meta, params, essay])
 
@@ -52,7 +45,7 @@ function Loaded({ meta }) {
   const scored = score !== null
   const threshold = meta.thresholds[state.strictness]
   const flagged = score !== null && score.logit >= threshold
-  const example = meta.examples.find((x) => x.id === state.exampleId) ?? null
+  const example = (meta.examples ?? []).find((x) => x.id === state.exampleId) ?? null
   const explain = flagged && state.explain.status === 'done' ? state.explain.data : null
   const reading = scoring || scored
   const wordsNow = state.scoredText.trim().split(/\s+/).filter(Boolean).length
@@ -70,21 +63,21 @@ function Loaded({ meta }) {
       <section className={styles.intro} aria-label="Introduction">
         <div className={styles.lede}>
           <h1 className="t-display">Did a student or an AI write this essay?</h1>
-          <p className={styles.long}>Paste an essay or load an example. The detector compares it with the {meta.trained_on.toLocaleString('en-US')} essays it was trained on and says which side of its flag line it falls.</p>
+          <p className={styles.long}>Paste an essay or load an example. The detector compares it with the {typeof meta.trained_on === 'number' ? `${meta.trained_on.toLocaleString('en-US')} ` : ''}essays it was trained on and says which side of its flag line it falls.</p>
           <p className={styles.course}>A course project for CSE472. Don’t use it to judge real students.</p>
         </div>
         <div className={styles.controls}>
-          <ExampleList examples={meta.examples} value={state.exampleId} onChange={essay.loadExample} />
+          <ExampleList examples={meta.examples ?? []} value={state.exampleId} onChange={essay.loadExample} />
           <div className={styles.strictRow}>
             <p id="strictness" className={styles.strictLabel}>How strict</p>
-            <StrictnessSwitch value={state.strictness} onChange={essay.setStrictness} />
+            <StrictnessSwitch />
           </div>
         </div>
       </section>
 
       {reading && (
         <VerdictPanel stage={scoring ? (skeleton ? 'loading' : 'reading') : 'done'} words={wordsNow} logit={score ? score.logit : null}
-                      strictness={state.strictness} onStrictness={essay.setStrictness} meta={meta} exampleLabel={example ? example.label : null} />
+                      strictness={state.strictness} meta={meta} exampleLabel={example ? example.label : null} />
       )}
       {problem && (
         <ErrorPanel problem={problem} onCopy={blocked ? undefined : copyText} onRetry={essay.submit} canRetry={!blocked} retryLabel={blocked ? 'Score essay' : 'Score again'} />
@@ -110,7 +103,7 @@ function Loaded({ meta }) {
               : <section className={styles.locked} aria-label="The essay"><p>{state.scoredText}</p></section>
           ) : (
             <>
-              <EssayEditor text={state.text} onChange={essay.setText} onSubmit={essay.submit} minWords={meta.limits.min_words} disabledReason={blocked} />
+              <EssayEditor text={state.text} onChange={essay.setText} onSubmit={essay.submit} minWords={meta.limits?.min_words ?? 40} disabledReason={blocked} />
               {!state.text && !problem && <p className={styles.invite}>No essay yet. Your score will land on a ruler from −10 to +10, next to the line where essays get flagged.</p>}
             </>
           )}

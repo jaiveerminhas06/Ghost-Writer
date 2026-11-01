@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './TryToFoolIt.module.css'
 import AttemptsTable from '../components/AttemptsTable'
@@ -6,22 +6,20 @@ import Button from '../components/Button'
 import CompareRuler from '../components/CompareRuler'
 import ComparePanes from '../components/ComparePanes'
 import MethodCards from '../components/MethodCards'
+import MetaGate from '../components/MetaGate'
+import StrictnessSwitch from '../components/StrictnessSwitch'
 import { ErrorPanel } from '../components/VerdictPanel'
 import { REPO } from '../components/Header'
-import { useEssay, useMetaState } from '../state/contexts'
+import { useEssay } from '../state/contexts'
 import { disagreement, FIRST_SEED, methodOf, METHODS, nextSeed, resultCopy, sidesOfTheLine } from '../lib/fool'
 import { fmt, words } from '../lib/format'
-import { useState } from 'react'
+import { attackFacts, testedBullets } from '../lib/figures'
 
 const COST = { typos: 'Instant', t5: 'Slower: runs the T5 model' }
-const pctText = (/** @type {number} */ x) => `${+x.toFixed(1)}%`
 
 /** Try to fool it: rewrite the essay (typos or a paraphrase), score it again, and see what moved. */
 export default function TryToFoolIt() {
-  const { state, retry } = useMetaState()
-  if (state.status === 'loading') return <div className="wrap" style={{ padding: '56px 0' }} aria-busy="true"><div className="skel" style={{ height: 56, width: '50%' }} /></div>
-  if (state.status === 'error') return <div className="wrap" style={{ padding: '56px 0' }}><ErrorPanel problem={state.problem} onRetry={retry} /></div>
-  return <Loaded meta={state.meta} />
+  return <MetaGate>{(meta) => <Loaded meta={meta} />}</MetaGate>
 }
 
 /** @param {{ meta: import('../types').Meta }} props */
@@ -34,11 +32,11 @@ function Loaded({ meta }) {
   const started = useRef(false)
   useEffect(() => {
     if (started.current || state.status !== 'idle') return
-    if (words(state.text).length >= meta.limits.min_words) { started.current = true; essay.submit() }
+    if (words(state.text).length >= (meta.limits?.min_words ?? 40)) { started.current = true; essay.submit() }
   }, [state.status, state.text, meta, essay])
 
   const score = state.status === 'scored' ? state.score : null
-  const example = meta.examples.find((x) => x.id === state.exampleId) ?? null
+  const example = (meta.examples ?? []).find((x) => x.id === state.exampleId) ?? null
 
   if (!score) {
     return (
@@ -58,20 +56,20 @@ function Loaded({ meta }) {
   const ran = attempts.some((a) => a.method === method)
   const busy = state.rewriting !== null
   const kind = methodOf(method).kind
-  const t5Missing = !meta.t5_available
+  const t5Missing = meta.t5_available === false
   const seed = nextSeed(attempts, method)
   const sides = sidesOfTheLine(attempts, method, threshold)
   const copy = shown ? resultCopy({ method: shown.method, before: score.logit, after: shown.logit, wordsChanged: shown.wordsChanged, thresholds: meta.thresholds, strictness }) : null
   const flagText = (/** @type {number} */ x) => (x >= threshold ? 'flagged' : 'not flagged')
-  const atk = meta.attacks
+  const facts = attackFacts(meta)
 
   const cards = METHODS.map((m) => {
     const last = [...attempts].reverse().find((a) => a.method === m.id)
     const desc = {
       typos5: 'Swaps, drops or doubles a letter in about one word in twenty. Meaning stays; spelling gets worse.',
-      typos10: `One word in ten. In testing, ${pctText(atk.caught_after.typos10)} of AI essays were still caught.`,
-      t5: `Rewrites each sentence with a pretrained paraphraser. In testing it changed about ${Math.round(atk.words_changed_percent.t5)}% of the words and ${pctText(atk.caught_after.t5)} of AI essays were still caught. Check the result still says what the student meant.`,
-      t5_heavy: `Rewrites about ${Math.round(atk.words_changed_percent.t5_heavy)}% of the words. The rewrite that moved the most verdicts in notebook 13: ${pctText(atk.caught_after.t5_heavy)} of AI essays were still caught, down from ${pctText(atk.caught_after.original)}.`,
+      typos10: `One word in ten.${facts.typos10}`,
+      t5: `Rewrites each sentence with a pretrained paraphraser.${facts.t5} Check the result still says what the student meant.`,
+      t5_heavy: facts.heavy,
     }[m.id]
     return {
       id: m.id, title: m.title, cost: COST[m.kind], desc: desc ?? '', muted: !last,
@@ -90,7 +88,10 @@ function Loaded({ meta }) {
           <h1 className="t-display">Try to fool it</h1>
           <p className={styles.lede}>Rewrite the essay and score it again. On a student essay, this shows the other side of the problem: changes that add nothing can flip the answer.</p>
         </div>
-        <p className={styles.about}>Rewriting <Link to="/">{example ? example.name : 'your essay'}</Link>, {score.words} words, {strictness} flag line at {fmt(threshold)}.</p>
+        <div className={styles.aboutBox}>
+          <p className={styles.about}>Rewriting <Link to="/">{example ? example.name : 'your essay'}</Link>, {score.words} words, {strictness} flag line at {fmt(threshold)}.</p>
+          <div className={styles.switch}><span id="fool-strictness">How strict</span><StrictnessSwitch /></div>
+        </div>
       </div>
 
       <section aria-labelledby="method" className={styles.method}>
@@ -147,13 +148,9 @@ function Loaded({ meta }) {
         </section>
         <aside aria-labelledby="tested" className={styles.tested}>
           <h2 id="tested" className="t-heading">{Math.abs(score.logit - threshold) < 2 ? 'This essay was borderline' : 'What the tests found'}</h2>
-          <p>Across the test set, rewriting rarely saved an AI essay, and it hurt honest ones:</p>
-          <ul>
-            <li>With typos in 10% of words, {pctText(atk.caught_after.typos10)} of AI essays were still caught.</li>
-            <li>After heavy T5 paraphrasing, {pctText(atk.caught_after.t5_heavy)} were.</li>
-            <li>A light T5 paraphrase raised the flag rate of student essays from {pctText(atk.humans_flagged.original)} to {pctText(atk.humans_flagged.t5)}.</li>
-          </ul>
-          <p className={styles.small}>Measured at the standard flag line.</p>
+          {testedBullets(meta).length > 0 ? <p>Across the test set, rewriting rarely saved an AI essay, and it hurt honest ones:</p> : <p>The results of testing these rewrites on the whole test set are in notebook 13.</p>}
+          {testedBullets(meta).length > 0 && <ul>{testedBullets(meta).map((b) => <li key={b}>{b}</li>)}</ul>}
+          {testedBullets(meta).length > 0 && <p className={styles.small}>Measured at the standard flag line.</p>}
           <a href={`${REPO}/blob/main/Notebooks/13_attack.ipynb`}>The full attack results (notebook 13)</a>
         </aside>
       </div>

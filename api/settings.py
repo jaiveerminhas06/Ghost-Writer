@@ -4,6 +4,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# Bump this when /api/meta or any response changes shape. The page knows which version it was built for and says so when they differ.
+API_VERSION = 2
+
 # --- the detector's rules -------------------------------------------------------------------------
 MIN_WORDS = 40                 # below this a score would mean little (same rule as demo/app.py)
 MAX_CHARS = 30_000             # longest essay accepted
@@ -26,6 +29,7 @@ RATE_LIMIT_PER_MIN = float(os.environ.get("GW_RATE_LIMIT", "60"))   # cost units
 BATCH_FILES_PER_UNIT = 10      # a batch of files costs one unit per ten files (at least one)
 MAX_FILES_PER_REQUEST = 50
 MAX_FILE_BYTES = 5 * 1024 * 1024
+MAX_REQUEST_BYTES = 20 * 1024 * 1024   # a whole upload; anything larger is refused before it is read, so no upload can reach the disk
 MAX_PDF_PAGES = 60
 LOCK_WAIT_SECONDS = 120        # how long a request waits for the model before answering "busy"
 
