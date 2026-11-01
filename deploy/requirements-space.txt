@@ -11,3 +11,6 @@ scipy
 huggingface_hub
 fastapi
 uvicorn
+python-multipart
+python-docx
+pypdf

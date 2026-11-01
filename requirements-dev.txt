@@ -1,0 +1,3 @@
+# For running the API tests: pytest api tests (no GPU needed)
+pytest
+httpx
