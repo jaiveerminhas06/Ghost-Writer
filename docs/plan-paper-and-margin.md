@@ -119,3 +119,9 @@ Each phase ends with the checks from the brief (tests, type check, screenshots a
 7. Fewer than 5 essays: the "You added N essays" card with the rows below.
 8. Rate limit 60 requests a minute, a batch counting one per ten files, set in one place (`api/settings.py`).
 Also agreed: throwaway artboard renderer outside the repo; "Meaning: unchanged" wording only for typos; no misspelling note; links point to `Ghost-Writer`.
+
+## 10. Added requirements (2026-11-01, after phase 2)
+
+- **Fool page (phase 5):** a "Try different typos" action that re-runs the same method with a new seed; each row of the attempts list records its seed. If repeated runs on the same essay land on both sides of the flag line, say so in one plain sentence. Reuse the existing button and list styles; no new components for it. Reason: seed 0 gave +3.3 and seed 42 gave -6.6 for the same 5% typos on the "wrongly flags" example.
+- **Timings:** warm, T5 light and heavy both take about 0.75-1.0 s on this GPU (5 runs each, three essays). The earlier "3 s vs 1 s" was model loading. The page shows no timings; cost labels stay qualitative.
+- **`docs/api.md`:** plain-language API explanation for the viva (committed).

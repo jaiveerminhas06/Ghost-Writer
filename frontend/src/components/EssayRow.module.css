@@ -1,0 +1,30 @@
+.row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 90px 180px 44px; gap: 16px; align-items: center; min-height: 56px; padding: 0 12px 0 20px;
+  border-top: 1px solid var(--line); background: var(--paper); color: var(--ink); text-decoration: none;
+  transition: background-color var(--t-fast) var(--ease-out);
+}
+.labelled { grid-template-columns: 150px minmax(0, 1fr) 90px 180px 44px; }
+.state { font-size: var(--fs-tiny); color: var(--ink-3); }
+.name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.score { text-align: right; font-weight: 600; }
+.result { font-size: var(--fs-small); color: var(--ink-2); }
+.open { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink-3); }
+.row[role="button"], a.row { cursor: pointer; }
+.row[data-force="hover"] { background: oklch(from var(--paper) calc(l - 0.025) c h); }
+@media (hover: hover) { .row[href]:hover, .row[role="button"]:hover { background: oklch(from var(--paper) calc(l - 0.025) c h); } }
+.row:focus-visible { outline-offset: -2px; }
+
+.row[data-tone="flagged"] .score, .row[data-tone="flagged"] .result { color: var(--pen); }
+.row[data-tone="selected"] { background: var(--pen-tint); font-weight: 600; }
+.row[data-tone="selected"] .score, .row[data-tone="selected"] .result { color: var(--pen); }
+.row[data-tone="queued"] .name, .row[data-tone="queued"] .score, .row[data-tone="queued"] .result { color: var(--ink-3); }
+.row[data-tone="error"] { background: var(--brick-tint); }
+.row[data-tone="error"] .score { color: var(--ink-3); }
+.row[data-tone="error"] .result { color: var(--brick); }
+
+/* phone: the result drops under the name (colour is never the only signal) */
+@media (max-width: 639px) {
+  .row, .labelled { grid-template-columns: minmax(0, 1fr) 64px 44px; grid-template-areas: "name score open" "result result open"; padding: 8px 4px 8px 16px; gap: 0 8px; }
+  .state { display: none; }
+  .name { grid-area: name; } .score { grid-area: score; } .result { grid-area: result; } .open { grid-area: open; }
+}

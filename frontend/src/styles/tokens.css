@@ -1,0 +1,59 @@
+/* Design tokens from design/DESIGN_SPEC.md, unchanged. All colours are OKLCH, neutrals tinted toward hue 265.
+   No pure white, black or grey anywhere. Relative colour syntax (oklch(from ...)) needs a current browser. */
+:root {
+  /* surfaces and text */
+  --desk:   oklch(0.955 0.008 265);   /* page background */
+  --desk-2: oklch(0.925 0.011 265);   /* wells, tracks, segmented-control backgrounds, skeletons */
+  --paper:  oklch(0.995 0.003 265);   /* essay sheet, panels, raised controls */
+  --ink:    oklch(0.23 0.022 265);    /* text, ruler, essay marker */
+  --ink-2:  oklch(0.38 0.020 265);    /* secondary text */
+  --ink-3:  oklch(0.50 0.018 265);    /* captions, axis labels (still 4.5:1 on desk) */
+  --line:   oklch(0.30 0.03 265 / 0.14);   /* hairline */
+  --line-2: oklch(0.30 0.03 265 / 0.28);   /* strong hairline */
+
+  /* the detector's voice */
+  --pen:        oklch(0.45 0.17 265);
+  --pen-hover:  oklch(from var(--pen) calc(l - 0.05) c h);
+  --pen-active: oklch(from var(--pen) calc(l - 0.09) calc(c - 0.01) h);
+  --pen-tint:   oklch(from var(--pen) 0.94 0.035 h);    /* selected rows, drop target */
+  --pen-ring:   oklch(from var(--pen) l c h / 0.35);    /* margin rule, focus glow on inputs */
+  --on-pen:     oklch(0.99 0.005 265);                  /* text on the pen colour (primary button, from the artboards) */
+
+  /* highlighter: small, larger, largest score drop; --hl-2 is also the over-the-line zone */
+  --hl-1: oklch(0.965 0.07 100);
+  --hl-2: oklch(0.925 0.12 95);
+  --hl-3: oklch(0.865 0.15 85);
+
+  /* errors only, never a verdict */
+  --brick:      oklch(0.50 0.16 32);
+  --brick-tint: oklch(from var(--brick) 0.955 0.03 h);
+
+  /* depth: tight contact layer + wide soft layer, tinted blue, 1px inset top highlight on raised things */
+  --sh-1: inset 0 1px 0 oklch(1 0 0 / 0.55), 0 1px 1px oklch(0.30 0.04 265 / 0.10), 0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);
+  --sh-2: inset 0 1px 0 oklch(1 0 0 / 0.8), 0 1px 1px oklch(0.30 0.04 265 / 0.08), 0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);
+  --sh-3: 0 1px 2px oklch(0.30 0.04 265 / 0.12), 0 28px 64px -18px oklch(0.30 0.06 265 / 0.32);
+  --sh-pen: inset 0 1px 0 oklch(1 0 0 / 0.22), 0 1px 1px oklch(0.30 0.06 265 / 0.20), 0 4px 12px -4px oklch(0.45 0.17 265 / 0.45);
+
+  /* motion */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in:  cubic-bezier(.55, 0, .75, .3);
+  --t-press: 120ms; --t-fast: 150ms; --t-base: 200ms; --t-move: 240ms; --t-exit: 160ms;
+
+  /* radius: 2 marks, 6 essay sheet, 8 controls, 10 primary button, 12 segmented track (8 + 4), 14 lists and popovers, 18 panels */
+  --r-mark: 2px; --r-sheet: 6px; --r-control: 8px; --r-primary: 10px; --r-track: 12px; --r-list: 14px; --r-panel: 18px;
+
+  /* type */
+  --font-ui: 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-essay: Tinos, 'Times New Roman', serif;
+  --fs-display: clamp(2.25rem, 1.55rem + 2.4vw, 3.5rem);
+  --fs-verdict: clamp(1.75rem, 1.35rem + 1.5vw, 2.5rem);
+  --fs-section: 1.625rem;
+  --fs-heading: 1.125rem;
+  --fs-essay: 1.1875rem;
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9375rem;
+  --fs-caption: 0.875rem;
+  --fs-tiny: 0.8125rem;
+
+  color-scheme: light;
+}

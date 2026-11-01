@@ -1,0 +1,42 @@
+/* Reset, page defaults and the type roles from the spec. Component styles live in each component's own CSS module. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--desk); color: var(--ink);
+  font-family: var(--font-ui); font-size: var(--fs-body); line-height: 1.55; font-weight: 420;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ul, ol, dl, dd, figure { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+a { color: var(--pen); text-underline-offset: 3px; }
+@media (hover: hover) { a:hover { color: var(--pen-active); } }
+:focus-visible { outline: 2px solid var(--pen); outline-offset: 3px; }
+mark { color: inherit; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+::selection { background: var(--pen-ring); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* type roles (design/DESIGN_SPEC.md, "Type"). Every number uses tabular figures. */
+.t-display { font-size: var(--fs-display); line-height: 1.05; letter-spacing: -0.028em; font-weight: 650; }
+.t-verdict { font-size: var(--fs-verdict); line-height: 1.1; letter-spacing: -0.02em; font-weight: 650; }
+.t-section { font-size: var(--fs-section); line-height: 1.15; letter-spacing: -0.015em; font-weight: 650; }
+.t-heading { font-size: var(--fs-heading); line-height: 1.35; letter-spacing: -0.005em; font-weight: 600; }
+.t-note { font-size: var(--fs-small); line-height: 1.5; font-style: italic; color: var(--pen); }
+.t-caption { font-size: var(--fs-caption); line-height: 1.45; letter-spacing: 0.005em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* page frame: the same width and gutters as the artboards */
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
+
+/* Reduced motion: movement turns into a fade of 120 ms or less. Component CSS supplies the fades; this removes the rest. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; scroll-behavior: auto !important; }
+}
+
+/* the spinner inside "working" buttons; under reduced motion it stays still and the button's label ("Scoring…") says the work is happening */
+@keyframes gw-spin { to { transform: rotate(360deg); } }
+.gw-spin { animation: gw-spin 900ms linear infinite; }
+@media (prefers-reduced-motion: reduce) { .gw-spin { animation: none; } }

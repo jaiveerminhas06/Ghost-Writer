@@ -1,0 +1,41 @@
+/* Buttons. States drawn in design/artboards/Components.dc.html: rest, hover (pointer only), pressed (scale .97),
+   keyboard focus, working, disabled. [data-force] draws a state on the /components sheet without the pointer. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: transform var(--t-press) var(--ease-out), background-color var(--t-fast) var(--ease-out),
+              border-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+}
+.btn:active:not(:disabled):not([aria-disabled]), .btn[data-force="pressed"] { transform: scale(0.97); }
+.btn[data-force="focus"] { outline: 2px solid var(--pen); outline-offset: 3px; }
+.btn:disabled, .btn[aria-disabled] { cursor: not-allowed; }
+.btn[aria-busy="true"] { cursor: progress; }
+
+/* primary: pen, the screen's one main action */
+.primary { min-height: 48px; padding: 0 20px; border: 0; border-radius: var(--r-primary); background: var(--pen); box-shadow: var(--sh-pen); color: var(--on-pen); font-weight: 600; }
+.primary:active:not(:disabled):not([aria-disabled]), .primary[data-force="pressed"] { background: var(--pen-active); box-shadow: inset 0 1px 2px oklch(0.20 0.06 265 / 0.35); }
+.primary[data-force="hover"] { background: var(--pen-hover); }
+@media (hover: hover) { .primary:hover:not(:disabled):not([aria-disabled]):not(:active) { background: var(--pen-hover); } }
+.primary:disabled, .primary[aria-disabled] { background: var(--desk-2); box-shadow: none; color: var(--ink-3); }
+
+/* secondary: paper, raised */
+.secondary { min-height: 44px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: var(--r-control); background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font-size: var(--fs-small); font-weight: 500; }
+.secondary:active:not(:disabled):not([aria-disabled]), .secondary[data-force="pressed"] { background: var(--desk-2); box-shadow: inset 0 1px 1px oklch(0.30 0.04 265 / 0.12); }
+.secondary[data-force="hover"] { background: oklch(from var(--paper) calc(l - 0.025) c h); }
+@media (hover: hover) { .secondary:hover:not(:disabled):not([aria-disabled]):not(:active) { background: oklch(from var(--paper) calc(l - 0.025) c h); } }
+.secondary[aria-busy="true"] { color: var(--ink-2); }
+.secondary:disabled, .secondary[aria-disabled] { border-style: dashed; background: transparent; box-shadow: none; color: var(--ink-3); }
+
+/* quiet: text only, pen-coloured (for example "What is the flag line?") */
+.quiet { min-height: 44px; padding: 0 12px 0 10px; gap: 8px; border: 0; border-radius: var(--r-control); background: transparent; color: var(--pen); font-size: var(--fs-small); font-weight: 550; }
+.quiet:active:not(:disabled):not([aria-disabled]), .quiet[data-force="pressed"] { background: var(--desk-2); }
+.quiet[data-force="hover"] { background: oklch(from var(--desk) calc(l - 0.03) c h); }
+@media (hover: hover) { .quiet:hover:not(:disabled):not([aria-disabled]):not(:active) { background: oklch(from var(--desk) calc(l - 0.03) c h); } }
+.quiet:disabled, .quiet[aria-disabled] { color: var(--ink-3); }
+
+/* icon: 18 px glyph in a 44 px target */
+.icon { width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--r-control); background: transparent; color: var(--ink-2); }
+.icon:active:not(:disabled):not([aria-disabled]), .icon[data-force="pressed"] { background: var(--desk-2); color: var(--ink); }
+.icon[data-force="hover"] { background: oklch(0.925 0.008 265); color: var(--ink); }
+@media (hover: hover) { .icon:hover:not(:disabled):not([aria-disabled]):not(:active) { background: oklch(0.925 0.008 265); color: var(--ink); } }
+.icon.done { background: var(--pen-tint); color: var(--pen); }
+.icon:disabled, .icon[aria-disabled] { color: oklch(0.70 0.012 265); }
