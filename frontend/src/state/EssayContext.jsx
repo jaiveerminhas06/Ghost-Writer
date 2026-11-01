@@ -24,7 +24,7 @@ function initial() {
   let saved = {}
   try { saved = JSON.parse(sessionStorage.getItem(KEY) || '{}') } catch { /* private window or blocked storage: start empty */ }
   return {
-    text: saved.text || '', exampleId: saved.exampleId ?? null, strictness: saved.strictness === 'standard' ? 'standard' : 'strict',
+    text: saved.text || '', exampleId: saved.exampleId ?? null, title: null, strictness: saved.strictness === 'standard' ? 'standard' : 'strict',
     status: 'idle', score: null, scoredText: '', problem: null, explain: idle(), attribution: idle(),
     attempts: [], selected: null, rewriting: null, rewriteProblem: null,
   }
@@ -33,9 +33,9 @@ function initial() {
 /** @param {EssayState} s  @param {any} a  @returns {EssayState} */
 function reduce(s, a) {
   switch (a.type) {
-    case 'text': return { ...s, text: a.text, exampleId: a.exampleId ?? null, status: 'idle', score: null, problem: null, explain: idle(), attribution: idle(), attempts: [], selected: null, rewriting: null, rewriteProblem: null }
+    case 'text': return { ...s, text: a.text, exampleId: a.exampleId ?? null, title: null, status: 'idle', score: null, problem: null, explain: idle(), attribution: idle(), attempts: [], selected: null, rewriting: null, rewriteProblem: null }
     case 'strictness': return { ...s, strictness: a.value }
-    case 'scoring': return { ...s, text: a.text, exampleId: a.exampleId, status: 'scoring', score: null, scoredText: a.text, problem: null, explain: idle(), attribution: idle(), attempts: [], selected: null, rewriting: null, rewriteProblem: null }
+    case 'scoring': return { ...s, text: a.text, exampleId: a.exampleId, title: a.title ?? null, status: 'scoring', score: null, scoredText: a.text, problem: null, explain: idle(), attribution: idle(), attempts: [], selected: null, rewriting: null, rewriteProblem: null }
     case 'scored': return { ...s, status: 'scored', score: a.score }
     case 'failed': return { ...s, status: 'error', problem: a.problem }
     case 'explain': return { ...s, explain: { status: a.status, data: a.data ?? null, problem: a.problem ?? null } }
@@ -68,9 +68,9 @@ export function EssayProvider({ children, lowestFlagLine }) {
     }
   }, [])
 
-  const submit = useCallback(async (/** @type {string} */ text, /** @type {number | null} */ exampleId) => {
+  const submit = useCallback(async (/** @type {string} */ text, /** @type {number | null} */ exampleId, /** @type {string | null} */ title = null) => {
     const id = ++run.current
-    dispatch({ type: 'scoring', text, exampleId })
+    dispatch({ type: 'scoring', text, exampleId, title })
     try {
       const score = await api.score(text)
       if (id !== run.current) return
@@ -88,7 +88,8 @@ export function EssayProvider({ children, lowestFlagLine }) {
     setText: (/** @type {string} */ text) => { run.current++; dispatch({ type: 'text', text, exampleId: null }) },
     /** @param {{ id: number, text: string }} example  loads and scores it at once */
     loadExample: (example) => submit(example.text, example.id),
-    submit: () => submit(state.text, state.exampleId),
+    submit: () => submit(state.text, state.exampleId, state.title),
+    openEssay: (file) => submit(file.text, null, file.name),
     edit: () => { run.current++; dispatch({ type: 'text', text: state.text, exampleId: state.exampleId }) },
     setStrictness: (/** @type {'strict' | 'standard'} */ value) => dispatch({ type: 'strictness', value }),
     retryExplain: () => loadExplain(state.scoredText, run.current),

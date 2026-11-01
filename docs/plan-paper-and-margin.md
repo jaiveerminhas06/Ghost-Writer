@@ -132,3 +132,5 @@ Also agreed: throwaway artboard renderer outside the repo; "Meaning: unchanged" 
 - Phase 3 (tokens, fonts, shell, /components): done, `c01842a`.
 - Phase 4 (Check an essay, desktop and phone, wired to the API): done, `f53fa80`. Pen colour set to `oklch(0.45 0.148 255)`, comparison removed, `b819c21`.
 - Phase 5 (Try to fool it, with "Try different typos" and the seed recorded per attempt): done.
+- Pre-phase-6 items: done, `bd06a19` (shared Strict/Standard switch on the Fool page, `api_version` in `/api/meta`, figures tolerated when missing, uploads kept off disk with tests).
+- Phase 6 (Check a class: drop zone, summary with expected false flags, dot strip or histogram, sortable table with 50-row pages, class-of-one and fewer-than-five states): done.

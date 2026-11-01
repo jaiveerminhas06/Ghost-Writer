@@ -7,11 +7,12 @@ const SECONDS = { meta: 15, score: 30, explain: 120, attribution: 30, typos: 30,
 
 /** A failed request, in words the page can show. `title` is the first sentence, `detail` the rest. */
 export class ApiProblem extends Error {
-  /** @param {string} code  @param {string} message  @param {number} [status] */
-  constructor(code, message, status = 0) {
+  /** @param {string} code  @param {string} message  @param {number} [status]  @param {number} [retryAfter]  seconds the server asked us to wait */
+  constructor(code, message, status = 0, retryAfter = 0) {
     super(message)
     this.code = code
     this.status = status
+    this.retryAfter = retryAfter
     const cut = message.search(/[.!?](\s|$)/)               // the server's messages are "Sentence one. Sentence two."
     this.title = cut === -1 ? message : message.slice(0, cut + 1)
     this.detail = cut === -1 ? '' : message.slice(cut + 1).trim()
@@ -38,7 +39,7 @@ async function request(path, { body, form, seconds }) {
     clearTimeout(timer)
   }
   const data = await res.json().catch(() => null)
-  if (!res.ok) throw new ApiProblem(data?.code ?? 'error', data?.detail ?? 'Something went wrong. Please try again.', res.status)
+  if (!res.ok) throw new ApiProblem(data?.code ?? 'error', data?.detail ?? 'Something went wrong. Please try again.', res.status, Number(res.headers.get('Retry-After')) || 0)
   return data
 }
 

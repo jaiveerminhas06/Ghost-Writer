@@ -6,6 +6,7 @@ import { ToastProvider } from './components/Toast'
 import { MetaProvider } from './state/MetaContext'
 import { useMetaState } from './state/contexts'
 import { EssayProvider } from './state/EssayContext'
+import { ClassProvider } from './state/ClassContext'
 
 /** The frame around every page: a skip link for keyboard users, the header, the page itself, and the place toasts appear.
  *  The data every page shares (the server's figures, the essay) is provided here. */
@@ -27,5 +28,10 @@ export default function App() {
 function EssayState({ children }) {
   const { state } = useMetaState()
   const lowest = state.status === 'ready' ? Math.min(...Object.values(state.meta.thresholds)) : null
-  return <EssayProvider lowestFlagLine={lowest}>{children}</EssayProvider>
+  const maxFileBytes = state.status === 'ready' ? state.meta.limits?.max_file_bytes : undefined
+  return (
+    <EssayProvider lowestFlagLine={lowest}>
+      <ClassProvider maxFileBytes={maxFileBytes}>{children}</ClassProvider>
+    </EssayProvider>
+  )
 }

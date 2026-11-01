@@ -89,7 +89,7 @@ function Loaded({ meta }) {
             scored
               ? (
                 <>
-                  <EssayReader key={state.scoredText} text={state.scoredText} title={example ? example.name : 'Your essay'}
+                  <EssayReader key={state.scoredText} text={state.scoredText} title={example ? example.name : state.title ?? 'Your essay'}
                                scoreInfo={score} explain={explain} onEdit={essay.edit} />
                   {flagged && state.explain.status === 'loading' && <p className={styles.status} role="status">Finding the sentences I reacted to…</p>}
                   {flagged && state.explain.status === 'error' && (

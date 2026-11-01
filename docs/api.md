@@ -29,8 +29,24 @@ It is built with **FastAPI**: each function with `@app.post("/api/...")` above i
 - **`settings.py`**: every number you could want to change (40-word minimum, the rate limit, file-size limits, the seed) in one place. Nothing is hidden in the code.
 - **`results.py`**: **the reason no number on the page is invented.** It reads each figure from the project's CSV files. The "worst topic" (Summer projects, 7.7% at the standard line) isn't typed anywhere; it is calculated from `14_errors.csv` each time the server starts.
 - **`errors.py`**: every failure has the same shape, `{"detail": "a sentence you can show", "code": "too_short"}`. The page shows `detail` as it is and uses `code` to decide what to do.
+- **`uploads.py`**: keeps uploaded files off the disk (see "Are uploads saved?" below).
 - **`textfiles.py`**: pulls plain text out of `.txt` (tries UTF-8, then Windows encoding), `.docx` (python-docx) and `.pdf` (pypdf). A scanned PDF has no text, so it is reported as "No text found". One bad file never stops the others.
 - **`limiter.py`** and **`language.py`**: explained next.
+
+## Versions: how the page knows the server matches it
+
+`GET /api/meta` includes an `api_version` number (`api/settings.py`). The page is built for one version. If the server sends a different one the page does not guess: an older server (or one with no version) gets "The API is out of date. Restart it", a newer one gets "This page is out of date. Reload it". Separately, every sentence on the page that quotes a figure from `/api/meta` is built in one place (`frontend/src/lib/figures.js`) and simply leaves a clause out if its figure is missing, so a half-updated server never produces "undefined%" or a blank page.
+
+## Are uploads saved? (`uploads.py`, tested in `tests/test_privacy.py`)
+
+The class page promises "Scores are kept on this computer and cleared when you close the tab" and that files are read in memory and never saved. That had to be made true, because the framework underneath FastAPI (Starlette) normally keeps each uploaded file in memory only up to 1 MB and **writes it to a temporary file on disk above that**. Our limit per file is 5 MB, so a 3 MB essay would have been written to disk. Two things now prevent that:
+
+1. The in-memory size is raised above anything we accept (`MultiPartParser.spool_max_size`), so no upload part ever rolls over to a file.
+2. A request bigger than 20 MB is refused before it is read: by its `Content-Length` header, or, for a request that does not declare one, as soon as the bytes counted while it streams in pass the limit.
+
+The tests prove it rather than assume it: a 3 MB upload stays in memory (a spy records zero roll-overs); the same upload with the framework default **does** roll over (so the first test would fail if the fix were removed); an oversized request gets a 413; nothing appears in the project or temp folder; and a marker word inside an essay never shows up in the log output. The browser keeps the scores and the extracted text in `sessionStorage`, which belongs to one tab and disappears when it closes (a new tab starts empty, and nothing is written to `localStorage` or cookies).
+
+What we cannot show by test: server logs written by uvicorn contain only the address of each request (for example `POST /api/batch 200 OK`), never its body; that is how uvicorn works, not something we added.
 
 ## `limiter.py`: why it exists
 

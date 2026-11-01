@@ -12,6 +12,7 @@ import ComponentsSheet from './pages/ComponentsSheet.jsx'
 import Placeholder from './pages/Placeholder.jsx'
 import CheckEssay from './pages/CheckEssay.jsx'
 import TryToFoolIt from './pages/TryToFoolIt.jsx'
+import CheckClass from './pages/CheckClass.jsx'
 
 createRoot(/** @type {HTMLElement} */ (document.getElementById('root'))).render(
   <StrictMode>
@@ -20,7 +21,7 @@ createRoot(/** @type {HTMLElement} */ (document.getElementById('root'))).render(
         <Route element={<App />}>
           <Route index element={<CheckEssay />} />
           <Route path="fool" element={<TryToFoolIt />} />
-          <Route path="class" element={<Placeholder title="Check a class" phase={6} />} />
+          <Route path="class" element={<CheckClass />} />
           <Route path="components" element={<ComponentsSheet />} />
           <Route path="*" element={<Placeholder title="There is no page here" phase="—" />} />
         </Route>
