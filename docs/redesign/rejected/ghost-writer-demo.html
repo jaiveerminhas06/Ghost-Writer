@@ -1,0 +1,1004 @@
+<!-- Rejected direction: the "marked script" prototype, superseded on 1 Nov 2026 by design/ ("paper and margin"). Kept for history. -->
+<title>Ghost Writer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Design prototype for the Ghost Writer frontend: the detector marks an essay the way an examiner marks a script.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* ==========================================================================
+   GHOST WRITER — "the marked script"
+   The detector is an examiner. The essay is an answer script on ruled paper;
+   the verdict is a rubber stamp and a circled mark; evidence is red-pen
+   underlining with marks in the margin; doubts are a sticky note; the score
+   scale is a school ruler; rewrites come back with proofreading marks.
+
+   Paper never changes colour: it is paper in both themes. Only the DESK the
+   papers lie on follows light/dark. So paper tokens are defined once; desk
+   tokens are redefined for dark.
+
+   Layout: desk → cover sheet → script tabs → answer script (+ sticky note,
+   clipped slip) → resubmission → examiner's report → footer.
+   ========================================================================== */
+:root {
+  /* desk (themed) */
+  --desk: #d6dbd2;          /* pale green-grey lino */
+  --desk-ink: #1d231d;
+  --desk-muted: #485247;
+  --desk-line: #b9c0b4;
+  --tab-idle: #e8ebe4;
+
+  /* paper (fixed in both themes) */
+  --paper: #fbfbf7;
+  --paper-edge: #dcdfd6;
+  --ink: #1e2230;           /* the student's ink: typed text */
+  --pencil: #5c626d;        /* secondary text on paper (5.9:1) */
+  --rule: #bccde8;          /* feint blue rules */
+  --margin-rule: #ec958c;   /* the red margin line */
+  --red: #c32a1d;           /* examiner's pen (5.6:1 on paper) */
+  --stamp-blue: #1f4c9e;
+  --sticky: #fbe68a;
+  --sticky-edge: #e9cd55;
+  --sticky-ink: #2d2a12;
+
+  /* type */
+  --print: 'Archivo', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;   /* printed form text */
+  --script: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;             /* the essay */
+  --hand: 'Kalam', 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;  /* the examiner */
+  --figures: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* the ruled line: essay text sits on the rules */
+  --line: 32px;
+  --rule-y: 24px;           /* where the rule falls inside each 32px line */
+
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --desk: #17201b; --desk-ink: #e4eae2; --desk-muted: #a3b0a2; --desk-line: #2e3a33; --tab-idle: #c9cec4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --desk: #17201b; --desk-ink: #e4eae2; --desk-muted: #a3b0a2; --desk-line: #2e3a33; --tab-idle: #c9cec4;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--desk); color: var(--desk-ink); font-family: var(--print); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+a { color: inherit; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-radius: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hand { font-family: var(--hand); color: var(--red); }
+.fig { font-family: var(--figures); font-variant-numeric: tabular-nums; }
+.caps { font-stretch: 75%; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: 12px; }
+
+.desk {
+  max-width: 1140px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 18px 40px;
+}
+
+/* paper sheet — the one shared surface */
+.paper {
+  position: relative; background: var(--paper); color: var(--ink);
+  border: 1px solid var(--paper-edge); border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(20,24,20,.06), 0 10px 24px -14px rgba(20,24,20,.35);
+}
+
+/* ---------- desk top ---------- */
+.desk-top { display: flex; gap: 10px 20px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.desk-top nav { display: flex; gap: 18px; flex-wrap: wrap; margin-left: auto; font-size: 14px; }
+.desk-top nav a { color: var(--desk-muted); text-decoration: none; }
+.desk-top nav a:hover { color: var(--desk-ink); text-decoration: underline; }
+.proto { font-family: var(--hand); font-size: 15px; color: var(--desk-muted); }
+
+/* ---------- cover sheet ---------- */
+.cover { padding: 26px clamp(18px, 4vw, 40px) 30px; display: grid; gap: 22px; }
+.cover-band { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; border-bottom: 2px solid var(--ink); padding-bottom: 10px; }
+.cover-band .caps { font-size: 13px; }
+.title-row { display: flex; align-items: flex-end; gap: 8px 24px; flex-wrap: wrap; }
+.title-row h1 {
+  font-family: var(--print); font-stretch: 62%; font-weight: 900; text-transform: uppercase;
+  font-size: clamp(3.4rem, 13vw, 8.4rem); line-height: .82; letter-spacing: -.01em;
+}
+.aside { position: relative; font-family: var(--hand); color: var(--red); font-size: clamp(1.25rem, 2.6vw, 1.6rem); line-height: 1.15; transform: rotate(-4deg); padding-bottom: .4em; max-width: 14ch; }
+.aside svg { position: absolute; left: -46px; top: 6px; width: 44px; height: 30px; overflow: visible; }
+@media (max-width: 560px) { .aside svg { display: none; } }
+.boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); border: 1.5px solid var(--ink); }
+.box { padding: 8px 12px 10px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); margin: 0 -1.5px -1.5px 0; display: grid; gap: 2px; min-width: 0; }
+.box .caps { color: var(--pencil); font-size: 11px; }
+.box .val { font-family: var(--hand); color: var(--red); font-size: 20px; line-height: 1.25; }
+.box .val.typed { font-family: var(--print); color: var(--ink); font-size: 16px; }
+.instr { font-family: var(--script); font-size: 17px; line-height: 1.6; max-width: 66ch; }
+.instr b { font-weight: 600; }
+.marks-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.marks-table caption { text-align: left; padding-bottom: 6px; }
+.marks-table th, .marks-table td { border: 1.5px solid var(--ink); padding: 8px 12px; text-align: left; vertical-align: middle; }
+.marks-table th { font-weight: 500; }
+.marks-table td.mark { width: 34%; font-family: var(--hand); color: var(--red); font-size: 24px; line-height: 1.1; white-space: nowrap; }
+.marks-table td.mark small { font-size: 15px; color: var(--red); opacity: .85; margin-left: 6px; white-space: normal; }
+.tw { overflow-x: auto; }
+
+/* ---------- script tabs ---------- */
+.tabs-label { margin: 34px 0 10px; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.tabs-label h2 { font-stretch: 75%; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; font-size: 15px; }
+.tabs-label p { color: var(--desk-muted); font-size: 14px; }
+.tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+@media (max-width: 720px) { .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tab {
+  text-align: left; cursor: pointer; border: 1px solid var(--paper-edge); border-bottom: 0; border-radius: 6px 6px 0 0;
+  background: var(--tab-idle); color: var(--ink); padding: 10px 12px 12px; display: grid; gap: 2px; min-height: 66px;
+  transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.tab:hover { transform: translateY(-2px); }
+.tab[aria-pressed="true"] { background: var(--paper); transform: none; box-shadow: 0 -2px 0 var(--red) inset; }
+.tab .t { font-stretch: 75%; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; font-size: 14px; }
+.tab .d { font-size: 13px; color: var(--pencil); line-height: 1.3; }
+@media (max-width: 720px) { .tab { border-radius: 6px; border-bottom: 1px solid var(--paper-edge); } }
+
+/* ---------- the answer script ---------- */
+.script-wrap { position: relative; }
+.script { border-top-left-radius: 0; }
+.script-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 20px; padding: 18px clamp(16px, 3.5vw, 34px) 12px; border-bottom: 1.5px solid var(--ink); align-items: start; }
+.meta { display: grid; gap: 6px; font-size: 14px; }
+.meta .row { display: flex; gap: 8px 18px; flex-wrap: wrap; align-items: baseline; }
+.meta .caps { color: var(--pencil); font-size: 11px; }
+.progress { font-family: var(--hand); color: var(--pencil); font-size: 16px; line-height: 1.3; min-height: 21px; }
+.progress .on { color: var(--red); }
+.verdict-zone { display: flex; gap: 8px; align-items: center; justify-content: flex-end; min-height: 112px; }
+@media (max-width: 640px) {
+  .script-head { grid-template-columns: 1fr; }
+  .verdict-zone { justify-content: flex-start; flex-wrap: wrap; }
+}
+
+/* rubber stamp */
+.stamp { width: 214px; height: 86px; transform: rotate(-7deg); transform-origin: 50% 60%; flex: none; }
+.stamp.land { animation: stamp 260ms var(--ease-out) both; }
+@keyframes stamp { 0% { transform: rotate(-11deg) scale(1.55); opacity: 0; } 70% { opacity: 1; } 100% { transform: rotate(-7deg) scale(1); opacity: 1; } }
+.stamp text { font-family: var(--print); }
+.stamp-empty { width: 196px; height: 70px; border: 1.5px dashed var(--paper-edge); border-radius: 6px; display: grid; place-items: center; color: var(--pencil); font-family: var(--hand); font-size: 15px; transform: rotate(-3deg); }
+
+/* circled mark */
+.grade { position: relative; width: 150px; height: 112px; flex: none; display: grid; place-items: center; text-align: center; }
+.grade svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.grade path { fill: none; stroke: var(--red); stroke-width: 2.6; stroke-linecap: round; }
+.grade.draw path { animation: draw 700ms var(--ease-out) 180ms both; }
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.grade .num { font-family: var(--hand); font-weight: 700; color: var(--red); font-size: 38px; line-height: 1; }
+.grade .of { font-family: var(--hand); color: var(--red); font-size: 14px; line-height: 1.1; margin-top: 2px; }
+.grade.empty path { stroke: var(--paper-edge); stroke-dasharray: 4 5; }
+.grade.empty .of { color: var(--pencil); }
+
+/* ruler */
+.ruler-zone { padding: 14px clamp(16px, 3.5vw, 34px) 6px; border-bottom: 1px solid var(--paper-edge); display: grid; gap: 4px; }
+.ruler-zone .cap { font-size: 13px; color: var(--pencil); max-width: 70ch; }
+svg.ruler { width: 100%; max-width: 600px; height: auto; display: block; overflow: visible; }
+.ruler .body { fill: #eef3f6; stroke: #a9b6c0; stroke-width: 1; }
+.ruler .zone-ai { fill: #f6dcd5; }
+.ruler .tick { stroke: #4a5560; stroke-width: .9; }
+.ruler .num { font-family: var(--figures); font-size: 9.5px; fill: #36404a; }
+.ruler .brand { font-family: var(--print); font-size: 7.5px; letter-spacing: .14em; fill: #6c7883; font-weight: 600; }
+.ruler .flag { stroke: var(--red); stroke-width: 2; stroke-linecap: round; }
+.ruler .flag-txt { font-family: var(--hand); font-size: 13px; fill: var(--red); }
+.ruler .arrow { stroke: var(--ink); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ruler .arrow-txt { font-family: var(--hand); font-weight: 700; font-size: 15px; fill: var(--ink); }
+.ruler .arrow.before { stroke: var(--pencil); stroke-dasharray: 3 3; }
+.ruler .arrow-txt.before { fill: var(--pencil); font-weight: 400; font-size: 13px; }
+.ruler .mover { transition: transform 650ms var(--ease-out); }
+@media (max-width: 560px) {
+  .ruler .num { font-size: 12.5px; } .ruler .brand { font-size: 9px; letter-spacing: .06em; }
+  .ruler .flag-txt { font-size: 16px; } .ruler .arrow-txt { font-size: 18px; } .ruler .arrow-txt.before { font-size: 15px; }
+}
+
+/* the ruled page */
+.page { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 820px) { .page.has-margin { grid-template-columns: minmax(0, 1fr) 150px; } }
+.lines {
+  position: relative; padding: calc(var(--line) * 1) clamp(16px, 3.5vw, 34px) calc(var(--line) * 1) calc(clamp(16px, 3.5vw, 34px) + 34px);
+  background-image: linear-gradient(to bottom, transparent calc(var(--rule-y) - 1px), var(--rule) calc(var(--rule-y) - 1px), var(--rule) var(--rule-y), transparent var(--rule-y));
+  background-size: 100% var(--line); background-position: 0 0; min-width: 0;
+}
+/* double red margin line */
+.lines::before { content: ""; position: absolute; top: 0; bottom: 0; left: clamp(16px, 3.5vw, 34px); width: 5px; border-left: 1.5px solid var(--margin-rule); border-right: 1.5px solid var(--margin-rule); }
+.essay, .essay-input {
+  font-family: var(--script); font-size: 17.5px; line-height: var(--line); color: var(--ink);
+  max-width: 64ch; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.essay-input { display: block; width: 100%; min-height: calc(var(--line) * 14); border: 0; outline: 0; resize: vertical; background: transparent; padding: 0; caret-color: var(--red); }
+.essay-input::placeholder { color: var(--pencil); font-style: italic; }
+
+/* red-pen underlines: a hand-drawn stroke revealed left→right by sliding a paper-coloured cover off it */
+.s { box-decoration-break: clone; -webkit-box-decoration-break: clone; background-repeat: no-repeat, repeat-x; background-position: 0 100%, 0 100%; background-size: 100% 10px, 120px 10px; padding-bottom: 3px; transition: background-position 900ms var(--ease-out); transition-delay: var(--d, 0ms); }
+.s.u1 { background-image: linear-gradient(var(--paper), var(--paper)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='10'%3E%3Cpath d='M0 6 C15 4.4,28 7.4,44 5.8 S75 4.2,92 6.2 S112 6.4,120 6' fill='none' stroke='%23c32a1d' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.s.u2 { background-image: linear-gradient(var(--paper), var(--paper)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='10'%3E%3Cpath d='M0 4.4 C15 3,28 5.8,44 4.2 S75 2.8,92 4.6 S112 4.8,120 4.4' fill='none' stroke='%23c32a1d' stroke-width='1.7' stroke-linecap='round'/%3E%3Cpath d='M0 8.4 C18 7.2,30 9.6,48 8 S80 7,96 8.6 S114 8.6,120 8.4' fill='none' stroke='%23c32a1d' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.s.u0 { background-image: linear-gradient(var(--paper), var(--paper)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='10'%3E%3Cpath d='M0 6 L120 6' fill='none' stroke='%235c626d' stroke-width='1.2' stroke-dasharray='2 4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.essay.lit .s { background-position: 2400px 100%, 0 100%; }
+.s.beyond { color: var(--pencil); }
+.s.active { background-color: rgba(195, 42, 29, .08); border-radius: 2px; }
+.inline-note { font-family: var(--hand); color: var(--red); font-size: 15px; margin-left: 4px; white-space: nowrap; }
+.inline-note.tick { color: var(--pencil); }
+@media (min-width: 820px) { .has-margin .inline-note { display: none; } }
+
+/* right margin: the examiner's marks, level with their sentence */
+.margin { position: relative; border-left: 1px solid var(--paper-edge); display: none; }
+@media (min-width: 820px) { .has-margin .margin { display: block; } }
+.note {
+  position: absolute; left: 12px; right: 8px; font-family: var(--hand); color: var(--red); font-size: 16px; line-height: 1.15;
+  background: none; border: 0; padding: 2px 4px; text-align: left; cursor: pointer; border-radius: 3px;
+  opacity: 0; transform: translateX(-4px); transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); transition-delay: var(--d, 0ms);
+}
+.note b { font-weight: 700; font-size: 19px; }
+.note small { display: block; font-size: 13.5px; }
+.note.tick { color: var(--pencil); }
+.essay-lit .note { opacity: 1; transform: none; }
+.note:hover, .note.active { background: rgba(195, 42, 29, .08); }
+
+/* script foot: the controls */
+.script-foot { display: flex; gap: 12px 22px; flex-wrap: wrap; align-items: center; padding: 14px clamp(16px, 3.5vw, 34px) 16px; border-top: 1.5px solid var(--ink); }
+.count { font-size: 14px; color: var(--pencil); flex: 1 1 210px; }
+.count.warn { color: var(--red); }
+fieldset.scheme { border: 0; margin: 0; padding: 0; display: flex; gap: 6px 16px; flex-wrap: wrap; align-items: center; font-size: 14px; }
+fieldset.scheme legend { float: left; margin-right: 6px; }
+.check { display: inline-flex; gap: 8px; align-items: center; cursor: pointer; min-height: 34px; }
+.check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.check .box2 { width: 18px; height: 18px; border: 1.5px solid var(--ink); position: relative; flex: none; background: var(--paper); }
+.check input:checked + .box2::after { content: "✓"; position: absolute; left: 1px; top: -9px; font-family: var(--hand); font-weight: 700; color: var(--red); font-size: 24px; line-height: 1; }
+.check input:focus-visible + .box2 { outline: 2px solid var(--red); outline-offset: 2px; }
+.check small { color: var(--pencil); font-family: var(--figures); font-size: 12px; }
+.btn-ink {
+  border: 0; cursor: pointer; background: var(--ink); color: var(--paper); font-weight: 700; font-stretch: 85%;
+  text-transform: uppercase; letter-spacing: .06em; font-size: 14px; padding: 12px 18px; border-radius: 3px; min-height: 44px;
+  transition: transform 140ms var(--ease-out), opacity 140ms var(--ease-out);
+}
+.btn-ink:hover:not(:disabled) { opacity: .9; }
+.btn-ink:active:not(:disabled) { transform: translateY(1px) scale(.98); }
+.btn-ink:disabled { opacity: .35; cursor: not-allowed; }
+.btn-line { border: 1.5px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; padding: 6px 12px; border-radius: 3px; font-size: 13px; font-weight: 600; min-height: 34px; }
+.btn-line:hover { background: rgba(30,34,48,.05); }
+.err { color: var(--red); font-family: var(--hand); font-size: 17px; padding: 0 clamp(16px, 3.5vw, 34px) 14px; }
+
+/* sticky note */
+.sticky {
+  background: var(--sticky); color: var(--sticky-ink); padding: 16px 18px 18px; font-family: var(--hand); font-size: 16px; line-height: 1.35;
+  box-shadow: 0 1px 0 var(--sticky-edge) inset, 0 12px 18px -12px rgba(40,34,0,.55); transform: rotate(1.6deg);
+  border-bottom-right-radius: 14px 6px;
+}
+.sticky h3 { font-family: var(--hand); font-weight: 700; font-size: 19px; margin-bottom: 8px; }
+.sticky ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.sticky li { padding-left: 16px; position: relative; }
+.sticky li::before { content: "–"; position: absolute; left: 0; }
+.sticky.in { animation: stick 420ms var(--ease-out) 500ms both; }
+@keyframes stick { from { opacity: 0; transform: rotate(5deg) translate(14px, -8px); } to { opacity: 1; transform: rotate(1.6deg); } }
+.sticky-slot { margin: 18px clamp(16px, 3.5vw, 34px) 0; max-width: 420px; }
+.side { display: none; }
+@media (min-width: 1180px) {
+  .script-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 236px; gap: 26px; align-items: start; }
+  .side { display: block; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); margin-top: 230px; }
+  .script-col { min-width: 0; }
+  .sticky-slot { display: none; }
+}
+
+/* clipped slip (attribution) */
+.slip-zone { padding: 0 clamp(16px, 3.5vw, 34px) 22px; }
+details.slip { position: relative; background: #fff; border: 1px solid var(--paper-edge); box-shadow: 0 6px 14px -10px rgba(20,24,20,.4); max-width: 520px; margin-top: 14px; transform: rotate(-.6deg); }
+details.slip summary { list-style: none; cursor: pointer; padding: 14px 16px 12px 46px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-weight: 600; font-size: 14px; }
+details.slip summary::-webkit-details-marker { display: none; }
+details.slip summary .hand { font-weight: 400; font-size: 16px; }
+details.slip summary .more { margin-left: auto; font-weight: 400; color: var(--pencil); font-size: 13px; }
+.clip { position: absolute; left: 14px; top: -14px; width: 20px; height: 46px; }
+.slip-body { padding: 0 16px 16px 46px; display: grid; gap: 12px; font-size: 14px; }
+.slip-body .warn { color: var(--red); font-family: var(--hand); font-size: 16px; line-height: 1.3; }
+.fam { display: grid; grid-template-columns: 6rem minmax(0, 1fr) 2.6rem; gap: 10px; align-items: center; }
+.fam .bar { height: 8px; border: 1px solid var(--ink); }
+.fam .bar i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, var(--ink) 0 1.5px, transparent 1.5px 4px); }
+.fam .p { font-family: var(--figures); text-align: right; font-size: 13px; }
+
+/* marks breakdown table */
+.breakdown { padding: 0 clamp(16px, 3.5vw, 34px) 18px; }
+.breakdown table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.breakdown th, .breakdown td { border-top: 1px solid var(--paper-edge); padding: 6px 8px; text-align: left; vertical-align: top; }
+.breakdown td.n { font-family: var(--figures); text-align: right; white-space: nowrap; }
+.breakdown th { color: var(--pencil); font-weight: 500; }
+.toolrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px clamp(16px, 3.5vw, 34px); border-bottom: 1px solid var(--paper-edge); font-size: 13.5px; color: var(--pencil); }
+.toolrow p { flex: 1 1 260px; max-width: 70ch; }
+
+/* ---------- resubmission ---------- */
+.resub { margin-top: 30px; }
+.resub-head { padding: 18px clamp(16px, 3.5vw, 34px) 14px; border-bottom: 1.5px solid var(--ink); display: grid; gap: 6px; }
+.resub-head h2 { font-stretch: 70%; font-weight: 900; text-transform: uppercase; font-size: 26px; letter-spacing: .01em; }
+.resub-head p { font-size: 14.5px; color: var(--pencil); max-width: 70ch; }
+.attacks { display: flex; gap: 6px 22px; flex-wrap: wrap; padding: 14px clamp(16px, 3.5vw, 34px); align-items: center; border-bottom: 1px solid var(--paper-edge); font-size: 14.5px; }
+.resub-out { display: grid; }
+.verdict-line { display: flex; gap: 8px 20px; flex-wrap: wrap; align-items: baseline; padding: 14px clamp(16px, 3.5vw, 34px) 4px; }
+.verdict-line .big { font-family: var(--hand); font-weight: 700; color: var(--red); font-size: 30px; line-height: 1; }
+.verdict-line .sm { font-size: 14px; color: var(--pencil); }
+.comment { font-family: var(--hand); color: var(--red); font-size: 18px; line-height: 1.35; padding: 4px clamp(16px, 3.5vw, 34px) 10px; max-width: 64ch; }
+.diff ins { text-decoration: none; font-family: var(--hand); color: var(--red); font-size: 17px; position: relative; padding-left: 2px; }
+.diff ins::before { content: ""; position: absolute; left: -4px; bottom: 4px; width: 7px; height: 7px; border-left: 1.6px solid var(--red); border-top: 1.6px solid var(--red); transform: rotate(45deg); }
+.diff del { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 2px; color: var(--pencil); }
+.skel { height: 10px; margin: 11px 0; background: var(--paper-edge); border-radius: 2px; animation: fade 1.3s ease-in-out infinite; }
+@keyframes fade { 50% { opacity: .4; } }
+
+/* ---------- examiner's report ---------- */
+.report { margin-top: 30px; padding: 26px clamp(18px, 4vw, 44px) 34px; display: grid; gap: 22px; }
+.report > header { border-bottom: 2px solid var(--ink); padding-bottom: 10px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.report h2 { font-stretch: 70%; font-weight: 900; text-transform: uppercase; font-size: clamp(28px, 4.5vw, 40px); line-height: 1; }
+.report h3 { font-stretch: 80%; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; font-size: 15px; margin-bottom: 8px; }
+.report ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.report li { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 8px; font-family: var(--script); font-size: 16.5px; line-height: 1.55; max-width: 74ch; }
+.report li > .fig { font-size: 13px; color: var(--pencil); padding-top: 4px; }
+.report li b { font-weight: 600; }
+.report .note-r { font-family: var(--hand); color: var(--red); font-size: 16px; margin-left: 6px; white-space: nowrap; }
+.struck { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 2.5px; }
+
+footer { margin-top: 28px; display: flex; gap: 10px 28px; flex-wrap: wrap; justify-content: space-between; font-size: 14px; color: var(--desk-muted); }
+footer p { max-width: 70ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div id="root"><p style="padding:24px;font-family:system-ui">Loading the Ghost Writer prototype…</p></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+/* =============================================================================
+   GHOST WRITER — "the marked script" prototype
+   Each component maps to a file in frontend/src/components/. Only mockApi is
+   fake: the real app keeps its existing api.js (same five calls, same shapes).
+   ============================================================================= */
+const { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } = React;
+
+const SAMPLES = {
+ "AI essay (Claude, a model family the detector never saw in training)": "Limiting car usage has several benefits for both individuals and society as a whole. One of the major advantages is improved air quality and environmental health. As passage 1 notes, vehicles are a leading source of air pollution in many cities. They emit a variety of harmful gases and particles that can cause respiratory problems like asthma. By driving less and using alternatives like public transportation, biking, or walking, cities would see lowered emissions and clearer air. This would significantly boost public health outcomes over time. \n\nA second advantage outlined in passage 2 is reduced traffic congestion. Traffic jams waste everyone's time and cause unnecessary stress. They also release more pollutants into the busy city air. If fewer private vehicles clogged up roads and more people switched to other modes, there would be less congestion for those who still need to drive. Commutes and goods delivery could be more efficient. People may also save money on gas by avoiding slow traffic. Public transportation could move more reliably too with less competition on the streets.\n\nPassage 3 discusses the economic and infrastructure benefits. Parking spaces and roads are extremely expensive for cities to build and maintain. With fewer cars needing accommodations, municipalities could allocate those funds elsewhere to improve transit, bike lanes, or public services. Individuals may save substantial costs in the long run without owning a private vehicle for every trip. Financial resources are better spent on more sustainable options. \n\nIn conclusion, limiting car usage through behavioral changes, urban design, and policy would lead to an array of ecological, social, and economic advantages according to the sources. Improved public health and reduced congestion are compelling outcomes. By raising awareness of these benefits, more citizens may be motivated to adopt multi-modal transportation habits for the betterment of communities overall. A shift away from complete car dependence can deliver positive results if implemented thoughtfully and progressively over time.",
+ "Human essay (a student)": "Dear Principal\n\nI've heard of the new cell phone policies, one where we get to use our phones during lunch and free time, or don't use our phones at all. I think policy 1 is better than policy 2, not just because I'm a student but because i think it's better. Policy 1 states: allow students to bring phones to school and use them during lunch periods and other free times, as long as the phones are turned off during class time. I think that sounds way better that not having phones at all. just think about it, what if something happens to a students mom and she cant take her son home, and if she tries to contact him, he wont be able to know because you chose policy 2. But if you chose policy 1, the student would call his mom back during lunch or free time and find out what happened. See, that makes policy 1 sound way better than policy 2. Now, what if their are some sneaky students and want to text in class? Well, tell the teachers to have a box and collect all of the student phones in the begging of class and return them back to the students at the end. It's that simple! This is just my opinion, but if you like it then thank you and i hope you choose policy 1.",
+ "Human essay the detector wrongly flags (careful, fluent writing)": "A driverless car is a scary concept. Some say that it is completely insane, but that is what they said when Neil Armstrong came up with the idea of walking on the moon, and now walking on the moon is no big deal. In my opinion, with a lot of hard work and problem solving, driverless cars could become the next big thing.\n\nThere are many things that have been done to make this idea become reality. For example, Google's modified Toyota Prius uses position-estimating sensors on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, and a GPS receiver. With modifications on these resources, they could potentually work. Of course, the driverless car will not be 100% driverless. The driver would need to be alert and ready to take control when needed. GM has developed ways to alert the driver. For example, they have made driver's seats that vibrate when the vehicle is in danger of backing into an object. Google and GM have taken great precautions in developing the driverless car.\n\nIn conclusion, driverless cars may seem scary at first, but I believe that with hard work and dedication, driverless cars will one day be no big deal."
+};
+const SAMPLE_META = [
+  { tag: 'Script A', note: 'AI · Claude, a model family never seen in training' },
+  { tag: 'Script B', note: 'Human · an ordinary student essay' },
+  { tag: 'Script C', note: 'Human · careful writing it wrongly flags' },
+];
+
+/* ---------- MOCK API (demo values; the third example's numbers are real, from images/demo_screenshot.png) ---------- */
+const THRESHOLDS = { strict: 7.80, standard: 4.67 };
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const words = (t) => t.trim().split(/\s+/).filter(Boolean);
+const AI_MARKERS = /\b(additionally|furthermore|moreover|overall|significant(ly)?|particularly|finally|conclusion|essay|ultimately|crucial|various|numerous|enhance|ensure|potential|benefits?)\b/gi;
+const HUMAN_MARKERS = /\b(dont|cant|wont|isnt|im|alot|gonna|kinda|really|very|stuff|lot|thing|nasa|paragraph)\b|\bi\b/g;
+function mulberry32(seed) { return () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+const sampleIndex = (text) => Object.values(SAMPLES).findIndex((t) => t.trim() === text.trim());
+function heuristicScore(text) {
+  const n = Math.max(1, words(text).length);
+  const ai = (text.match(AI_MARKERS) || []).length / n * 100, hu = (text.match(HUMAN_MARKERS) || []).length / n * 100;
+  return Math.max(-9.6, Math.min(9.8, 9.8 * Math.tanh((ai * 1.4 - hu * 0.55 - 0.4) / 2.2)));
+}
+const CANNED_SCORE = [9.62, -7.35, 9.1];
+const baseScore = (t) => (sampleIndex(t) >= 0 ? CANNED_SCORE[sampleIndex(t)] : heuristicScore(t));
+function splitSentences(text) {
+  const out = []; const re = /[^.!?\n]+(?:[.!?]+["')\]]*|\n|$)/g; let m;
+  while ((m = re.exec(text))) { const raw = m[0], lead = raw.length - raw.trimStart().length, body = raw.trim(); if (body) out.push({ start: m.index + lead, end: m.index + lead + body.length, text: body }); }
+  return out;
+}
+function injectTypos(text, rate) {
+  const rnd = mulberry32(42);
+  return text.replace(/[A-Za-z]{4,}/g, (w) => { if (rnd() > rate) return w; const i = 1 + Math.floor(rnd() * (w.length - 2)), op = rnd();
+    if (op < 0.4) return w.slice(0, i) + w[i + 1] + w[i] + w.slice(i + 2); if (op < 0.7) return w.slice(0, i) + w.slice(i + 1); return w.slice(0, i) + w[i] + w.slice(i); });
+}
+const SYN = { significant: 'considerable', benefits: 'advantages', however: 'but', many: 'numerous', people: 'individuals', help: 'assist', important: 'crucial', also: 'as well', think: 'believe', because: 'since', big: 'large', show: 'demonstrate', very: 'quite', make: 'create', reduce: 'lower', improve: 'enhance', cars: 'vehicles', car: 'vehicle', idea: 'notion', problem: 'issue', scary: 'frightening', example: 'instance', developed: 'created', ways: 'methods', ready: 'prepared', save: 'conserve', alert: 'attentive', driver: 'motorist' };
+function mockParaphrase(text, p) {
+  const rnd = mulberry32(7);
+  return text.replace(/[A-Za-z]+/g, (w) => { const r = SYN[w.toLowerCase()]; if (!r || rnd() > p) return w; return w[0] === w[0].toUpperCase() ? r[0].toUpperCase() + r.slice(1) : r; })
+             .replace(/In conclusion,/g, p > 0.5 ? 'To sum up,' : 'In conclusion,');
+}
+const mockApi = {
+  async getSamples() { await sleep(120); return SAMPLES; },
+  async score(text, strictness) {
+    await sleep(800);
+    if (words(text).length < 40) throw new Error('Enter at least 40 words.');
+    const score = baseScore(text), threshold = THRESHOLDS[strictness], tokens = Math.round(words(text).length * 1.31);
+    return { score, threshold, flagged: score >= threshold, tokens, tokens_read: Math.min(tokens, 512) };
+  },
+  async explain(text) {
+    await sleep(2400);
+    const score = baseScore(text), method = score > 9.4 ? 'integrated_gradients' : 'occlusion', rnd = mulberry32(hashStr(text));
+    let tok = 0;
+    const sentences = splitSentences(text).slice(0, 80).map((s) => {
+      tok += words(s.text).length * 1.31;
+      const ai = (s.text.match(AI_MARKERS) || []).length, hu = (s.text.match(HUMAN_MARKERS) || []).length;
+      const opener = /^(in conclusion|additionally|furthermore|overall|for example|in my opinion|finally|moreover)/i.test(s.text) ? 1 : 0;
+      let c = ai * 0.75 + opener * 0.9 + (words(s.text).length > 24 ? 0.25 : 0) - hu * 0.35 + (rnd() - 0.45) * 0.5;
+      if (method === 'integrated_gradients') c = c * 0.18 + 0.05;
+      return { ...s, contribution: tok > 512 ? null : +c.toFixed(3) };
+    });
+    return { method, truncated: splitSentences(text).length > 80, sentences };
+  },
+  async attribution(text) {
+    await sleep(1000);
+    const i = sampleIndex(text);
+    const f = i === 2 ? [['Mistral', .37], ['Llama 2', .18], ['GPT-3.5', .13]] : i === 0 ? [['Claude', .58], ['GPT-3.5', .14], ['PaLM', .09]] : [['GPT-3.5', .31], ['Mistral', .22], ['Cohere', .12]];
+    return { families: f.map(([family, probability]) => ({ family, probability })), heldout_accuracy: '0–28%' };
+  },
+  async rewrite(text, strictness, attack) {
+    const typos = attack.startsWith('typos');
+    await sleep(typos ? 900 : 3000);
+    const edited = typos ? injectTypos(text, attack === 'typos_5' ? 0.05 : 0.10) : mockParaphrase(text, attack === 'paraphrase_heavy' ? 0.9 : 0.4);
+    const b = baseScore(text);
+    const shift = { typos_5: b > 9.3 ? -0.2 : b > 0 ? -5.8 : -0.8, typos_10: b > 9.3 ? -0.5 : b > 0 ? -7.9 : -1.4,
+                    paraphrase_light: b > 9.3 ? -0.3 : b > 0 ? -1.1 : 1.6, paraphrase_heavy: b > 9.3 ? -1.2 : b > 0 ? -2.6 : 3.3 }[attack];
+    const score = Math.max(-9.6, Math.min(9.8, b + shift)), threshold = THRESHOLDS[strictness], tokens = Math.round(words(edited).length * 1.31);
+    return { edited, words_changed: wordsChanged(text, edited), score, threshold, flagged: score >= threshold, tokens, tokens_read: Math.min(tokens, 512) };
+  },
+};
+const api = mockApi;   // ← real app: import * as api from './api'
+
+/* ---------- word diff (unchanged from the current frontend/src/lib/diff.js) ---------- */
+function diffWords(a, b) {
+  const A = a.split(/\s+/).filter(Boolean), B = b.split(/\s+/).filter(Boolean);
+  const n = A.length, m = B.length, L = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const ops = []; let i = 0, j = 0;
+  while (i < n && j < m) { if (A[i] === B[j]) { ops.push(['=', B[j]]); i++; j++; } else if (L[i + 1][j] >= L[i][j + 1]) ops.push(['-', A[i++]]); else ops.push(['+', B[j++]]); }
+  while (i < n) ops.push(['-', A[i++]]); while (j < m) ops.push(['+', B[j++]]);
+  return ops;
+}
+function wordsChanged(a, b) { return diffWords(a, b).filter((o) => o[0] === '+').length / Math.max(1, words(a).length); }
+function diffByParagraph(a, b) { const pa = a.split(/\n\s*\n/), pb = b.split(/\n\s*\n/); return pa.length === pb.length ? pa.map((p, k) => diffWords(p, pb[k])) : [diffWords(a, b)]; }
+
+/* ---------- helpers ---------- */
+const fmt = (x) => (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(1);
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LETTER = ['A', 'B', 'C'];
+
+/* =============================================================================
+   <Stamp/> — the verdict, inked. An SVG filter roughens the edges and knocks
+   speckles out of the ink so it reads as rubber, not a CSS badge.
+   ============================================================================= */
+function Stamp({ flagged }) {
+  const color = flagged ? 'var(--red)' : 'var(--stamp-blue)';
+  return (
+    <svg className="stamp land" viewBox="0 0 214 86" role="img" aria-label={flagged ? 'Stamped: flagged, AI-like style, not proof' : 'Stamped: not flagged, student-like style, not proof'}>
+      <defs>
+        <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" result="rough" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="1" seed="9" result="s" />
+          <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -9 5.6" result="holes" />
+          <feComposite in="rough" in2="holes" operator="in" />
+        </filter>
+      </defs>
+      <g filter="url(#ink)" style={{ color }} opacity=".92">
+        <rect x="4" y="4" width="206" height="78" rx="7" fill="none" stroke="currentColor" strokeWidth="3.2" />
+        <rect x="10" y="10" width="194" height="66" rx="4" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        <text x="107" y="47" textAnchor="middle" fill="currentColor" fontSize={flagged ? 31 : 25} fontWeight="900" style={{ fontStretch: '62%', letterSpacing: '.04em' }}>{flagged ? 'FLAGGED' : 'NOT FLAGGED'}</text>
+        <text x="107" y="66" textAnchor="middle" fill="currentColor" fontSize="9" fontWeight="700" style={{ letterSpacing: '.1em' }}>{flagged ? 'AI-LIKE STYLE · NOT PROOF' : 'STUDENT-LIKE · NOT PROOF'}</text>
+      </g>
+    </svg>
+  );
+}
+
+/* <Grade/> — the score circled in red, the way a mark is written on a script */
+function Grade({ v, strictness }) {
+  return (
+    <div className={`grade${v ? ' draw' : ' empty'}`}>
+      <svg viewBox="0 0 150 112" aria-hidden="true"><path pathLength="1" strokeDasharray="1" d="M84 9 C128 7,148 33,145 58 C141 90,101 106,68 104 C31 102,7 81,9 55 C11 28,42 8,90 12" /></svg>
+      {v ? (
+        <div>
+          <div className="num">{fmt(v.score)}</div>
+          <div className="of">flag line {fmt(v.threshold)}<br />{strictness === 'strict' ? 'strict' : 'standard'} scheme</div>
+        </div>
+      ) : <div className="of">score<br />goes here</div>}
+    </div>
+  );
+}
+
+/* =============================================================================
+   <Ruler/> — the detector's scale as a school ruler: logit −10 … +10, ticks
+   every half point, the flag line ruled in red, the score marked with an
+   arrow. With `before`, a dashed pencil arrow shows the old score.
+   ============================================================================= */
+function Ruler({ score, threshold, before, label = 'Score' }) {
+  const L = 14, R = 406;
+  const X = (v) => L + ((clamp(v, -10, 10) + 10) / 20) * (R - L);
+  const [shown, setShown] = useState(before ?? 0);
+  useEffect(() => { const r = requestAnimationFrame(() => setShown(score)); return () => cancelAnimationFrame(r); }, [score]);
+  const tx = X(threshold);
+  const ticks = []; for (let v = -10; v <= 10.001; v += 0.5) ticks.push(Math.round(v * 2) / 2);
+  const lab = (x, half) => clamp(x, L + half, R - half) - x;
+  const showBefore = before != null && Math.abs(X(before) - X(score)) > 44;
+  const desc = `${label} ${fmt(score)} on a ruler from −10 (student-like) to +10 (AI-like); flag line at ${fmt(threshold)}; ${score >= threshold ? 'above the line: flagged' : 'below the line: not flagged'}.`;
+  return (
+    <svg className="ruler" viewBox="0 0 420 116" role="img" aria-label={desc}>
+      <rect className="body" x="2" y="38" width="416" height="46" rx="3" />
+      <rect className="zone-ai" x={tx} y="38.5" width={417.5 - tx} height="10" />
+      {ticks.map((v) => {
+        const major = Number.isInteger(v) && v % 5 === 0, mid = Number.isInteger(v);
+        return <line key={v} className="tick" x1={X(v)} x2={X(v)} y1="38" y2={38 + (major ? 15 : mid ? 10 : 6)} />;
+      })}
+      {[-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10].map((v) => (
+        <text key={v} className="num" x={X(v)} y="66" textAnchor="middle">{v > 0 ? `+${v}` : v < 0 ? `−${-v}` : '0'}</text>
+      ))}
+      <text className="brand" x="12" y="79">◂ STUDENT-LIKE</text>
+      <text className="brand" x="408" y="79" textAnchor="end">AI-LIKE ▸</text>
+      <text className="brand" x="210" y="79" textAnchor="middle">LOGIT SCALE</text>
+      <path className="flag" d={`M${tx + 1.2} 32 L${tx - 0.6} 90`} />
+      <text className="flag-txt" x={clamp(tx, 52, 368)} y="108" textAnchor="middle">flag line {fmt(threshold)}</text>
+      {before != null && (
+        <g className="mover" style={{ transform: `translateX(${X(before)}px)` }}>
+          <path className="arrow before" d="M-5 6 C-3 16,-1 24,0 35 M-4 28 L0 35 L4 28" />
+          {showBefore && <text className="arrow-txt before" x={lab(X(before), 30)} y="4" textAnchor="middle">was {fmt(before)}</text>}
+        </g>
+      )}
+      <g className="mover" style={{ transform: `translateX(${X(shown)}px)` }}>
+        <path className="arrow" d="M-6 14 C-3 22,-1 28,0 35 M-4.5 28.5 L0 35 L4.5 28.5" />
+        <text className="arrow-txt" x={lab(X(shown), 16)} y="11" textAnchor="middle">{fmt(score)}</text>
+      </g>
+    </svg>
+  );
+}
+
+/* =============================================================================
+   Marking: which sentences get a red line, and what goes in the margin.
+   share = contribution ÷ strongest positive contribution (same rule as demo/app.py:
+   under 10% gets nothing).  ≥ 60%: double line + margin mark;  30–60%: single line +
+   margin mark;  10–30%: dotted pencil line;  clearly negative: pencil tick ✓.
+   ============================================================================= */
+function markOf(c, maxPos, maxNeg) {
+  if (c == null) return { cls: 'beyond', note: null };
+  if (c > 0) {
+    const share = c / maxPos;
+    if (share >= 0.6) return { cls: 'u2', note: 'strong' };
+    if (share >= 0.3) return { cls: 'u1', note: 'mid' };
+    if (share >= 0.1) return { cls: 'u0', note: null };
+    return { cls: '', note: null };
+  }
+  if (maxNeg > 0 && -c / maxNeg >= 0.5 && -c >= 0.1 * maxPos) return { cls: '', note: 'tick' };
+  return { cls: '', note: null };
+}
+const sign2 = (c) => (c >= 0 ? '+' : '−') + Math.abs(c).toFixed(Math.abs(c) < 1 ? 2 : 1);
+
+function MarkedEssay({ text, data, lit, active, setActive, sentenceRefs }) {
+  const pos = data.sentences.map((s) => Math.max(0, s.contribution ?? 0));
+  const maxPos = Math.max(1e-6, ...pos);
+  const maxNeg = Math.max(0, ...data.sentences.map((s) => -(s.contribution ?? 0)));
+  const strongest = pos.indexOf(Math.max(...pos));
+  const pieces = []; let last = 0;
+  data.sentences.forEach((s, i) => {
+    pieces.push(text.slice(last, s.start));
+    const m = markOf(s.contribution, maxPos, maxNeg);
+    pieces.push(
+      <span key={i} ref={(el) => (sentenceRefs.current[i] = el)}
+            className={`s ${m.cls}${active === i ? ' active' : ''}`} style={{ '--d': `${Math.min(i * 70, 1600)}ms` }}
+            title={s.contribution == null ? 'Beyond the 512 tokens the detector reads' : `Contribution ${sign2(s.contribution)}`}
+            onMouseEnter={() => setActive(i)} onMouseLeave={() => setActive(null)}>
+        {text.slice(s.start, s.end)}
+      </span>
+    );
+    if (m.note) pieces.push(<span key={`n${i}`} className={`inline-note${m.note === 'tick' ? ' tick' : ''}`} aria-hidden="true">{m.note === 'tick' ? `✓ ${sign2(s.contribution)}` : sign2(s.contribution)}</span>);
+    last = s.end;
+  });
+  pieces.push(text.slice(last));
+  return <p className={`essay${lit ? ' lit' : ''}`}>{pieces}</p>;
+}
+
+/* <Margin/> — places each mark level with the first line of its sentence, nudging marks down so they never overlap */
+function Margin({ data, sentenceRefs, containerRef, active, setActive, onPick }) {
+  const [tops, setTops] = useState({});
+  const pos = data.sentences.map((s) => Math.max(0, s.contribution ?? 0));
+  const maxPos = Math.max(1e-6, ...pos);
+  const maxNeg = Math.max(0, ...data.sentences.map((s) => -(s.contribution ?? 0)));
+  const strongest = pos.indexOf(Math.max(...pos));
+  const marks = data.sentences.map((s, i) => ({ i, s, m: markOf(s.contribution, maxPos, maxNeg) })).filter((x) => x.m.note);
+
+  const place = useCallback(() => {
+    const box = containerRef.current; if (!box) return;
+    const top0 = box.getBoundingClientRect().top; const out = {}; let floor = -Infinity;
+    marks.forEach(({ i }) => {
+      const el = sentenceRefs.current[i]; if (!el) return;
+      const r = el.getClientRects()[0]; if (!r) return;
+      const want = r.top - top0 - 4; const h = i === strongest ? 46 : 26;
+      const y = Math.max(want, floor); out[i] = y; floor = y + h + 4;
+    });
+    setTops(out);
+  }, [data]);
+  useLayoutEffect(() => {
+    place();
+    const ro = new ResizeObserver(place); if (containerRef.current) ro.observe(containerRef.current);
+    if (document.fonts) document.fonts.ready.then(place);
+    return () => ro.disconnect();
+  }, [place]);
+
+  return (
+    <div className="margin" aria-label="Examiner's marks">
+      {marks.map(({ i, s, m }, k) => (
+        <button key={i} className={`note${m.note === 'tick' ? ' tick' : ''}${active === i ? ' active' : ''}`}
+                style={{ top: tops[i] ?? 0, '--d': `${300 + k * 90}ms` }}
+                onMouseEnter={() => setActive(i)} onMouseLeave={() => setActive(null)} onFocus={() => setActive(i)} onBlur={() => setActive(null)} onClick={() => onPick(i)}
+                aria-label={`Sentence ${i + 1}: contribution ${sign2(s.contribution)}${m.note === 'tick' ? ', toward student-like' : ', toward AI-like'}`}>
+          {m.note === 'tick' ? <>✓ <b>{sign2(s.contribution)}</b></> : <b>{sign2(s.contribution)}</b>}
+          {i === strongest && m.note !== 'tick' && <small>{data.method === 'occlusion' ? 'biggest push' : 'style, not one line'}</small>}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* =============================================================================
+   <StickyNote/> — "Before you trust this": doubts that apply to THIS essay
+   ============================================================================= */
+function doubtsFor(v, text, highlights, strictness) {
+  const out = []; const margin = v.score - v.threshold; const n = words(text).length;
+  if (v.flagged && margin < 2) out.push(`Borderline: only ${fmt(margin)} over the flag line. Small edits can push it under; try the typos below.`);
+  if (!v.flagged && margin > -2) out.push(`Close call: ${Math.abs(margin).toFixed(1)} under the flag line.`);
+  if (v.flagged && n > 420) out.push('Long and polished. The human essays it wrongly flags are like this (median 489 words, almost no misspellings).');
+  if (highlights && highlights.method === 'integrated_gradients') out.push('No single sentence decides it. The style runs all the way through.');
+  if (v.tokens > v.tokens_read) out.push(`Only the first ${v.tokens_read} of ${v.tokens} tokens were read.`);
+  if (v.flagged) out.push(`On topics it never saw, ${strictness === 'strict' ? '2.3%' : '3.9%'} of human essays get flagged, not ${strictness === 'strict' ? '0.5%' : '1%'}.`);
+  if (!v.flagged) out.push('Not flagged is not proof either. It only means the style is closer to the student essays it trained on.');
+  out.push('A flag is a reason to ask questions, never evidence on its own.');
+  return out.slice(0, 4);
+}
+function StickyNote({ items }) {
+  return (
+    <aside className="sticky in" aria-label="Before you trust this">
+      <h3>Before you trust this…</h3>
+      <ul>{items.map((t, i) => <li key={i}>{t}</li>)}</ul>
+    </aside>
+  );
+}
+
+/* <Slip/> — attribution, paper-clipped to the script and folded shut */
+function Slip({ data }) {
+  return (
+    <details className="slip">
+      <summary>
+        <svg className="clip" viewBox="0 0 20 46" aria-hidden="true"><path d="M6 40 V8 a4 4 0 0 1 8 0 V36 a6 6 0 0 1 -12 0 V12" fill="none" stroke="#7d8790" strokeWidth="1.8" strokeLinecap="round" /></svg>
+        Which training essays does it resemble?
+        <span className="hand">not who wrote it</span>
+        <span className="more">open</span>
+      </summary>
+      <div className="slip-body">
+        <p className="warn">This cannot name the model. When a whole source was hidden from training, it picked the right family only {data.heldout_accuracy} of the time, at or below chance. If the flag is a false alarm, ignore this slip.</p>
+        {data.families.map((f) => (
+          <div className="fam" key={f.family}>
+            <span>{f.family}</span>
+            <span className="bar"><i style={{ width: `${f.probability * 100}%` }} /></span>
+            <span className="p">{Math.round(f.probability * 100)}%</span>
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
+/* =============================================================================
+   <Resubmission/> — try to fool it. The rewrite comes back with proofreading
+   marks: struck words, carets for insertions, and the examiner's comment.
+   ============================================================================= */
+const ATTACKS = [
+  { key: 'typos_5', label: 'Typos in 5% of words' },
+  { key: 'typos_10', label: 'Typos in 10%' },
+  { key: 'paraphrase_light', label: 'Paraphrase, light (T5)' },
+  { key: 'paraphrase_heavy', label: 'Paraphrase, heavy (T5)' },
+];
+function Resubmission({ text, strictness, before }) {
+  const [attack, setAttack] = useState('typos_5');
+  const [out, setOut] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [marks, setMarks] = useState(true);
+  useEffect(() => { setOut(null); setErr(''); }, [text, strictness]);
+  async function run() {
+    setBusy(true); setErr('');
+    try { setOut(await api.rewrite(text, strictness, attack)); } catch (e) { setErr(e.message); }
+    setBusy(false);
+  }
+  const diff = useMemo(() => (out ? diffByParagraph(text, out.edited) : null), [out, text]);
+  let comment = '';
+  if (out) {
+    if (before.flagged && !out.flagged) comment = 'Got past it. Now read the rewrite: does it still make sense?';
+    else if (before.flagged && out.flagged) comment = 'Still flagged. In testing, edits rarely moved a confident verdict unless they rewrote about half the words.';
+    else if (!before.flagged && out.flagged) comment = 'Now flagged! Running honest work through a paraphraser can make it look machine-written.';
+    else comment = out.score > before.score ? 'Still not flagged, but the rewrite moved it toward AI-like.' : 'Still not flagged.';
+  }
+  return (
+    <section className="paper resub" aria-labelledby="resub-h">
+      <div className="resub-head">
+        <p className="caps" style={{ color: 'var(--pencil)' }}>Resubmission</p>
+        <h2 id="resub-h">Try to fool it</h2>
+        <p>Rewrite the script automatically, then have it marked again. Works on human essays too.</p>
+      </div>
+      <div className="attacks">
+        <fieldset className="scheme">
+          <legend className="sr-only">Kind of rewrite</legend>
+          {ATTACKS.map((a) => (
+            <label key={a.key} className="check">
+              <input type="radio" name="attack" value={a.key} checked={attack === a.key} onChange={() => setAttack(a.key)} />
+              <span className="box2" aria-hidden="true" />{a.label}
+            </label>
+          ))}
+        </fieldset>
+        <button className="btn-ink" style={{ marginLeft: 'auto' }} onClick={run} disabled={busy}>{busy ? 'Rewriting…' : 'Rewrite and re-mark'}</button>
+      </div>
+      {err && <p className="err" role="alert" style={{ paddingTop: 12 }}>{err}</p>}
+      {busy && <div style={{ padding: '10px clamp(16px,3.5vw,34px) 18px' }} aria-busy="true"><p className="progress">{attack.startsWith('para') ? 'Paraphrasing with T5, about 15 s on a CPU…' : 'Adding typos…'}</p><div className="skel" /><div className="skel" style={{ width: '72%' }} /></div>}
+      {out && !busy && (
+        <div className="resub-out" aria-live="polite">
+          <div className="ruler-zone" style={{ borderBottom: 0 }}>
+            <Ruler score={out.score} threshold={out.threshold} before={before.score} label="Score after rewrite" />
+          </div>
+          <div className="verdict-line">
+            <span className="big">{fmt(before.score)} → {fmt(out.score)}</span>
+            <span className="sm">{Math.round(out.words_changed * 100)}% of words changed · {out.flagged ? 'flagged' : 'not flagged'}</span>
+          </div>
+          <p className="comment">{comment}</p>
+          <div className="toolrow" style={{ borderTop: '1px solid var(--paper-edge)' }}>
+            <p>{marks ? 'Struck words were removed; words after a caret were put in.' : 'The rewritten text as the detector read it.'}</p>
+            <button className="btn-line" onClick={() => setMarks((x) => !x)} aria-pressed={marks}>{marks ? 'Clean copy' : 'Show marks'}</button>
+          </div>
+          <div className="lines" tabIndex={0} aria-label="Rewritten essay">
+            <p className="essay diff">
+              {marks ? diff.map((ops, k) => (
+                <React.Fragment key={k}>
+                  {k > 0 && '\n\n'}
+                  {ops.map(([op, w], i) => op === '=' ? <span key={i}>{w}</span> : op === '+' ? <ins key={i}>{w}</ins> : <del key={i}>{w}</del>).reduce((acc, el, i) => (i ? [...acc, ' ', el] : [el]), [])}
+                </React.Fragment>
+              )) : out.edited}
+            </p>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* =============================================================================
+   <App/>
+   ============================================================================= */
+const MIN_WORDS = 40;
+function App() {
+  const [samples, setSamples] = useState(SAMPLES);
+  const [pick, setPick] = useState(2);
+  const [text, setText] = useState(Object.values(SAMPLES)[2] || '');
+  const [strictness, setStrictness] = useState('strict');
+  const [mode, setMode] = useState('edit');
+  const [result, setResult] = useState(null);
+  const [phase, setPhase] = useState('idle');       // idle | scoring | tracing | done
+  const [elapsed, setElapsed] = useState(0);
+  const [took, setTook] = useState(null);
+  const [err, setErr] = useState('');
+  const [active, setActive] = useState(null);
+  const [lit, setLit] = useState(false);
+  const [asTable, setAsTable] = useState(false);
+  const runId = useRef(0);
+  const sentenceRefs = useRef([]);
+  const linesRef = useRef(null);
+
+  useEffect(() => { api.getSamples().then(setSamples).catch(() => setErr('Cannot reach the API. Start it with: uvicorn api.main:app --port 8000')); }, []);
+  useEffect(() => {
+    if (phase !== 'scoring' && phase !== 'tracing') return;
+    const t0 = performance.now(); const id = setInterval(() => setElapsed(performance.now() - t0), 100);
+    return () => clearInterval(id);
+  }, [phase]);
+
+  async function analyse(t = text, s = strictness) {
+    const run = ++runId.current; const T0 = performance.now();
+    setErr(''); setResult(null); setLit(false); setActive(null); setMode('read'); setPhase('scoring'); setTook(null); setAsTable(false);
+    try {
+      const verdict = await api.score(t, s); if (run !== runId.current) return;
+      setResult({ verdict, highlights: null, attribution: null });
+      if (!verdict.flagged) { setPhase('done'); setTook(performance.now() - T0); return; }
+      setPhase('tracing');
+      const [highlights, attribution] = await Promise.all([api.explain(t, s), api.attribution(t, s)]);
+      if (run !== runId.current) return;
+      setResult({ verdict, highlights, attribution }); setPhase('done'); setTook(performance.now() - T0);
+      requestAnimationFrame(() => requestAnimationFrame(() => setLit(true)));
+    } catch (e) { if (run !== runId.current) return; setErr(e.message); setPhase('idle'); setMode('edit'); }
+  }
+  useEffect(() => { analyse(); }, []);
+
+  function load(i) {
+    runId.current++;
+    const t = i >= 0 ? Object.values(samples)[i] : '';
+    setPick(i); setText(t); setResult(null); setErr(''); setMode('edit'); setPhase('idle');
+    if (i >= 0) analyse(t, strictness);
+  }
+  function edit() { runId.current++; setResult(null); setMode('edit'); setPhase('idle'); }
+  function changeStrictness(s) { setStrictness(s); if (result || phase !== 'idle') analyse(text, s); }
+  function jump(i) { const el = sentenceRefs.current[i]; if (el) el.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' }); setActive(i); }
+
+  const n = words(text).length, ready = n >= MIN_WORDS, working = phase === 'scoring' || phase === 'tracing';
+  const v = result && result.verdict, h = result && result.highlights;
+  const names = Object.keys(samples);
+
+  return (
+    <div className="desk">
+      <div className="desk-top">
+        <span className="proto">Prototype: demo scores, not the model</span>
+        <nav aria-label="Project links">
+          <a href="#report">Examiner’s report</a>
+          <a href="https://github.com/jaiveerminhas06/Ghost-Writer/blob/main/MODEL_CARD.md">Model card</a>
+          <a href="https://github.com/jaiveerminhas06/Ghost-Writer">GitHub</a>
+        </nav>
+      </div>
+
+      {/* ---------- cover sheet ---------- */}
+      <header className="paper cover">
+        <div className="cover-band"><span className="caps">Answer script · cover sheet</span><span className="caps">CSE472 · Deep Learning for NLP</span></div>
+        <div className="title-row">
+          <h1>Ghost Writer</h1>
+          <p className="aside">
+            <svg viewBox="0 0 44 30" aria-hidden="true"><path d="M42 6 C30 2,14 6,4 22 M4 22 L5 12 M4 22 L13 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+            but who wrote it?
+          </p>
+        </div>
+        <div className="boxes">
+          <div className="box"><span className="caps">Candidate</span><span className="val">unknown: that’s the question</span></div>
+          <div className="box"><span className="caps">Examiner</span><span className="val typed">DistilRoBERTa, fine-tuned on 28,006 essays</span></div>
+          <div className="box"><span className="caps">Marking scheme</span><span className="val typed">Flag line set on held-out human essays</span></div>
+        </div>
+        <p className="instr"><b>Instructions.</b> Hand in an essay of 40 words or more. The examiner marks it: a stamp for the verdict, red lines under the sentences that pushed the score toward AI, and a note of its own doubts. <b>Do not use it to judge a real student.</b></p>
+        <div className="tw">
+          <table className="marks-table">
+            <caption className="caps" style={{ color: 'var(--pencil)' }}>Marks awarded to the examiner, on essays it never saw</caption>
+            <tbody>
+              <tr><th scope="row">Telling AI from student on two essay topics held out of training (on-topic essays)</th><td className="mark">0.9998<small>AUC</small></td></tr>
+              <tr><th scope="row">Catching essays from AI model families it never saw (Claude, Falcon-180B)</th><td className="mark">99.2%<small>caught</small></td></tr>
+              <tr><th scope="row">Human essays on those new topics wrongly flagged (target was 0.5%)</th><td className="mark">2.3%<small>← the honest one</small></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </header>
+
+      <div className="script-wrap">
+      <div className="script-col">
+      {/* ---------- script tabs ---------- */}
+      <div className="tabs-label"><h2>Choose a script to mark</h2><p>or hand in your own</p></div>
+      <div className="tabs" role="group" aria-label="Load an essay">
+        {names.map((name, i) => (
+          <button key={name} className="tab" aria-pressed={pick === i} onClick={() => load(i)}>
+            <span className="t">{SAMPLE_META[i]?.tag || `Script ${LETTER[i]}`}</span><span className="d">{SAMPLE_META[i]?.note || name}</span>
+          </button>
+        ))}
+        <button className="tab" aria-pressed={pick === -1} onClick={() => load(-1)}>
+          <span className="t">Blank sheet</span><span className="d">Paste your own essay</span>
+        </button>
+      </div>
+
+      {/* ---------- the answer script ---------- */}
+        <article className="paper script" aria-label="The essay being marked">
+          <div className="script-head">
+            <div className="meta">
+              <div className="row">
+                <span><span className="caps">Script</span> <b>{pick >= 0 ? LETTER[pick] : 'Blank'}</b></span>
+                <span><span className="caps">Words</span> <span className="fig">{n}</span></span>
+                {v && <span><span className="caps">Tokens read</span> <span className="fig">{v.tokens_read}/{v.tokens}</span></span>}
+              </div>
+              <p className="progress" aria-live="polite">
+                {phase === 'scoring' && <span className="on">Marking… scoring {(elapsed / 1000).toFixed(1)} s</span>}
+                {phase === 'tracing' && <>Scored ✓ · <span className="on">finding which sentences moved it… {(elapsed / 1000).toFixed(1)} s</span> <span style={{ fontSize: 14 }}>(up to a minute on CPU)</span></>}
+                {phase === 'done' && took != null && <>Marked in {(took / 1000).toFixed(1)} s{v && !v.flagged ? ' · no red lines: highlights are only drawn on flagged essays' : ''}</>}
+                {phase === 'idle' && 'Not marked yet.'}
+              </p>
+              {mode === 'read' && <div><button className="btn-line" onClick={edit}>Edit the essay</button></div>}
+            </div>
+            <div className="verdict-zone" aria-live="polite">
+              {v ? <Stamp key={`stamp-${v.score}-${v.threshold}`} flagged={v.flagged} /> : <div className="stamp-empty">stamp</div>}
+              <Grade key={v ? `grade-${v.score}-${v.threshold}` : 'grade-empty'} v={v} strictness={strictness} />
+            </div>
+          </div>
+
+          {v && (
+            <div className="ruler-zone">
+              <Ruler score={v.score} threshold={v.threshold} />
+              <p className="cap">Every essay gets one score. Past the red line it is flagged: the line sits where only {strictness === 'strict' ? '0.5%' : '1%'} of held-out human essays cross it.</p>
+            </div>
+          )}
+
+          {v && <div className="sticky-slot"><StickyNote key={`${v.score}-${v.threshold}-${!!h}`} items={doubtsFor(v, text, h, strictness)} /></div>}  {/* phones/tablets: inside the paper */}
+
+          {h && (
+            <div className="toolrow">
+              <p>{h.method === 'occlusion'
+                ? 'Red lines: the score drops most when these sentences are removed. Double line = biggest push. Numbers in the margin are the drop.'
+                : 'Removing any one sentence barely moves this score, so lines come from integrated gradients: the style runs through the whole essay.'}</p>
+              <button className="btn-line" onClick={() => setAsTable((x) => !x)} aria-pressed={asTable}>{asTable ? 'Back to the script' : 'Marks as a table'}</button>
+            </div>
+          )}
+
+          {h && asTable ? (
+            <div className="breakdown tw">
+              <table>
+                <thead><tr><th>#</th><th>Sentence</th><th style={{ textAlign: 'right' }}>Contribution</th></tr></thead>
+                <tbody>{h.sentences.map((s, i) => <tr key={i}><td className="n">{i + 1}</td><td>{s.text}</td><td className="n">{s.contribution == null ? 'not read' : sign2(s.contribution)}</td></tr>)}</tbody>
+              </table>
+            </div>
+          ) : (
+            <div className={`page${h ? ' has-margin' : ''}${lit ? ' essay-lit' : ''}`} ref={linesRef}>
+              <div className="lines">
+                {mode === 'edit' ? (
+                  <>
+                    <label htmlFor="essay" className="sr-only">Essay text</label>
+                    <textarea id="essay" className="essay-input" value={text} spellCheck="false" placeholder="Write or paste the essay here. English, 40 words or more."
+                              onChange={(e) => { setText(e.target.value); if (pick >= 0) setPick(-1); }} />
+                  </>
+                ) : h ? (
+                  <MarkedEssay text={text} data={h} lit={lit} active={active} setActive={setActive} sentenceRefs={sentenceRefs} />
+                ) : (
+                  <p className="essay">{text}</p>
+                )}
+              </div>
+              {h && <Margin data={h} sentenceRefs={sentenceRefs} containerRef={linesRef} active={active} setActive={setActive} onPick={jump} />}
+            </div>
+          )}
+
+          {result && result.attribution && <div className="slip-zone"><Slip data={result.attribution} /></div>}
+
+          {err && <p className="err" role="alert">{err}</p>}
+          <div className="script-foot">
+            <p className={`count${!ready && text ? ' warn' : ''}`}>{n} words{!ready ? ` · ${MIN_WORDS} needed` : ''} · never stored or logged</p>
+            <fieldset className="scheme">
+              <legend>Scheme:</legend>
+              <label className="check"><input type="radio" name="scheme" checked={strictness === 'strict'} onChange={() => changeStrictness('strict')} /><span className="box2" aria-hidden="true" />Strict <small>0.5%</small></label>
+              <label className="check"><input type="radio" name="scheme" checked={strictness === 'standard'} onChange={() => changeStrictness('standard')} /><span className="box2" aria-hidden="true" />Standard <small>1%</small></label>
+            </fieldset>
+            <button className="btn-ink" disabled={!ready || working} onClick={() => analyse()}>{working ? 'Marking…' : 'Mark this script'}</button>
+          </div>
+        </article>
+
+      {v && phase === 'done' && <Resubmission text={text} strictness={strictness} before={v} />}
+      </div>
+        {/* wide screens: the same note, stuck to the desk beside the script */}
+        <div className="side">{v && <StickyNote key={`${v.score}-${v.threshold}-${!!h}`} items={doubtsFor(v, text, h, strictness)} />}</div>
+      </div>
+
+      {/* ---------- examiner's report ---------- */}
+      <section className="paper report" id="report" aria-labelledby="report-h">
+        <header><h2 id="report-h">Examiner’s report</h2><span className="caps" style={{ color: 'var(--pencil)' }}>How the mark is given, and where it fails</span></header>
+        <div>
+          <h3>1 · How a script is marked</h3>
+          <ol>
+            <li><span className="fig">1.1</span><span><b>Read.</b> The first 512 tokens. Anything longer is cut, and the script says so.</span></li>
+            <li><span className="fig">1.2</span><span><b>Score.</b> DistilRoBERTa, fine-tuned on 28,006 DAIGT-V2 essays, gives one number. Higher is more AI-like.</span></li>
+            <li><span className="fig">1.3</span><span><b>Flag.</b> Compare with a line set on validation human essays, so only 0.5% (strict) or 1% (standard) of them cross it.</span></li>
+            <li><span className="fig">1.4</span><span><b>Explain.</b> Remove each sentence and re-score (occlusion). If nothing moves, use integrated gradients.</span></li>
+          </ol>
+        </div>
+        <div>
+          <h3>2 · What looked good and wasn’t</h3>
+          <ol>
+            <li><span className="fig">2.1</span><span>“Which model wrote it” scored <b>0.976</b> macro-F1 on a random split, then picked the right family only <b>0–28%</b> of the time for a source it had never seen.<span className="note-r">at or below chance</span></span></li>
+            <li><span className="fig">2.2</span><span><b>50%</b> of AI essays were off-topic for their prompt label, so topic was a shortcut. Every model is also scored on on-topic essays only.</span></li>
+            <li><span className="fig">2.3</span><span>GPT-2 perplexity alone caught only <b>18%</b> of essays from unseen AI models. Claude and GPT-4 surprise it almost as much as students do.</span></li>
+          </ol>
+        </div>
+        <div>
+          <h3>3 · The first attempt</h3>
+          <ol>
+            <li><span className="fig">3.1</span><span>Version 1 reported <b className="struck">100% accuracy</b><span className="note-r">not real</span>: 282 essays, every AI essay from one generated batch, a 57-essay test set. TF-IDF learned that batch’s style. It is kept in <span className="fig" style={{ fontSize: 14 }}>Archive/</span> as the “before”.</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <footer>
+        <p>CSE472 course project, ISEP Paris. It separates 2023-era AI essays from US school essays and has not been tested on other writing. Do not use it to judge a real student.</p>
+        <p><a href="https://github.com/jaiveerminhas06/Ghost-Writer">Source, notebooks and model card</a></p>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
