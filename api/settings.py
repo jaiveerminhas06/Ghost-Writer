@@ -42,6 +42,7 @@ CLEAR_ENGLISH_SHARE = 0.20     # at or above this the essay is accepted even if 
 RESULTS = ROOT / "results"
 SAMPLES_JSON = ROOT / "demo" / "samples.json"
 SPLITS_CSV = ROOT / "data" / "processed" / "splits.csv"
+DEMO_CLASS = ROOT / "demo" / "class_sample"      # the demo class: essays, labels.json and how they were picked
 
 # --- hosting -------------------------------------------------------------------------------------
 EXTRA_ORIGINS = [o for o in os.environ.get("GW_ORIGINS", "").split(",") if o]

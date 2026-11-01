@@ -54,6 +54,8 @@ export const attribution = (text) => request('/attribution', { body: { text }, s
 /** @param {string} text  @param {'typos5'|'typos10'|'t5'|'t5_heavy'} method  @param {number} [seed]  @returns {Promise<import('./types').RewriteResult>} */
 export const rewrite = (text, method, seed) =>
   request('/rewrite', { body: { text, method, ...(seed === undefined ? {} : { seed }) }, seconds: method.startsWith('t5') ? SECONDS.t5 : SECONDS.typos })
+/** @returns {Promise<{ essays: { name: string, text: string }[], labels: Record<string, 'human' | 'ai'> }>} */
+export const demoClass = () => request('/demo-class', { seconds: SECONDS.meta })
 /** @param {File[]} files  @returns {Promise<{ results: import('./types').BatchItem[] }>} */
 export const batch = (files) => {
   const form = new FormData()

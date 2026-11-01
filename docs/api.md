@@ -48,6 +48,26 @@ The tests prove it rather than assume it: a 3 MB upload stays in memory (a spy r
 
 What we cannot show by test: server logs written by uvicorn contain only the address of each request (for example `POST /api/batch 200 OK`), never its body; that is how uvicorn works, not something we added.
 
+## The class estimate: "about 3, probably between 0 and 7"
+
+On the class page the sentence "you would still expect about N to cross it, probably between A and B" answers: *if every essay were honest student work, how many would the detector flag anyway?*
+
+- **The mean.** Each honest essay is flagged with some small chance `p`: the false-flag rate on topics the model never saw (2.3% at Strict, 3.9% at Standard; they come from `results/09_threshold_rates.csv`). For `n` essays the expected count is `n x p`. A class of 130 at 2.3% gives 3.0.
+- **The range.** The real count varies around that mean. If each essay is flagged independently with chance `p`, the count is a binomial; when `p` is small that is almost exactly a **Poisson** distribution with mean `n x p`. Its probabilities come one after another: `P(0) = e^-mean`, then `P(k+1) = P(k) x mean / (k+1)`. "Probably between" is the central 95%: from the smallest `k` where the chance of "k or fewer" reaches 2.5%, up to the smallest `k` where it reaches 97.5%. For a mean of 3 that is 0 to 7 (the chance of 7 or fewer is 98.8%, of 6 or fewer only 96.6%). For a mean of 16 it is 9 to 24. The code is `poissonInterval` in `frontend/src/lib/figures.js`, tested against these textbook values.
+- **What it does not include.** It treats `p` as exactly known and the same for every essay. In truth `p` was measured on a finite set of essays and differs by topic (the worst unseen topic, Summer projects, was 5.2% at Strict and 7.7% at Standard), so the real range is wider than the one shown. The sentence names the worst topic for that reason.
+
+## The demo class and how its 30 essays were picked
+
+`demo/class_sample/` holds 30 essays whose real authors are known, so the class page can compare the detector's flags with the truth ("Known authors: 0 of the 19 student essays were flagged (at 2.3% we'd expect about 0.4), and 11 of the 11 AI essays were."). `demo/class_sample/make_class_sample.py` builds it, and gives the same class every time it is run:
+
+1. **Never essays the model trained or tuned on.** Only the `heldout_prompt` split (a whole topic kept out of training and validation, notebook 03), and only the topic "Does the electoral college work?". A class writes on one topic, and an unseen topic is the situation the 2.3% / 3.9% figures describe.
+2. **Student essays:** all of that topic's human essays. **AI essays:** only those really about that topic (`on_topic`, notebook 06: half the dataset's AI essays are off-topic for their label), and not from `train_essays`, which holds the dataset's few known mislabelled rows.
+3. **The mix** follows the real ratio inside that split, 62.6% student: 30 x 0.626 = 18.8, so 19 student and 11 AI.
+4. **Random draw, seed 42,** inside each group. No filter on length, and the detector's scores were never looked at.
+5. **Shuffled, neutral names** (`essay_01.txt`...), so neither the order nor the name says who wrote it. `labels.json` records each essay's row in the dataset, its split, its source and its true label.
+
+`tests/test_api.py` checks the claim against the project's own files: every essay is in the `heldout_prompt` split (not `train` or `val`), its text is exactly the dataset row, and its label is the dataset's label. **Caution for the viva:** the result on these 30 (no student essay flagged) is a demonstration, not a measurement. With 19 student essays, "0 flagged" is also consistent with a true rate of up to about 15%.
+
 ## `limiter.py`: why it exists
 
 A public demo can be hammered by one visitor (or a script), and the model runs on one small GPU. The limiter keeps a list of each visitor's recent requests and refuses the next one if they have used 60 "units" in the last minute. It answers `429 Too many requests, wait N seconds`. Rules:

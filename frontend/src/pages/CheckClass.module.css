@@ -3,6 +3,8 @@
 .top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 24px 48px; }
 .intro { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
 .intro p { max-width: 58ch; color: var(--ink-2); font-size: var(--fs-heading); line-height: 1.5; }
+.demo { max-width: 360px; margin-top: 8px; }
+.known { padding-top: 6px; color: var(--ink) !important; font-weight: 500; max-width: 62ch; }
 .notice { font-size: var(--fs-small); color: var(--ink-2); }
 
 .summary { background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 52px); display: flex; flex-direction: column; gap: 28px; }

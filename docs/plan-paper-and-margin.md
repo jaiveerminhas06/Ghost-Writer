@@ -134,3 +134,4 @@ Also agreed: throwaway artboard renderer outside the repo; "Meaning: unchanged" 
 - Phase 5 (Try to fool it, with "Try different typos" and the seed recorded per attempt): done.
 - Pre-phase-6 items: done, `bd06a19` (shared Strict/Standard switch on the Fool page, `api_version` in `/api/meta`, figures tolerated when missing, uploads kept off disk with tests).
 - Phase 6 (Check a class: drop zone, summary with expected false flags, dot strip or histogram, sortable table with 50-row pages, class-of-one and fewer-than-five states): done.
+- Demo class (30 held-out essays with known labels, `GET /api/demo-class`, button on the class page, known-authors sentence) and the Poisson range for expected false flags: done.

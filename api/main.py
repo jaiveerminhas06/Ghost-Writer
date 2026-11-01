@@ -28,7 +28,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from . import limiter, results, settings, uploads
+from . import demo, limiter, results, settings, uploads
 from .errors import ApiError, api_error_handler, validation_handler
 from .language import english_check
 from .textfiles import extract_text
@@ -116,6 +116,12 @@ class Essay(BaseModel):
 @app.get("/api/meta")
 def meta():
     return results.meta()
+
+
+@app.get("/api/demo-class")
+def demo_class():
+    """The demo class's essays and their true labels (see api/demo.py)."""
+    return demo.demo_class()
 
 
 @app.post("/api/score")

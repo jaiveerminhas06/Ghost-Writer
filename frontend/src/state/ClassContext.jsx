@@ -5,6 +5,7 @@ import { useToast } from '../lib/toast'
 import { sleep } from '../lib/format'
 
 const KEY = 'gw-class'
+const LABELS = 'gw-class-labels'
 const CHUNK = 10                         // files per request: a batch of up to ten costs one unit of the server's rate limit
 const CHUNK_BYTES = 12 * 1024 * 1024     // and never more than this many bytes, to stay well inside the server's 20 MB limit
 const TYPES = ['.docx', '.pdf', '.txt']
@@ -21,6 +22,9 @@ export function ClassProvider({ children, maxFileBytes = 5 * 1024 * 1024 }) {
   const toast = useToast()
   const [items, setItems] = useState(() => {
     try { return /** @type {ClassItem[]} */ (JSON.parse(sessionStorage.getItem(KEY) || '[]')) } catch { return [] }
+  })
+  const [labels, setLabels] = useState(() => {
+    try { return /** @type {Record<string, string>} */ (JSON.parse(sessionStorage.getItem(LABELS) || '{}')) } catch { return {} }
   })
   const [working, setWorking] = useState(false)
   const [notice, setNotice] = useState(/** @type {string | null} */ (null))
@@ -109,11 +113,24 @@ export function ClassProvider({ children, maxFileBytes = 5 * 1024 * 1024 }) {
     queue.current = []
     setItems([])
     setNotice(null)
-    try { sessionStorage.removeItem(KEY) } catch { /* ignore */ }
+    setLabels({})
+    try { sessionStorage.removeItem(KEY); sessionStorage.removeItem(LABELS) } catch { /* ignore */ }
   }, [])
 
+  /** The demo class: 30 essays whose real authors are known. They go through the same path as files the visitor adds. */
+  const loadDemo = useCallback(async () => {
+    try {
+      const d = await api.demoClass()
+      setLabels(d.labels)
+      try { sessionStorage.setItem(LABELS, JSON.stringify(d.labels)) } catch { /* ignore */ }
+      addFiles(d.essays.map((e) => new File([e.text], e.name, { type: 'text/plain' })))
+    } catch (e) {
+      toast.show({ kind: 'error', message: /** @type {api.ApiProblem} */ (e).title || "Couldn't load the demo class." })
+    }
+  }, [addFiles, toast])
+
   return (
-    <ClassContext.Provider value={{ items, working, notice, reveal, addFiles, clear, showErrors: () => setReveal((n) => n + 1) }}>
+    <ClassContext.Provider value={{ items, working, notice, reveal, labels, loadDemo, addFiles, clear, showErrors: () => setReveal((n) => n + 1) }}>
       {children}
     </ClassContext.Provider>
   )

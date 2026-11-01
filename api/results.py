@@ -8,7 +8,7 @@ from functools import lru_cache
 
 import pandas as pd
 
-from . import settings
+from . import demo, settings
 
 # Built-in examples: display names (the artboard's wording) in the order of demo/samples.json. Labels come from each
 # essay's title in that file, which starts "AI essay" or "Human essay".
@@ -103,4 +103,5 @@ def meta():
                    "max_files": settings.MAX_FILES_PER_REQUEST, "max_file_bytes": settings.MAX_FILE_BYTES, "file_types": [".docx", ".pdf", ".txt"]},
         "t5_available": t5_available(),
         "examples": examples(),
+        "demo_class": demo.counts(),
     }

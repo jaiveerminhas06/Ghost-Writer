@@ -227,3 +227,28 @@ def test_deep_links_get_index_html_and_api_paths_stay_json(client, monkeypatch, 
     assert client.get("/assets/x.js").text == "console.log(1)"
     assert client.get("/../../etc/passwd").text == "<html>app</html>"               # no escape from dist
     assert client.get("/api/nope").json()["code"] == "not_found"
+
+
+# ---------- the demo class ----------
+def test_demo_class_is_served_with_its_labels(client):
+    d = client.get("/api/demo-class").json()
+    assert len(d["essays"]) == 30 and set(d["labels"]) == {e["name"] for e in d["essays"]}
+    assert sorted(set(d["labels"].values())) == ["ai", "human"] and list(d["labels"].values()).count("human") == 19
+    assert client.get("/api/meta").json()["demo_class"] == {"essays": 30, "human": 19, "ai": 11}
+
+
+def test_demo_class_never_includes_an_essay_the_model_trained_or_tuned_on():
+    """The claim in the viva: every demo essay comes from the held-out prompt, checked against the project's own split file,
+    and each file is exactly the essay its row_id says it is, with the label the dataset gives it."""
+    import json
+    import pandas as pd
+    spec = json.loads((settings.DEMO_CLASS / "labels.json").read_text())
+    splits = pd.read_csv(settings.SPLITS_CSV, index_col="row_id")["split"]
+    essays = pd.read_csv(settings.ROOT / "data" / "processed" / "train_deduped.csv", usecols=["text", "label", "prompt_name"])
+    essays["text"] = essays["text"].str.strip()                           # the same stripping as src/data.py
+    for e in spec["essays"]:
+        assert splits.loc[e["row_id"]] == "heldout_prompt" and splits.loc[e["row_id"]] not in {"train", "val"}
+        row = essays.loc[e["row_id"]]
+        assert (settings.DEMO_CLASS / e["file"]).read_text() == row["text"]
+        assert e["label"] == ("human" if row["label"] == 0 else "ai") and row["prompt_name"] == spec["prompt"]
+    assert len({e["row_id"] for e in spec["essays"]}) == 30                # no essay twice

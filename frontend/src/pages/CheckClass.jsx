@@ -4,12 +4,13 @@ import styles from './CheckClass.module.css'
 import Button from '../components/Button'
 import ClassStrip from '../components/ClassStrip'
 import ClassTable from '../components/ClassTable'
+import DemoClassOption from '../components/DemoClassOption'
 import DropZone from '../components/DropZone'
 import MetaGate from '../components/MetaGate'
 import StrictnessSwitch from '../components/StrictnessSwitch'
 import { useClass, useEssay } from '../state/contexts'
 import { MIN_CLASS, paginate, sortItems, summarize } from '../lib/classStats'
-import { crossing, expectedFlags } from '../lib/figures'
+import { crossing, expectedFlags, knownAuthors } from '../lib/figures'
 
 const DEFAULT_TYPES = ['.docx', '.pdf', '.txt']
 
@@ -45,6 +46,8 @@ function Loaded({ meta }) {
 
   const open = (/** @type {{ name: string, text: string | null }} */ item) => { essay.openEssay({ name: item.name, text: item.text ?? '' }); navigate('/') }
   const headline = crossing(sum.flagged, sum.scored)
+  const known = knownAuthors(cls.items, cls.labels, meta, setting, threshold)
+  const demoLoaded = cls.items.length > 0 && cls.items.every((i) => cls.labels[i.name])
   const caption = sum.pending > 0 ? `Scoring ${sum.scored + sum.errors} of ${sum.files} files…` : `${sum.files} ${sum.files === 1 ? 'file' : 'files'}, ${sum.scored} scored.`
 
   return (
@@ -53,6 +56,7 @@ function Loaded({ meta }) {
         <div className={styles.intro}>
           <h1 className="t-display">Check a class</h1>
           <p>Score a whole set of essays at once. The point is the pattern across a class, and how many flags you’d get even if nobody used AI.</p>
+          {meta.demo_class && <div className={styles.demo}><DemoClassOption count={meta.demo_class.essays} selected={demoLoaded} disabled={cls.working} onLoad={cls.loadDemo} /></div>}
         </div>
         <DropZone inputRef={input} onFiles={cls.addFiles} hasFiles={cls.items.length > 0} accept={meta.limits?.file_types ?? DEFAULT_TYPES} />
       </div>
@@ -65,6 +69,7 @@ function Loaded({ meta }) {
               <p className={styles.caption} aria-live="polite">{caption}</p>
               <h2 id="summary" className="t-verdict num">{headline}</h2>
               <p>{expectedFlags(meta, setting, sum.scored)}</p>
+              {known && <p className={styles.known}>{known}</p>}
             </div>
             <StrictnessSwitch />
           </div>
