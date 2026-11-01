@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Check a class</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-hover:oklch(from var(--pen) calc(l - 0.05) c h);--pen-active:oklch(from var(--pen) calc(l - 0.09) calc(c - 0.01) h);--pen-tint:oklch(from var(--pen) 0.94 0.035 h);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-2:oklch(0.925 0.12 95);--brick:oklch(0.50 0.16 32);--brick-tint:oklch(from var(--brick) 0.955 0.03 h);--sh-1:inset 0 1px 0 oklch(1 0 0 / 0.55),0 1px 1px oklch(0.30 0.04 265 / 0.10),0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);--sh-3:0 1px 2px oklch(0.30 0.04 265 / 0.12),0 28px 64px -18px oklch(0.30 0.06 265 / 0.32);--ease-out:cubic-bezier(.22,1,.36,1)}
+body{margin:0;background:var(--desk)}
+a{color:var(--pen)}a:hover{color:var(--pen-active)}
+h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
+.gw-btn{transition:transform 120ms var(--ease-out),background-color 180ms var(--ease-out)}
+.gw-btn:active:not(:disabled){transform:scale(.97)}
+.gw-row{transition:background-color 150ms var(--ease-out)}
+@media (hover:hover){.gw-row:hover{background:oklch(0.97 0.004 265) !important}.gw-tab:hover{color:var(--ink) !important}.gw-sort:hover{color:var(--ink) !important}}
+.gw-row:active{background:var(--desk-2) !important}
+.gw-scroll{mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 28px),transparent 100%);-webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 28px),transparent 100%)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0ms !important;animation:none !important}}
+</style>
+</helmet>
+<div style="position: relative; min-height: 100vh; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 1.0625rem; line-height: 1.55; font-weight: 420">
+
+<header style="border-bottom: 1px solid var(--line)">
+<div style="max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); display: flex; flex-wrap: wrap; align-items: center; gap: 0 40px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 64px; color: var(--ink); text-decoration: none; font-weight: 650; font-size: 1.1875rem; letter-spacing: -0.01em">
+<svg width="22" height="26" viewBox="0 0 22 26" fill="none" aria-hidden="true"><path d="M2.5 1.5h12l5 5v18h-17z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M6.5 1.5v23" stroke="oklch(0.45 0.17 265)" stroke-width="1.6"></path><path d="M9.5 10h6M9.5 14h6M9.5 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+Ghost Writer</a>
+<nav aria-label="Main" style="display: flex; flex: 1 1 auto; gap: 28px; overflow-x: auto">
+<a href="Main.dc.html" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid transparent; padding-top: 2px; color: var(--ink-2); font-weight: 450; text-decoration: none; white-space: nowrap">Check an essay</a>
+<a href="Fool.dc.html" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid transparent; padding-top: 2px; color: var(--ink-2); font-weight: 450; text-decoration: none; white-space: nowrap">Try to fool it</a>
+<a href="Class.dc.html" aria-current="page" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid var(--pen); padding-top: 2px; color: var(--ink); font-weight: 550; text-decoration: none; white-space: nowrap">Check a class</a>
+</nav>
+<a href="https://github.com/jaiveerminhas06/AI-Generated-Text-Detection/blob/main/MODEL_CARD.md" style="display: flex; align-items: center; min-height: 44px; font-weight: 500">Model card</a>
+</div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 56px clamp(16px, 4vw, 40px) 120px; display: flex; flex-direction: column; gap: 40px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 24px 48px">
+<div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<h1 style="margin: 0; font-size: clamp(2.25rem, 1.55rem + 2.4vw, 3.5rem); line-height: 1.05; letter-spacing: -0.028em; font-weight: 650">Check a class</h1>
+<p style="margin: 0; max-width: 58ch; color: var(--ink-2); font-size: 1.125rem; line-height: 1.5">Score a whole set of essays at once. The point is the pattern across a class, and how many flags you'd get even if nobody used AI.</p>
+</div>
+<div style="flex: 1 1 360px; min-width: 0; display: flex; align-items: center; gap: 16px; padding: 12px 12px 12px 16px; border-radius: 14px; border: 1.5px dashed var(--line-2); background: oklch(from var(--paper) l c h / 0.5)">
+<svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true" style="flex: none; color: var(--ink-3)"><path d="M11 14V3.5M6.5 8L11 3.5 15.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3.5 13.5v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+<p style="flex: 1 1 auto; margin: 0; font-size: 0.9375rem; color: var(--ink-2)">Drop more essays here: .docx, .pdf or .txt</p>
+<button type="button" class="gw-btn" style="min-height: 44px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 0.9375rem; font-weight: 500; cursor: pointer">Choose files</button>
+</div>
+</div>
+
+<section aria-labelledby="summary" style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 52px); display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 20px 48px">
+<div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 0.9375rem; color: var(--ink-3)">Grade 10, set B. Prompt: "Does the electoral college work?" 30 files, 28 scored.</p>
+<h2 id="summary" style="margin: 0; font-size: clamp(1.75rem, 1.35rem + 1.5vw, 2.5rem); line-height: 1.1; letter-spacing: -0.02em; font-weight: 650; font-variant-numeric: tabular-nums">{{headline}}</h2>
+<p style="margin: 0; max-width: 62ch; color: var(--ink-2)">{{expectText}}</p>
+</div>
+<div role="group" aria-label="How strict" style="flex: none; display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: var(--desk-2); box-shadow: inset 0 0 0 1px var(--line)">
+<button type="button" aria-pressed="{{strictPressed}}" onClick="{{setStrict}}" class="gw-btn" style="min-height: 44px; min-width: 96px; padding: 0 16px; border: 0; border-radius: 8px; font: inherit; font-size: 0.9375rem; cursor: pointer; {{strictStyle}}">Strict</button>
+<button type="button" aria-pressed="{{standardPressed}}" onClick="{{setStandard}}" class="gw-btn" style="min-height: 44px; min-width: 96px; padding: 0 16px; border: 0; border-radius: 8px; font: inherit; font-size: 0.9375rem; cursor: pointer; {{standardStyle}}">Standard</button>
+</div>
+</div>
+
+<div style="position: relative; height: 150px; margin: 0 4px" role="img" aria-label="Each dot is one essay on the score scale from minus 10 to plus 10. {{headline}}">
+<div style="position: absolute; top: 20px; left: {{thresholdPos}}; right: 0; height: 90px; background: oklch(0.925 0.12 95 / 0.45)"></div>
+<sc-for list="{{dots}}" as="d" hint-placeholder-count="28">
+<div style="position: absolute; left: {{d.left}}; bottom: {{d.bottom}}; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; box-sizing: border-box; {{d.style}}"></div>
+</sc-for>
+<div style="position: absolute; top: 108px; left: 0; right: 0; height: 2px; background: var(--ink)"></div>
+<sc-for list="{{ticks}}" as="t" hint-placeholder-count="5">
+<div style="position: absolute; top: 102px; left: {{t.pos}}; width: 2px; height: 14px; margin-left: -1px; background: var(--ink)"></div>
+<p style="position: absolute; top: 122px; left: {{t.pos}}; transform: translateX(-50%); margin: 0; font-size: 0.875rem; color: var(--ink-3); font-variant-numeric: tabular-nums">{{t.label}}</p>
+</sc-for>
+<div style="position: absolute; top: 8px; left: {{thresholdPos}}; width: 3px; height: 118px; margin-left: -1.5px; background: var(--pen)"></div>
+<p style="position: absolute; top: 0; left: {{thresholdPos}}; transform: translateX(calc(-100% - 10px)); margin: 0; white-space: nowrap; color: var(--pen); font-weight: 600; font-size: 0.9375rem; font-variant-numeric: tabular-nums">Flag line +{{thresholdText}}</p>
+</div>
+</section>
+
+<section aria-labelledby="essays" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px">
+<h2 id="essays" style="margin: 0; font-size: 1.625rem; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Essays</h2>
+<p style="margin: 0; font-size: 0.875rem; color: var(--ink-3)">Open an essay to see which sentences drove its score.</p>
+</div>
+<div style="border-radius: 14px; background: var(--paper); box-shadow: var(--sh-2); overflow: hidden">
+<div style="overflow-x: auto">
+<div role="table" aria-label="Essays in this class" style="min-width: 680px">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1fr) 90px 100px 210px 44px; gap: 16px; align-items: center; padding: 0 12px 0 20px; border-bottom: 1px solid var(--line-2); font-size: 0.8125rem; color: var(--ink-3)">
+<p role="columnheader" style="margin: 0; padding: 12px 0">Essay</p>
+<p role="columnheader" style="margin: 0; text-align: right">Words</p>
+<p role="columnheader" aria-sort="{{ariaSort}}" style="margin: 0; display: flex; justify-content: flex-end"><button type="button" onClick="{{toggleSort}}" class="gw-sort" style="display: flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 0 0 8px; border: 0; background: transparent; color: var(--ink-2); font: inherit; font-weight: 600; cursor: pointer">Score <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true" style="transform: {{sortRot}}; margin-top: 1px"><path d="M2 3.5L5 6.5 8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></p>
+<p role="columnheader" style="margin: 0">Result</p>
+<p role="columnheader" style="margin: 0"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)">Open</span></p>
+</div>
+<div class="gw-scroll" style="max-height: 560px; overflow-y: auto">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+<a role="row" href="Main.dc.html" class="gw-row" style="display: grid; grid-template-columns: minmax(0, 1fr) 90px 100px 210px 44px; gap: 16px; align-items: center; min-height: 52px; padding: 0 12px 0 20px; border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; {{r.style}}">
+<p role="cell" style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500">{{r.name}}</p>
+<p role="cell" style="margin: 0; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2)">{{r.words}}</p>
+<p role="cell" style="margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: {{r.scoreColor}}">{{r.scoreText}}</p>
+<p role="cell" style="margin: 0; font-size: 0.9375rem; color: {{r.resultColor}}">{{r.result}}</p>
+<p role="cell" aria-hidden="true" style="margin: 0; display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink-3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="transform: translateX(1px)"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></p>
+</a>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<p style="margin: 0; max-width: 72ch; font-size: 0.9375rem; color: var(--ink-3)">Scores are kept on this computer and cleared when you close the tab. Ghost Writer is a course project: use a flag to start a conversation with a student, never to decide a grade.</p>
+</main>
+
+<div role="status" style="position: absolute; right: clamp(16px, 4vw, 40px); bottom: 32px; display: flex; align-items: center; gap: 12px; width: min(400px, calc(100% - 32px)); box-sizing: border-box; padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--paper); box-shadow: var(--sh-3), inset 0 0 0 1px var(--line)">
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="flex: none; color: oklch(0.50 0.16 32)"><circle cx="10" cy="10" r="8.25" stroke="currentColor" stroke-width="1.6"></circle><path d="M10 5.75v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><circle cx="10" cy="13.9" r="1.05" fill="currentColor"></circle></svg><p style="flex: 1 1 auto; margin: 0; font-size: 0.9375rem">2 files couldn't be scored. They're at the end of the list.</p>
+<button type="button" class="gw-btn" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--pen); font: inherit; font-size: 0.9375rem; font-weight: 600; cursor: pointer">Show</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2150}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { strict: true, desc: true }; }
+  renderVals() {
+    const pos = (v) => ((v + 10) / 20 * 100).toFixed(2) + '%';
+    const strict = this.state.strict;
+    const t = strict ? 7.8 : 4.7;
+    const std = 4.7;
+    const data = [
+      ['amara_okafor_electoral.docx', 488, 9.6], ['essay_benoit_l.docx', 512, 9.4], ['chen_wei_final.pdf', 455, 8.2], ['d_ramirez_v2.docx', 431, 7.9],
+      ['priya_nair_electoral_college_essay_final_submission.docx', 467, 5.3], ['tom_h.txt', 402, 1.8], ['sofia_g.docx', 389, -0.6], ['jonas_meyer.docx', 377, -2.1],
+      ['l_martin.docx', 296, -3.4], ['fatima_z.pdf', 344, -4.0], ['kenji_s.docx', 512, -4.7], ['grace_o.docx', 318, -5.2],
+      ['ali_r.docx', 351, -5.9], ['hannah_k.txt', 263, -6.3], ['mateo_c.docx', 307, -6.6], ['zoe_p.docx', 411, -6.9],
+      ['ravi_patel.docx', 284, -7.2], ['emma_w.docx', 365, -7.4], ['noah_b.pdf', 241, -7.7], ['lucia_f.docx', 330, -7.9],
+      ['sam_t.docx', 276, -8.1], ['yusuf_a.docx', 298, -8.3], ['ines_d.docx', 352, -8.5], ['oliver_j.txt', 219, -8.8],
+      ['maya_s.docx', 305, -9.0], ['leo_v.docx', 271, -9.2], ['ana_m.docx', 233, -9.4], ['ben_k.docx', 258, -9.6]
+    ];
+    const scored = data.map(([name, words, s]) => ({ name, words, s }));
+    const flagged = scored.filter((r) => r.s >= t).length;
+    const sorted = scored.slice().sort((a, b) => this.state.desc ? b.s - a.s : a.s - b.s);
+    const fmt = (s) => (s > 0 ? '+' : s < 0 ? '−' : '') + Math.abs(s).toFixed(1);
+    const rows = sorted.map((r) => {
+      const over = r.s >= t;
+      const stdOnly = strict && !over && r.s >= std;
+      return {
+        name: r.name, words: String(r.words), scoreText: fmt(r.s),
+        scoreColor: over ? 'var(--pen)' : 'var(--ink)',
+        result: over ? 'Flagged' : (stdOnly ? 'Under strict, over standard' : 'Not flagged'),
+        resultColor: over ? 'var(--pen)' : (stdOnly ? 'var(--ink)' : 'var(--ink-2)'),
+        style: over ? 'background: var(--pen-tint)' : 'background: var(--paper)'
+      };
+    });
+    rows.push({ name: 'scan_0007.jpg', words: '–', scoreText: '–', scoreColor: 'var(--ink-3)', result: 'No text found in the image', resultColor: 'var(--brick)', style: 'background: var(--brick-tint)' });
+    rows.push({ name: 'kofi_draft.docx', words: '31', scoreText: '–', scoreColor: 'var(--ink-3)', result: 'Too short: needs 40 words', resultColor: 'var(--brick)', style: 'background: var(--brick-tint)' });
+    const bins = {};
+    const dots = scored.map((r) => {
+      const b = Math.round(r.s * 2);
+      bins[b] = (bins[b] || 0) + 1;
+      const over = r.s >= t;
+      return { left: pos(r.s), bottom: (44 + (bins[b] - 1) * 13) + 'px', style: over ? 'background: var(--pen)' : 'border: 2px solid var(--ink-3); background: var(--paper)' };
+    });
+    const on = 'background: var(--paper); color: var(--ink); font-weight: 600; box-shadow: var(--sh-1)';
+    const off = 'background: transparent; color: var(--ink-2); font-weight: 450; box-shadow: none';
+    return {
+      headline: flagged + ' of 28 essays cross the flag line.',
+      expectText: strict
+        ? 'If all 28 were written by students, you would still expect up to one to cross it: on topics it never saw, 2.3% of student essays did. Treat each flag as a question for that student.'
+        : 'At the standard line, one unseen topic saw 7.7% of student essays flagged. For a class of 28 that is about two false alarms, even with no AI at all.',
+      thresholdPos: pos(t), thresholdText: t.toFixed(1),
+      strictPressed: strict ? 'true' : 'false', standardPressed: strict ? 'false' : 'true',
+      strictStyle: strict ? on : off, standardStyle: strict ? off : on,
+      setStrict: () => this.setState({ strict: true }), setStandard: () => this.setState({ strict: false }),
+      dots, rows,
+      ariaSort: this.state.desc ? 'descending' : 'ascending',
+      sortRot: this.state.desc ? 'none' : 'rotate(180deg)',
+      toggleSort: () => this.setState({ desc: !this.state.desc }),
+      ticks: [-10, -5, 0, 5, 10].map((v) => ({ pos: pos(v), label: v > 0 ? '+' + v : (v < 0 ? '−' + Math.abs(v) : '0') }))
+    };
+  }
+}
+</script>
+</body>
+</html>

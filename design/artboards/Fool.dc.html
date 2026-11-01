@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Try to fool it</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-hover:oklch(from var(--pen) calc(l - 0.05) c h);--pen-active:oklch(from var(--pen) calc(l - 0.09) calc(c - 0.01) h);--pen-tint:oklch(from var(--pen) 0.94 0.035 h);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-1:oklch(0.965 0.07 100);--hl-2:oklch(0.925 0.12 95);--hl-3:oklch(0.865 0.15 85);--brick:oklch(0.50 0.16 32);--sh-1:inset 0 1px 0 oklch(1 0 0 / 0.55),0 1px 1px oklch(0.30 0.04 265 / 0.10),0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);--sh-pen:inset 0 1px 0 oklch(1 0 0 / 0.22),0 1px 1px oklch(0.30 0.06 265 / 0.20),0 4px 12px -4px oklch(0.45 0.17 265 / 0.45);--ease-out:cubic-bezier(.22,1,.36,1)}
+body{margin:0;background:var(--desk)}
+a{color:var(--pen)}a:hover{color:var(--pen-active)}
+h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
+ins{text-decoration:underline 2px var(--pen);text-underline-offset:4px;background:oklch(0.94 0.035 265 / 0.7)}
+.gw-btn{transition:transform 120ms var(--ease-out),background-color 180ms var(--ease-out),box-shadow 150ms var(--ease-out)}
+.gw-btn:active:not(:disabled){transform:scale(.97)}
+.gw-primary:active:not(:disabled){background:var(--pen-active) !important}
+@media (hover:hover){.gw-primary:hover:not(:disabled){background:var(--pen-hover) !important}.gw-tab:hover{color:var(--ink) !important}.gw-card:hover{box-shadow:var(--sh-2),inset 0 0 0 1px var(--line-2)}}
+.gw-pane{mask-image:linear-gradient(to bottom,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0ms !important;animation:none !important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 1.0625rem; line-height: 1.55; font-weight: 420">
+
+<header style="border-bottom: 1px solid var(--line)">
+<div style="max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); display: flex; flex-wrap: wrap; align-items: center; gap: 0 40px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 64px; color: var(--ink); text-decoration: none; font-weight: 650; font-size: 1.1875rem; letter-spacing: -0.01em">
+<svg width="22" height="26" viewBox="0 0 22 26" fill="none" aria-hidden="true"><path d="M2.5 1.5h12l5 5v18h-17z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M6.5 1.5v23" stroke="oklch(0.45 0.17 265)" stroke-width="1.6"></path><path d="M9.5 10h6M9.5 14h6M9.5 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+Ghost Writer</a>
+<nav aria-label="Main" style="display: flex; flex: 1 1 auto; gap: 28px; overflow-x: auto">
+<a href="Main.dc.html" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid transparent; padding-top: 2px; color: var(--ink-2); font-weight: 450; text-decoration: none; white-space: nowrap">Check an essay</a>
+<a href="Fool.dc.html" aria-current="page" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid var(--pen); padding-top: 2px; color: var(--ink); font-weight: 550; text-decoration: none; white-space: nowrap">Try to fool it</a>
+<a href="Class.dc.html" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid transparent; padding-top: 2px; color: var(--ink-2); font-weight: 450; text-decoration: none; white-space: nowrap">Check a class</a>
+</nav>
+<a href="https://github.com/jaiveerminhas06/AI-Generated-Text-Detection/blob/main/MODEL_CARD.md" style="display: flex; align-items: center; min-height: 44px; font-weight: 500">Model card</a>
+</div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 56px clamp(16px, 4vw, 40px) 96px; display: flex; flex-direction: column; gap: 40px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px 64px">
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<h1 style="margin: 0; font-size: clamp(2.25rem, 1.55rem + 2.4vw, 3.5rem); line-height: 1.05; letter-spacing: -0.028em; font-weight: 650">Try to fool it</h1>
+<p style="margin: 0; max-width: 60ch; color: var(--ink-2); font-size: 1.125rem; line-height: 1.5">Rewrite the essay and score it again. On a student essay, this shows the other side of the problem: changes that add nothing can flip the answer.</p>
+</div>
+<p style="flex: 1 1 260px; margin: 0; max-width: 34ch; color: var(--ink-3); font-size: 0.9375rem">Rewriting <a href="Main.dc.html">Student essay it wrongly flags</a>, 209 words, strict flag line at +7.8.</p>
+</div>
+
+<section aria-labelledby="method" style="display: flex; flex-direction: column; gap: 16px">
+<h2 id="method" style="margin: 0; font-size: 1.125rem; font-weight: 600">Rewrite with</h2>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px">
+<div role="radiogroup" aria-labelledby="method" style="flex: 999 1 720px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); grid-template-rows: auto auto 1fr auto; column-gap: 16px; row-gap: 16px">
+<sc-for list="{{methods}}" as="m" hint-placeholder-count="3">
+<div role="radio" aria-checked="{{m.checked}}" tabindex="{{m.tab}}" onClick="{{m.pick}}" class="gw-card" style="grid-row: span 4; display: grid; grid-template-rows: subgrid; row-gap: 8px; padding: 20px; border-radius: 18px; cursor: pointer; transition: box-shadow 150ms var(--ease-out); {{m.style}}">
+<p style="margin: 0; font-weight: 600">{{m.title}}</p>
+<p style="margin: 0; font-size: 0.8125rem; color: var(--ink-3)">{{m.cost}}</p>
+<p style="margin: 0; font-size: 0.9375rem; color: var(--ink-2)">{{m.desc}}</p>
+<p style="margin: 4px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.875rem; font-variant-numeric: tabular-nums; color: {{m.resultColor}}">{{m.result}}</p>
+</div>
+</sc-for>
+</div>
+<div style="flex: 1 1 200px; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px">
+<button type="button" onClick="{{run}}" class="gw-btn gw-primary" style="min-height: 52px; padding: 0 24px; border: 0; border-radius: 10px; background: var(--pen); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font: inherit; font-weight: 600; cursor: pointer">Rewrite and re-score</button>
+<p style="margin: 0; font-size: 0.8125rem; color: var(--ink-3)">Every run is kept in the list below.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="result" style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 52px); display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px 48px">
+<div style="flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<h2 id="result" style="margin: 0; font-size: clamp(1.75rem, 1.35rem + 1.5vw, 2.5rem); line-height: 1.1; letter-spacing: -0.02em; font-weight: 650">Not flagged any more.</h2>
+<p style="margin: 0; max-width: 58ch; color: var(--ink-2)">Ten misspelled words dropped the score under both flag lines. The essay got worse and passed, which is why a pass is no proof of a human either.</p>
+</div>
+<dl style="flex: 1 1 300px; margin: 0; display: grid; grid-template-columns: auto auto; justify-content: start; gap: 6px 28px; font-variant-numeric: tabular-nums">
+<dt style="color: var(--ink-3); font-size: 0.9375rem">Score</dt><dd style="margin: 0; font-weight: 600">+9.1 to +3.3 <span style="font-weight: 420; color: var(--ink-3)">(−5.8)</span></dd>
+<dt style="color: var(--ink-3); font-size: 0.9375rem">Words changed</dt><dd style="margin: 0; font-weight: 600">10 of 209 <span style="font-weight: 420; color: var(--ink-3)">(5%)</span></dd>
+<dt style="color: var(--ink-3); font-size: 0.9375rem">Meaning</dt><dd style="margin: 0; font-weight: 600">Unchanged, spelling worse</dd>
+</dl>
+</div>
+
+<div style="position: relative; height: 110px; margin: 0 4px" role="img" aria-label="Score moved from plus 9.1 to plus 3.3. The strict flag line is at plus 7.8.">
+<div style="position: absolute; top: 48px; left: 89%; right: 0; height: 18px; background: var(--hl-2)"></div>
+<div style="position: absolute; top: 56px; left: 0; right: 0; height: 2px; background: var(--ink)"></div>
+<sc-for list="{{ticks}}" as="t" hint-placeholder-count="5">
+<div style="position: absolute; top: 50px; left: {{t.pos}}; width: 2px; height: 14px; margin-left: -1px; background: var(--ink)"></div>
+<p style="position: absolute; top: 72px; left: {{t.pos}}; transform: translateX(-50%); margin: 0; font-size: 0.875rem; color: var(--ink-3); font-variant-numeric: tabular-nums">{{t.label}}</p>
+</sc-for>
+<div style="position: absolute; top: 18px; left: 89%; width: 3px; height: 56px; margin-left: -1.5px; background: var(--pen)"></div>
+<p style="position: absolute; top: 0; left: 89%; transform: translateX(calc(-100% - 10px)); margin: 0; white-space: nowrap; color: var(--pen); font-weight: 600; font-size: 0.9375rem; font-variant-numeric: tabular-nums">Flag line +7.8</p>
+<div style="position: absolute; top: 55px; left: 66.5%; width: 29%; border-top: 2px dashed var(--ink)"></div>
+<div style="position: absolute; top: 48px; left: 95.5%; width: 12px; height: 12px; margin-left: -8px; border: 2px solid var(--ink); border-radius: 50%; background: var(--paper)"></div>
+<div style="position: absolute; top: 47px; left: 66.5%; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 3px var(--paper)"></div>
+<p style="position: absolute; top: 18px; left: 66.5%; transform: translateX(-50%); margin: 0; white-space: nowrap; font-weight: 700; font-size: 0.9375rem; font-variant-numeric: tabular-nums">After +3.3</p>
+<p style="position: absolute; top: 90px; left: 95.5%; transform: translateX(-70%); margin: 0; white-space: nowrap; color: var(--ink-2); font-size: 0.875rem; font-variant-numeric: tabular-nums">Before +9.1</p>
+</div>
+</section>
+
+<section aria-labelledby="compare" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px">
+<h2 id="compare" style="margin: 0; font-size: 1.625rem; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">What changed</h2>
+<p style="margin: 0; font-size: 0.875rem; color: var(--ink-3)">The two pages scroll together. Changed words are underlined.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 20px">
+<article aria-label="Original essay" style="flex: 1 1 420px; min-width: 0; background: var(--paper); border-radius: 6px; box-shadow: var(--sh-2); display: flex; flex-direction: column">
+<p style="margin: 0; padding: 14px 24px; border-bottom: 1px solid var(--line); font-size: 0.9375rem; font-weight: 600; display: flex; justify-content: space-between; gap: 12px"><span>Original</span><span style="font-weight: 420; color: var(--ink-3); font-variant-numeric: tabular-nums">+9.1, flagged</span></p>
+<div class="gw-pane" tabindex="0" aria-label="Original essay text, scrollable" style="height: 400px; overflow-y: auto; padding: 24px clamp(20px, 3vw, 40px); font-family: Tinos, 'Times New Roman', serif; font-size: 1.125rem; line-height: 1.95">
+<p style="margin: 0 0 1.2em; text-indent: 2.5em">A driverless car is a scary concept. Some say that it is completely insane, but that is what they said when Neil Armstrong came up with the idea of walking on the moon, and now walking on the moon is no big deal. In my opinion, with a lot of hard work and problem solving, driverless cars could become the next big thing.</p>
+<p style="margin: 0 0 1.2em; text-indent: 2.5em">There are many things that have been done to make this idea become reality. For example, Google's modified Toyota Prius uses position-estimating sensors on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, and a GPS receiver. With modifications on these resources, they could potentually work. Of course, the driverless car will not be 100% driverless. The driver would need to be alert and ready to take control when needed. GM has developed ways to alert the driver. For example, they have made driver's seats that vibrate when the vehicle is in danger of backing into an object. Google and GM have taken great precautions in developing the driverless car.</p>
+<p style="margin: 0; text-indent: 2.5em">In conclusion, driverless cars may seem scary at first, but I believe that with hard work and dedication, driverless cars will one day be no big deal.</p>
+</div>
+</article>
+<article aria-label="Rewritten essay" style="flex: 1 1 420px; min-width: 0; background: var(--paper); border-radius: 6px; box-shadow: var(--sh-2); display: flex; flex-direction: column">
+<p style="margin: 0; padding: 14px 24px; border-bottom: 1px solid var(--line); font-size: 0.9375rem; font-weight: 600; display: flex; justify-content: space-between; gap: 12px"><span>Typos in 5% of words</span><span style="font-weight: 420; color: var(--ink-3); font-variant-numeric: tabular-nums">+3.3, not flagged</span></p>
+<div class="gw-pane" tabindex="0" aria-label="Rewritten essay text, scrollable" style="height: 400px; overflow-y: auto; padding: 24px clamp(20px, 3vw, 40px); font-family: Tinos, 'Times New Roman', serif; font-size: 1.125rem; line-height: 1.95">
+<p style="margin: 0 0 1.2em; text-indent: 2.5em">A driverless car is a <ins>csary</ins> concept. Some say that it is completely insane, but <ins>thhat</ins> is <ins>whaat</ins> they said when Neil Armstrong <ins>acme</ins> up with the idea of walking on the moon, and now walking on the moon is no big deal. In my opinion, with a lot of hard work and problem solving, driverless cars could become the next big thing.</p>
+<p style="margin: 0 0 1.2em; text-indent: 2.5em">There are many things that have been done to make this idea become reality. For example, Google's modified Toyota Prius uses position-estimating sensors on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, and a GPS receiver. <ins>WWith</ins> modifications on these resources, they could potentually work. Of course, the driverless car will not be 100% driverless. <ins>Thhe</ins> driver <ins>woulld</ins> <ins>nneed</ins> to be alert and ready to take control when needed. GM has developed ways to alert the driver. For example, they have made driver's seats that vibrate when the vehicle is in danger of backing into an object. Google and GM <ins>haave</ins> taken great <ins>pecautions</ins> in developing the driverless car.</p>
+<p style="margin: 0; text-indent: 2.5em">In conclusion, driverless cars may seem scary at first, but I believe that with hard work and dedication, driverless cars will one day be no big deal.</p>
+</div>
+</article>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 32px 40px; align-items: flex-start">
+<section aria-labelledby="attempts" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<h2 id="attempts" style="margin: 0; font-size: 1.625rem; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Attempts on this essay</h2>
+<div style="border-radius: 14px; background: var(--paper); box-shadow: var(--sh-2); overflow: hidden">
+<div style="display: grid; grid-template-columns: 40px minmax(0, 1fr) 120px 90px 150px; gap: 16px; padding: 12px 20px; font-size: 0.8125rem; color: var(--ink-3)">
+<p style="margin: 0">#</p><p style="margin: 0">Method</p><p style="margin: 0; text-align: right">Words changed</p><p style="margin: 0; text-align: right">Score</p><p style="margin: 0">Result</p>
+</div>
+<div style="display: grid; grid-template-columns: 40px minmax(0, 1fr) 120px 90px 150px; gap: 16px; align-items: center; min-height: 56px; padding: 0 20px; border-top: 1px solid var(--line); background: var(--pen-tint); font-weight: 600; font-variant-numeric: tabular-nums">
+<p style="margin: 0; color: var(--ink-3)">1</p><p style="margin: 0; font-weight: 500">Typos in 5% of words</p><p style="margin: 0; text-align: right">10</p><p style="margin: 0; text-align: right; font-weight: 600">+3.3</p><p style="margin: 0">Not flagged</p>
+</div>
+<div style="display: grid; grid-template-columns: 40px minmax(0, 1fr) 120px 90px 150px; gap: 16px; align-items: center; min-height: 56px; padding: 0 20px; border-top: 1px solid var(--line); color: var(--ink-3); font-variant-numeric: tabular-nums">
+<p style="margin: 0">0</p><p style="margin: 0">Original</p><p style="margin: 0; text-align: right">0</p><p style="margin: 0; text-align: right">+9.1</p><p style="margin: 0">Flagged</p>
+</div>
+</div>
+</section>
+
+<aside aria-labelledby="tested" style="flex: 1 1 320px; min-width: 0; padding: 24px; border-radius: 18px; box-shadow: inset 0 0 0 1px var(--line-2); display: flex; flex-direction: column; gap: 12px">
+<h2 id="tested" style="margin: 0; font-size: 1.125rem; line-height: 1.35; font-weight: 600">This essay was borderline</h2>
+<p style="margin: 0; font-size: 0.9375rem; color: var(--ink-2)">Across the test set, rewriting rarely saved an AI essay, and it hurt honest ones:</p>
+<ul style="margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; font-size: 0.9375rem; color: var(--ink-2); font-variant-numeric: tabular-nums">
+<li>With typos in 10% of words, 98.9% of AI essays were still caught.</li>
+<li>After heavy T5 paraphrasing, 96.4% were.</li>
+<li>Paraphrasing student essays raised their flag rate from 0.7% to 2.7%.</li>
+</ul>
+<a href="https://github.com/jaiveerminhas06/AI-Generated-Text-Detection/blob/main/Notebooks/13_attack.ipynb" style="display: flex; align-items: center; min-height: 44px; font-size: 0.9375rem; font-weight: 500">The full attack results (notebook 13)</a>
+</aside>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2050}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: 'typo5' }; }
+  renderVals() {
+    const pos = (v) => ((v + 10) / 20 * 100).toFixed(2) + '%';
+    const on = 'background: var(--paper); box-shadow: var(--sh-2), inset 0 0 0 2px var(--pen)';
+    const off = 'background: oklch(from var(--paper) l c h / 0.6); box-shadow: inset 0 0 0 1px var(--line-2)';
+    const list = [
+      { id: 'typo5', title: 'Typos in 5% of words', cost: 'Instant', desc: 'Swaps or doubles letters in one word in twenty. Meaning stays; spelling gets worse.', result: 'Last run: +9.1 to +3.3', resultColor: 'var(--ink)' },
+      { id: 'typo10', title: 'Typos in 10% of words', cost: 'Instant', desc: 'One word in ten.', result: 'Not run on this essay', resultColor: 'var(--ink-3)' },
+      { id: 't5', title: 'Paraphrase with T5', cost: 'Slower: runs the T5 model', desc: 'Rewrites each sentence with a pretrained paraphraser. Check the result still says what the student meant.', result: 'Not run on this essay', resultColor: 'var(--ink-3)' }
+    ];
+    return {
+      methods: list.map((m) => ({ ...m, checked: this.state.picked === m.id ? 'true' : 'false', tab: this.state.picked === m.id ? '0' : '-1', style: this.state.picked === m.id ? on : off, pick: () => this.setState({ picked: m.id }) })),
+      run: () => {},
+      ticks: [-10, -5, 0, 5, 10].map((v) => ({ pos: pos(v), label: v > 0 ? '+' + v : (v < 0 ? '−' + Math.abs(v) : '0') }))
+    };
+  }
+}
+</script>
+</body>
+</html>

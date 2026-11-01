@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>States and edge cases</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-tint:oklch(from var(--pen) 0.94 0.035 h);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-1:oklch(0.965 0.07 100);--hl-2:oklch(0.925 0.12 95);--hl-3:oklch(0.865 0.15 85);--brick:oklch(0.50 0.16 32);--brick-tint:oklch(from var(--brick) 0.955 0.03 h);--skel:oklch(0.925 0.011 265);--sh-1:inset 0 1px 0 oklch(1 0 0 / 0.55),0 1px 1px oklch(0.30 0.04 265 / 0.10),0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);--sh-pen:inset 0 1px 0 oklch(1 0 0 / 0.22),0 1px 1px oklch(0.30 0.06 265 / 0.20),0 4px 12px -4px oklch(0.45 0.17 265 / 0.45)}
+body{margin:0;background:var(--desk)}
+h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
+mark{color:inherit;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+@keyframes gwpulse{0%,100%{opacity:.55}50%{opacity:1}}
+.gw-skel{background:var(--skel);border-radius:6px;animation:gwpulse 1.4s ease-in-out infinite}
+@keyframes gwspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.gw-skel{animation:none;opacity:.7}*{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 1440px; min-height: 3500px; box-sizing: border-box; padding: 72px 80px 80px; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 17px; line-height: 1.55; font-weight: 420; display: flex; flex-direction: column; gap: 56px">
+
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 64px">
+<h1 style="margin: 0; font-size: 52px; line-height: 1.05; letter-spacing: -0.028em; font-weight: 650; max-width: 14ch">States of the essay check</h1>
+<p style="margin: 0; max-width: 60ch; color: var(--ink-2)">The verdict panel is the part that changes, so each state is drawn there. The essay never disappears: not while scoring, not on an error. Scores in the not-flagged and long-essay tiles are illustrative; every other figure is from the project.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px 48px">
+
+<section aria-labelledby="st-empty" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-empty" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Empty</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">First visit. The page is an invitation: the paper is ready, the examples are one tap away, and Score stays disabled until there is enough to read.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2); display: flex; flex-direction: column; gap: 16px">
+<div style="background: var(--paper); border-radius: 6px; box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 14px">
+<label for="st-ta" style="font-weight: 600; font-size: 15px">Essay</label>
+<textarea id="st-ta" rows="5" placeholder="Paste an essay of at least 40 words, or load one of the examples." style="box-sizing: border-box; width: 100%; border: 0; padding: 0; background: transparent; color: var(--ink); font: 400 18px/2 Tinos, serif; resize: none"></textarea>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line)">
+<p style="margin: 0; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums">0 words</p>
+<button type="button" disabled style="min-height: 48px; padding: 0 24px; border: 0; border-radius: 10px; background: var(--desk-2); color: var(--ink-3); font: inherit; font-weight: 600">Score essay</button>
+</div>
+</div>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">No essay yet. Your score will land on a ruler from −10 to +10, next to the line where essays get flagged.</p>
+</div>
+</section>
+
+<section aria-labelledby="st-short" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-short" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Too short to score</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The demo needs 40 words. The count says how far there is to go instead of showing an error.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div style="background: var(--paper); border-radius: 6px; box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 14px">
+<p style="margin: 0; font-weight: 600; font-size: 15px">Essay</p>
+<p style="margin: 0; font: 400 18px/2 Tinos, serif">A driverless car is a scary concept. Some say that it is completely insane, but that is what they said when Neil Armstrong came up with the idea of walking on the moon.</p>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line)">
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="width: 120px; height: 4px; border-radius: 2px; background: var(--desk-2)"><div style="width: 80%; height: 4px; border-radius: 2px; background: var(--pen)"></div></div>
+<p style="margin: 0; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums">32 words. 8 more to go.</p>
+</div>
+<button type="button" disabled style="min-height: 48px; padding: 0 24px; border: 0; border-radius: 10px; background: var(--desk-2); color: var(--ink-3); font: inherit; font-weight: 600">Score essay</button>
+</div>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="st-opt" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-opt" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">The first 300 ms: optimistic</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Right after Score is pressed, before the model answers. The essay locks into the paper, the word count is final, and an empty marker waits at the left of the ruler. No skeleton yet: most answers arrive within this window.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 12px">
+<svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="animation: gwspin 900ms linear infinite; color: var(--pen)"><circle cx="8" cy="8" r="6.25" stroke="oklch(0.45 0.17 265 / 0.25)" stroke-width="1.75"></circle><path d="M14.25 8A6.25 6.25 0 0 0 8 1.75" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></svg>
+<p role="status" style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em">Reading 209 words…</p>
+</div>
+<div style="position: relative; height: 56px" aria-hidden="true">
+<div style="position: absolute; top: 28px; left: 0; right: 0; height: 2px; background: oklch(0.23 0.022 265 / 0.35)"></div>
+<div style="position: absolute; top: 4px; left: 89%; width: 3px; height: 44px; background: var(--pen)"></div>
+<div style="position: absolute; top: 20px; left: 0; width: 14px; height: 14px; margin-left: -1px; border: 2px dashed var(--ink-3); border-radius: 50%; box-sizing: border-box; background: var(--paper)"></div>
+</div>
+<p style="margin: 0; font-size: 14px; color: var(--ink-3)">The flag line is drawn at once because it doesn't depend on the essay.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="st-load" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-load" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Loading after 300 ms: skeleton</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The skeleton copies the real layout block for block, so nothing jumps when the verdict arrives. Highlight bars sit over the actual sentences, which stay readable.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2); display: flex; flex-direction: column; gap: 16px" aria-busy="true">
+<div style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 10px"><div class="gw-skel" style="width: 82%; height: 26px"></div><div class="gw-skel" style="width: 48%; height: 26px"></div></div>
+<div style="position: relative; height: 40px"><div style="position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: oklch(0.23 0.022 265 / 0.25)"></div><div style="position: absolute; top: 0; left: 89%; width: 3px; height: 40px; background: var(--pen)"></div></div>
+<div class="gw-skel" style="width: 70%; height: 14px"></div>
+</div>
+<div style="background: var(--paper); border-radius: 6px; box-shadow: var(--sh-2); padding: 24px 32px; font: 400 17px/2 Tinos, serif; color: var(--ink-2)">
+<p style="margin: 0">A driverless car is a scary concept. Some say that it is completely insane, but that is what they said when Neil Armstrong came up with the idea of walking on the moon…</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="st-err" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-err" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Error: the detector didn't answer</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The message replaces the verdict, says what happened and what to do, and keeps the essay. Brick is used for errors only, so it never reads as a verdict on the student.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div role="alert" style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2), inset 0 0 0 1px oklch(0.50 0.16 32 / 0.35); padding: 28px 32px; display: flex; flex-direction: column; gap: 12px">
+<p style="margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.01em">The detector didn't respond.</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The model server stopped answering after 30 seconds. Your essay is still on the page below. Check the server is running, then try again.</p>
+<div style="display: flex; gap: 8px; padding-top: 6px">
+<button type="button" style="min-height: 48px; padding: 0 24px; border: 0; border-radius: 10px; background: var(--pen); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font: inherit; font-weight: 600">Score again</button>
+<button type="button" style="min-height: 48px; padding: 0 16px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-weight: 500">Copy essay</button>
+</div>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="st-lang" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-lang" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Error: outside what it was trained on</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The detector would happily score French, but the number would be meaningless. It refuses, and says why.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div role="alert" style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2), inset 0 0 0 1px oklch(0.50 0.16 32 / 0.35); padding: 28px 32px; display: flex; flex-direction: column; gap: 12px">
+<p style="margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.01em">This essay looks like French.</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The detector only learned from English school essays, so any score it gave here would mean nothing. Paste an English essay to score it.</p>
+<button type="button" disabled style="align-self: flex-start; margin-top: 6px; min-height: 48px; padding: 0 24px; border: 0; border-radius: 10px; background: var(--desk-2); color: var(--ink-3); font: inherit; font-weight: 600">Score essay</button>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="st-pass" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-pass" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Not flagged</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The quiet outcome gets the same honesty as a flag: under the line is not proof of a human either. No green, no tick.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 20px">
+<p style="margin: 0; font-size: 26px; line-height: 1.12; font-weight: 650; letter-spacing: -0.018em">Not flagged. This reads like the student essays I was trained on.</p>
+<div style="position: relative; height: 56px" aria-hidden="true">
+<div style="position: absolute; top: 20px; left: 89%; right: 0; height: 16px; background: var(--hl-2)"></div>
+<div style="position: absolute; top: 27px; left: 0; right: 0; height: 2px; background: var(--ink)"></div>
+<div style="position: absolute; top: 4px; left: 89%; width: 3px; height: 44px; background: var(--pen)"></div>
+<div style="position: absolute; top: 4px; left: 19%; width: 0; height: 0; margin-left: -8px; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 13px solid var(--ink)"></div>
+<p style="position: absolute; top: 0; left: 19%; margin: 0 0 0 14px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums">This essay −6.2</p>
+</div>
+<p style="margin: 0; font-size: 14px; color: var(--ink-2)">Heavily paraphrased AI text can land here too. In testing, 3.6% of AI essays slipped under after a T5 rewrite.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="st-long" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-long" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Very long essay</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The model reads 512 tokens. Instead of pretending to read the rest, the paper shows exactly where reading stopped, and highlights end there.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div style="background: var(--paper); border-radius: 6px; box-shadow: var(--sh-2); padding: 24px 32px 0; font: 400 17px/2 Tinos, serif; overflow: hidden">
+<p style="margin: 0">…which is why the Electoral College still protects smaller states. <mark style="background: var(--hl-2); padding: 1px">Ultimately, its benefits outweigh the drawbacks critics describe.</mark></p>
+<div style="display: flex; align-items: center; gap: 12px; margin: 14px -32px; padding: 0 32px">
+<div style="flex: 1 1 auto; border-top: 2px dashed var(--pen)"></div>
+<p style="margin: 0; font-family: 'Atkinson Hyperlegible Next', sans-serif; font-size: 14px; color: var(--pen); font-style: italic; white-space: nowrap; font-variant-numeric: tabular-nums">I stopped reading here, at 512 tokens.</p>
+</div>
+<p style="margin: 0 0 20px; color: var(--ink-3)">Opponents argue that the system ignores the popular vote, yet the 2000 and 2016 elections show that…</p>
+</div>
+<p style="margin: 14px 0 0; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums">1,240 words. The score covers the first part only.</p>
+</div>
+</section>
+
+<section aria-labelledby="st-one" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-one" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">A class of one</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">With one essay, a class summary would just repeat it. The class view hands over to the single-essay check.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 14px">
+<p style="margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.01em">You added one essay.</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">A class summary needs at least five to say anything. Check this one on its own, or add more files.</p>
+<div style="display: flex; gap: 8px">
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 10px; background: var(--pen); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font-weight: 600; text-decoration: none">Check it on its own</a>
+<button type="button" style="min-height: 48px; padding: 0 16px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-weight: 500">Add files</button>
+</div>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="st-many" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="st-many" style="margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 650">Hundreds of essays</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Past 60 essays, dots overlap, so the strip turns into columns of 0.5-point bins. The table switches to 50 rows per page and stops animating reorders.</p>
+<div style="padding: 28px; border-radius: 22px; background: var(--desk-2)">
+<div style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 14px">
+<p style="margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.01em; font-variant-numeric: tabular-nums">31 of 412 essays cross the flag line.</p>
+<div style="position: relative; height: 110px" role="img" aria-label="Histogram of 412 essay scores">
+<div style="position: absolute; bottom: 18px; left: 89%; right: 0; height: 92px; background: oklch(0.925 0.12 95 / 0.45)"></div>
+<div style="position: absolute; bottom: 18px; left: 0; right: 0; display: flex; align-items: flex-end; gap: 2px; height: 92px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="40">
+<div style="flex: 1 1 0; height: {{b.h}}; border-radius: 2px 2px 0 0; {{b.style}}"></div>
+</sc-for>
+</div>
+<div style="position: absolute; bottom: 16px; left: 0; right: 0; height: 2px; background: var(--ink)"></div>
+<div style="position: absolute; bottom: 16px; left: 89%; width: 3px; height: 96px; background: var(--pen)"></div>
+<p style="position: absolute; bottom: 0; left: 0; margin: 0; font-size: 12px; color: var(--ink-3)">−10</p>
+<p style="position: absolute; bottom: 0; right: 0; margin: 0; font-size: 12px; color: var(--ink-3)">+10</p>
+</div>
+<p style="margin: 0; font-size: 14px; color: var(--ink-2)">Values illustrative. Even with no AI at all, a class this size would see around 9 false flags on a new topic at the strict line.</p>
+</div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const heights = [3,5,9,14,22,30,38,44,46,42,36,30,24,18,13,9,7,5,4,3,3,2,2,2,1,1,1,1,1,2,1,2,2,3,4,5,6,8,9,6];
+    const max = 46;
+    return {
+      bars: heights.map((h, i) => ({ h: Math.max(2, Math.round(h / max * 88)) + 'px', style: i >= 36 ? 'background: var(--pen)' : 'background: oklch(0.50 0.018 265 / 0.45)' }))
+    };
+  }
+}
+</script>
+</body>
+</html>
