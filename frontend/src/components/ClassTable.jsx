@@ -1,4 +1,7 @@
+import { useRef } from 'react'
 import styles from './ClassTable.module.css'
+import { useFlip } from '../lib/flip'
+import { PAGE_SIZE } from '../lib/classStats'
 import Button from './Button'
 import { ChevronDown, ChevronRight } from './Icons'
 import { fmt } from '../lib/format'
@@ -10,6 +13,8 @@ import { resultOf } from '../lib/classStats'
  *  sort: 'desc' | 'asc', onSort: () => void, onOpen: (item: import('../lib/classStats').ClassItem) => void, minWords: number,
  *  paging: { page: number, pages: number, from: number, to: number, total: number }, onPage: (page: number) => void }} props */
 export default function ClassTable({ rows, thresholds, setting, sort, onSort, onOpen, minWords, paging, onPage }) {
+  const body = useRef(/** @type {HTMLDivElement | null} */ (null))
+  useFlip(body, { duration: 220, enter: false, fadeAbove: PAGE_SIZE - 1 })   // sorting glides; a page of 50 only cross-fades
   const firstErrorId = rows.find((r) => r.status === 'error')?.id         // the "Show" button of the toast scrolls to this row
   return (
     <div className={styles.card}>
@@ -24,7 +29,7 @@ export default function ClassTable({ rows, thresholds, setting, sort, onSort, on
             <p role="columnheader">Result</p>
             <p role="columnheader"><span className="sr-only">Open</span></p>
           </div>
-          <div className={styles.body}>
+          <div className={styles.body} ref={body}>
             {rows.map((item) => {
               const res = resultOf(item, thresholds, setting)
               const err = item.status === 'error' ? (item.error?.code === 'too_short' ? `Too short: needs ${minWords} words` : res.text) : res.text
@@ -39,8 +44,8 @@ export default function ClassTable({ rows, thresholds, setting, sort, onSort, on
                 </>
               )
               return item.status === 'done'
-                ? <a key={item.id} role="row" href="/" className={styles.row} data-tone={res.tone} onClick={(e) => { e.preventDefault(); onOpen(item) }}>{cells}</a>
-                : <div key={item.id} role="row" className={styles.row} data-tone={res.tone} {...mark}>{cells}</div>
+                ? <a key={item.id} role="row" href="/" data-flip={item.id} className={styles.row} data-tone={res.tone} onClick={(e) => { e.preventDefault(); onOpen(item) }}>{cells}</a>
+                : <div key={item.id} role="row" data-flip={item.id} className={styles.row} data-tone={res.tone} {...mark}>{cells}</div>
             })}
           </div>
         </div>

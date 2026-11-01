@@ -1,5 +1,5 @@
 .scroll { overflow-x: auto; border-radius: var(--r-list); background: var(--paper); box-shadow: var(--sh-2); }
-.table { min-width: 700px; }
+.table { min-width: 700px; position: relative; }
 .row {
   display: grid; grid-template-columns: 40px minmax(0, 1fr) 64px 130px 80px 120px; gap: 16px; align-items: center; width: 100%; min-height: 56px; padding: 0 20px;
   border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; text-align: left; font-variant-numeric: tabular-nums;

@@ -19,7 +19,7 @@
 }
 
 /* the essay's marker: lands from the left end of the ruler, then follows --s */
-.marker { top: 0; left: 0; width: 0; height: 100px; transform: translateX(calc(var(--s) * 1cqw)); transition: transform 320ms var(--ease-out); animation: land 320ms var(--ease-out); }
+.marker { top: 0; left: 0; width: 0; height: 100px; transform: translateX(calc(var(--s) * 1cqw)); transition: transform var(--t-spring) var(--spring); animation: land var(--t-spring) var(--spring); }
 @keyframes land { from { transform: translateX(0); } }
 .triangle { position: absolute; top: 56px; left: -9px; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 14px solid var(--ink); }
 .stem { position: absolute; top: 68px; left: -1.5px; width: 3px; height: 30px; background: var(--ink); }
@@ -46,7 +46,9 @@
   .flip .here { transform: translateX(-10px); }
   .waiting { top: 46px; }
 }
+/* reduced motion: nothing slides. The marker appears where it belongs with a fade of at most 120 ms; the flag line jumps. */
 @media (prefers-reduced-motion: reduce) {
-  .marker { animation: fade 120ms linear; } @keyframes fade { from { opacity: 0; } }
-  .marker, .flagLine, .flagLabel, .zone { transition: opacity 120ms linear; }
+  .marker { animation: appear 120ms linear; transition: none; }
+  @keyframes appear { from { opacity: 0; } }
+  .flagLine, .flagLabel, .zone { transition: none; }
 }

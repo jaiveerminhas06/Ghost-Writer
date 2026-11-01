@@ -63,28 +63,46 @@ function useNotePositions(row) {
   }, [row])
 }
 
-/** @param {{ para: import('../lib/essayLayout').Paragraph, notes: import('../lib/notes').Note[], showCut: boolean }} props */
-function ParagraphRow({ para, notes, showCut }) {
+/** One paragraph with its margin notes. The yellow is painted on a second copy of the paragraph that sits exactly behind the text
+ *  (same words, same wrapping, transparent ink, hidden from screen readers) so that each mark can fade in with `opacity` alone: a
+ *  <mark> is inline text that may wrap over several lines, and fading its own background would mean animating a colour.
+ *  The real <mark> elements stay in the text itself, without a background, so they still mean "highlighted" to assistive tech.
+ *  `order` numbers the marked sentences from the top, which sets how late each one fades in (40 ms apart).
+ *  @param {{ para: import('../lib/essayLayout').Paragraph, notes: import('../lib/notes').Note[], showCut: boolean, order: Map<number, number> }} props */
+function ParagraphRow({ para, notes, showCut, order }) {
   const row = useRef(/** @type {HTMLDivElement | null} */ (null))
   useNotePositions(row)
-  const render = (/** @type {import('../lib/essayLayout').Piece[]} */ pieces) => pieces.map((p) => {
-    if (p.tier > 0) return <mark key={p.start} data-tier={p.tier} data-sentence={p.sentence}>{p.text}</mark>
+  const render = (/** @type {import('../lib/essayLayout').Piece[]} */ pieces, /** @type {boolean} */ paint) => pieces.map((p) => {
+    if (p.tier > 0) {
+      return paint
+        ? <mark key={p.start} data-tier={p.tier} style={/** @type {any} */ ({ '--i': order.get(/** @type {number} */ (p.sentence)) ?? 0 })}>{p.text}</mark>
+        : <mark key={p.start} data-tier={p.tier} data-sentence={p.sentence}>{p.text}</mark>
+    }
     return p.dim ? <span key={p.start} className={styles.dim}>{p.text}</span> : <span key={p.start}>{p.text}</span>
   })
+  const block = (/** @type {import('../lib/essayLayout').Piece[]} */ pieces, /** @type {string} */ extra) => {
+    if (!pieces.some((p) => p.tier > 0)) return <p className={`${styles.para} ${extra}`}>{render(pieces, false)}</p>
+    return (
+      <div className={styles.stack}>
+        <p className={`${styles.para} ${styles.paint} ${extra}`} aria-hidden="true">{render(pieces, true)}</p>
+        <p className={`${styles.para} ${extra}`}>{render(pieces, false)}</p>
+      </div>
+    )
+  }
   const cut = para.cutAt
   const before = cut === null ? para.pieces : para.pieces.slice(0, cut)
   const after = cut === null ? [] : para.pieces.slice(cut)
   return (
     <div className={styles.row} ref={row}>
       <div className={styles.textCol} data-text>
-        {before.length > 0 && <p className={styles.para}>{render(before)}</p>}
+        {before.length > 0 && block(before, '')}
         {showCut && (
           <div className={styles.cut}><i /><p>I stopped reading here, at 512 tokens.</p></div>
         )}
-        {after.length > 0 && <p className={`${styles.para} ${before.length ? styles.rest : ''}`}>{render(after)}</p>}
+        {after.length > 0 && block(after, before.length ? styles.rest : '')}
       </div>
       <div className={styles.notesCol}>
-        {notes.map((n) => <p key={n.id} className={styles.note} data-note data-sentence={n.sentence}>{n.text}</p>)}
+        {notes.map((n) => <p key={n.id} className={styles.note} data-note data-sentence={n.sentence} style={/** @type {any} */ ({ '--i': order.get(n.sentence) ?? 0 })}>{n.text}</p>)}
       </div>
     </div>
   )
@@ -100,6 +118,9 @@ export function EssayReader({ text, title, scoreInfo, explain, onEdit }) {
   const paragraphs = layoutEssay(text, sentences, scoreInfo.truncated ? scoreInfo.read_chars : text.length)
   const notes = explain ? marginNotes(sentences, explain.method) : []
   const firstCut = paragraphs.findIndex((p) => p.cutAt !== null)
+  /** @type {Map<number, number>} */
+  const order = new Map()                          // marked sentences, numbered from the top of the essay
+  for (const para of paragraphs) for (const piece of para.pieces) if (piece.tier > 0 && piece.sentence != null && !order.has(piece.sentence)) order.set(piece.sentence, order.size)
   const noteFor = (/** @type {number} */ i) => notes.filter((n) => paragraphs[i].pieces.some((p) => p.sentence === n.sentence && p.tier > 0))
   const copy = async () => {
     try {
@@ -122,7 +143,7 @@ export function EssayReader({ text, title, scoreInfo, explain, onEdit }) {
         </div>
       </div>
       <div className={styles.body}>
-        {paragraphs.map((p, i) => <ParagraphRow key={p.start} para={p} notes={noteFor(i)} showCut={i === firstCut} />)}
+        {paragraphs.map((p, i) => <ParagraphRow key={p.start} para={p} notes={noteFor(i)} showCut={i === firstCut} order={order} />)}
       </div>
     </article>
   )

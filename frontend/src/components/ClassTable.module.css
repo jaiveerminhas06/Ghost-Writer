@@ -8,7 +8,7 @@
 .sortCell { display: flex; justify-content: flex-end; }
 .sort { display: flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 0 0 8px; border: 0; background: transparent; color: var(--ink-2); font: inherit; font-weight: 600; cursor: pointer; }
 .flip { display: grid; transform: rotate(180deg); }
-.body { max-height: 560px; overflow-y: auto; }
+.body { max-height: 560px; overflow-y: auto; position: relative; }
 .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
 .muted { color: var(--ink-2); }
 .score { font-weight: 600; }

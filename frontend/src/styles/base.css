@@ -32,9 +32,10 @@ button { -webkit-tap-highlight-color: transparent; }
 /* content-box on purpose: the content is 1240 px wide and the gutters sit outside it, as in the artboards */
 .wrap { box-sizing: content-box; max-width: 1240px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
 
-/* Reduced motion: movement turns into a fade of 120 ms or less. Component CSS supplies the fades; this removes the rest. */
+/* Reduced motion: nothing moves. Of everything that could change over time, only opacity may, and for at most 120 ms: position, size and
+   colour changes happen at once. Components that play keyframe animations replace them with a fade in their own reduced-motion block. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0ms !important; scroll-behavior: auto !important; }
+  *, *::before, *::after { transition-property: opacity !important; transition-duration: 120ms !important; transition-timing-function: linear !important; scroll-behavior: auto !important; }
 }
 
 /* the spinner inside "working" buttons; under reduced motion it stays still and the button's label ("Scoring…") says the work is happening */

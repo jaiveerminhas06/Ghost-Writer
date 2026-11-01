@@ -7,7 +7,7 @@
 .card > p:first-child { color: var(--ink); font-size: var(--fs-body); }
 .card a { font-size: var(--fs-small); min-height: 44px; display: flex; align-items: center; }
 
-.anchor { position: absolute; right: 0; bottom: 56px; z-index: 2; width: min(380px, 100%); transform-origin: bottom right; animation: pop-in var(--t-base) var(--ease-out) both; }
+.anchor { position: absolute; right: 0; bottom: 56px; z-index: 2; width: min(380px, 100%); transform-origin: bottom right; animation: pop-in 180ms var(--ease-out) both; }
 .anchor[data-state="closed"] { animation: pop-out 120ms var(--ease-in) both; }
 @keyframes pop-in { from { opacity: 0; transform: scale(0.96); } }
 @keyframes pop-out { to { opacity: 0; transform: scale(0.96); } }

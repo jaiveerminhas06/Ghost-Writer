@@ -19,7 +19,7 @@ export default function ClassStrip({ scores, threshold, summary }) {
            aria-label={layout.mode === 'bars' ? `Histogram of ${scores.length} essay scores from minus 10 to plus 10. ${summary}` : `Each dot is one essay on the score scale from minus 10 to plus 10. ${summary}`}>
         <div className={styles.zone} />
         {layout.mode === 'dots' && layout.dots.map((d, i) => (
-          <i key={i} className={`${styles.dot} ${d.flagged ? styles.flagged : ''}`} style={{ left: `${d.pos}%`, bottom: 44 + d.stack * ROW }} />
+          <i key={i} className={`${styles.dot} ${d.flagged ? styles.flagged : ''}`} style={/** @type {any} */ ({ left: `${d.pos}%`, bottom: 44 + d.stack * ROW, '--n': i })} />
         ))}
         {layout.mode === 'bars' && (
           <div className={styles.columns}>

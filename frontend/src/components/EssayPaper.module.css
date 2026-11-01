@@ -27,10 +27,19 @@
 .textCol { flex: 999 1 460px; min-width: 0; padding: 0 clamp(20px, 5vw, 64px); font-family: var(--font-essay); font-size: var(--fs-essay); line-height: 2.05; }
 .para { margin: 0 0 1.4em; text-indent: 2.5em; white-space: pre-line; overflow-wrap: anywhere; }
 .rest { text-indent: 0; }
+/* both layers (see ParagraphRow) give a mark the same padding, so the words wrap identically and the yellow lines up with the text */
 .textCol mark { padding: 2px 1px; border-radius: var(--r-mark); }
-.textCol mark[data-tier="1"] { background: var(--hl-1); }
-.textCol mark[data-tier="2"] { background: var(--hl-2); }
-.textCol mark[data-tier="3"] { background: var(--hl-3); }
+.stack { display: grid; }
+.stack > * { grid-area: 1 / 1; }
+.paint { color: transparent; pointer-events: none; user-select: none; }
+.paint mark[data-tier="1"] { background: var(--hl-1); }
+.paint mark[data-tier="2"] { background: var(--hl-2); }
+.paint mark[data-tier="3"] { background: var(--hl-3); }
+/* highlights paint top to bottom: each mark fades in over 180 ms, 40 ms after the one above it (capped at 1.2 s); its note follows 120 ms later */
+.paint mark { animation: arrive 180ms var(--ease-out) min(calc(var(--i, 0) * 40ms), 1200ms) both; }
+.note { animation: arrive 180ms var(--ease-out) calc(min(calc(var(--i, 0) * 40ms), 1200ms) + 120ms) both; }
+@keyframes arrive { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .paint mark, .note { animation: arrive 120ms linear both; } }
 .dim { color: var(--ink-3); }
 
 /* where the detector stopped reading: a dashed pen rule with its note; marks end here and the rest is dimmed */

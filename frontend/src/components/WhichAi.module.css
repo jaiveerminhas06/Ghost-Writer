@@ -3,7 +3,7 @@
 /* opens by growing its row from 0fr to 1fr (no height animation) and fading the content in */
 .drawer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--t-move) var(--ease-out); }
 .drawer[data-open="true"] { grid-template-rows: 1fr; }
-.inner { overflow: hidden; min-height: 0; display: flex; flex-direction: column; gap: 10px; color: var(--ink-3); font-size: var(--fs-caption); opacity: 0; transition: opacity var(--t-base) var(--ease-out); }
+.inner { overflow: hidden; min-height: 0; display: flex; flex-direction: column; gap: 10px; color: var(--ink-3); font-size: var(--fs-caption); opacity: 0; transition: opacity 180ms var(--ease-out); }
 .drawer[data-open="true"] .inner { opacity: 1; }
 .fam { display: grid; grid-template-columns: minmax(0, 1fr) 40px; align-items: center; gap: 4px 12px; }
 .fam p:nth-child(2) { text-align: right; }
