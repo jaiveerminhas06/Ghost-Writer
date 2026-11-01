@@ -3,7 +3,7 @@ import styles from './MethodCards.module.css'
 /** Rewrite methods as a radio group. Each card is title, cost, description, last result; the cards share rows (CSS subgrid), so
  *  titles, costs, descriptions and results line up even when one description is longer. Arrow keys move the choice, as a real
  *  radio group does. A card with `unavailable` is dashed and says why. */
-/** @param {{ label: string, methods: { id: string, title: string, cost: string, desc: string, result: string, unavailable?: string }[], value: string | null, onChange: (id: string) => void, force?: string }} props */
+/** @param {{ label: string, methods: { id: string, title: string, cost: string, desc: string, result: string, muted?: boolean, unavailable?: string }[], value: string | null, onChange: (id: string) => void, force?: string }} props */
 export default function MethodCards({ label, methods, value, onChange, force }) {
   const usable = methods.filter((m) => !m.unavailable)
   const move = (e, id) => {
@@ -28,7 +28,7 @@ export default function MethodCards({ label, methods, value, onChange, force }) 
             <p className={styles.title}>{m.title}</p>
             <p className={`${styles.cost} num`}>{m.cost}</p>
             <p className={styles.desc}>{m.unavailable || m.desc}</p>
-            <p className={`${styles.result} num`}>{m.result}</p>
+            <p className={`${styles.result} num ${m.muted ? styles.muted : ""}`}>{m.result}</p>
           </div>
         )
       })}

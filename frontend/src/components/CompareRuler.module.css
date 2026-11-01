@@ -1,0 +1,28 @@
+/* Positions are percentages of the ruler's width written as cqw, so markers and the flag line move with transform (see Ruler.module.css). */
+.fit { container-type: inline-size; }
+.ruler { position: relative; height: 110px; margin: 0 4px; }
+.ruler > * { position: absolute; }
+.zone { top: 48px; left: 0; right: 0; height: 18px; background: var(--hl-2); transform-origin: right; transform: scaleX(calc((100 - var(--t)) / 100)); transition: transform var(--t-move) var(--ease-out); }
+.axis { top: 56px; left: 0; right: 0; height: 2px; background: var(--ink); }
+.tickWrap { top: 50px; width: 0; }
+.tick { position: absolute; top: 0; left: -1px; width: 2px; height: 14px; background: var(--ink); }
+.tickLabel { position: absolute; top: 22px; left: 0; transform: translateX(-50%); font-size: var(--fs-caption); color: var(--ink-3); }
+.flagLine { top: 18px; left: 0; width: 3px; height: 56px; margin-left: -1.5px; background: var(--pen); transform: translateX(calc(var(--t) * 1cqw)); transition: transform var(--t-move) var(--ease-out); }
+.flagLabel { top: 0; left: 0; white-space: nowrap; color: var(--pen); font-weight: 600; font-size: var(--fs-small); transform: translateX(calc(var(--t) * 1cqw - 100% - 10px)); transition: transform var(--t-move) var(--ease-out); }
+
+/* the dashed line between the markers: an SVG line with a non-scaling stroke, so stretching it with scaleX keeps the dashes even */
+.link { top: 55px; left: 0; width: 100cqw; height: 4px; transform-origin: left; transform: translateX(calc(var(--lo) * 1cqw)) scaleX(calc(var(--span) / 100)); transition: transform 320ms var(--ease-out); overflow: visible; }
+/* sits 1 px above the axis (as drawn), so the dashes read as thicker segments along it */
+.link line { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 6; }
+.before { top: 48px; left: -8px; width: 12px; height: 12px; border: 2px solid var(--ink); border-radius: 50%; background: var(--paper); box-sizing: content-box; margin-left: 0; transform: translateX(calc(var(--b) * 1cqw)); }
+.after { top: 47px; left: -9px; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 3px var(--paper); transform: translateX(calc(var(--a) * 1cqw)); transition: transform 320ms var(--ease-out); }
+.waiting { background: var(--paper); box-shadow: 0 0 0 3px var(--paper), inset 0 0 0 2px var(--ink-3); animation: waiting 1.4s ease-in-out infinite; }
+@keyframes waiting { 50% { opacity: 0.45; } }
+.afterLabel { top: 18px; left: 0; white-space: nowrap; font-weight: 700; font-size: var(--fs-small); transform: translateX(calc(var(--a) * 1cqw - 50%)); transition: transform 320ms var(--ease-out); }
+.beforeLabel { top: 90px; left: 0; white-space: nowrap; color: var(--ink-2); font-size: var(--fs-caption); transform: translateX(calc(var(--b) * 1cqw - 70%)); }
+
+@container (max-width: 520px) { .mid { display: none; } .flagLabel { font-size: var(--fs-tiny); } }
+@media (prefers-reduced-motion: reduce) {
+  .link, .after, .afterLabel, .flagLine, .flagLabel, .zone { transition: opacity 120ms linear; }
+  .waiting { animation: none; opacity: 0.7; }
+}

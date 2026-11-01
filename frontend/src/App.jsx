@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import styles from './App.module.css'
+import ErrorBoundary from './components/ErrorBoundary'
 import Header from './components/Header'
 import { ToastProvider } from './components/Toast'
 import { MetaProvider } from './state/MetaContext'
@@ -15,7 +16,7 @@ export default function App() {
         <EssayState>
           <a href="#main" className={styles.skip}>Skip to the page</a>
           <Header />
-          <main id="main" tabIndex={-1} className={styles.main}><Outlet /></main>
+          <main id="main" tabIndex={-1} className={styles.main}><ErrorBoundary><Outlet /></ErrorBoundary></main>
         </EssayState>
       </MetaProvider>
     </ToastProvider>

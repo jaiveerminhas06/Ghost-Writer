@@ -1,0 +1,2 @@
+.box { box-sizing: content-box; padding-block: 56px 96px; display: flex; flex-direction: column; gap: 16px; max-width: 60ch; }
+.box p { color: var(--ink-2); }

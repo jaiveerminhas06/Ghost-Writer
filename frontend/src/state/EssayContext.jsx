@@ -26,18 +26,23 @@ function initial() {
   return {
     text: saved.text || '', exampleId: saved.exampleId ?? null, strictness: saved.strictness === 'standard' ? 'standard' : 'strict',
     status: 'idle', score: null, scoredText: '', problem: null, explain: idle(), attribution: idle(),
+    attempts: [], selected: null, rewriting: null, rewriteProblem: null,
   }
 }
 
 /** @param {EssayState} s  @param {any} a  @returns {EssayState} */
 function reduce(s, a) {
   switch (a.type) {
-    case 'text': return { ...s, text: a.text, exampleId: a.exampleId ?? null, status: 'idle', score: null, problem: null, explain: idle(), attribution: idle() }
+    case 'text': return { ...s, text: a.text, exampleId: a.exampleId ?? null, status: 'idle', score: null, problem: null, explain: idle(), attribution: idle(), attempts: [], selected: null, rewriting: null, rewriteProblem: null }
     case 'strictness': return { ...s, strictness: a.value }
-    case 'scoring': return { ...s, text: a.text, exampleId: a.exampleId, status: 'scoring', score: null, scoredText: a.text, problem: null, explain: idle(), attribution: idle() }
+    case 'scoring': return { ...s, text: a.text, exampleId: a.exampleId, status: 'scoring', score: null, scoredText: a.text, problem: null, explain: idle(), attribution: idle(), attempts: [], selected: null, rewriting: null, rewriteProblem: null }
     case 'scored': return { ...s, status: 'scored', score: a.score }
     case 'failed': return { ...s, status: 'error', problem: a.problem }
     case 'explain': return { ...s, explain: { status: a.status, data: a.data ?? null, problem: a.problem ?? null } }
+    case 'rewriting': return { ...s, rewriting: { method: a.method, seed: a.seed }, rewriteProblem: null }
+    case 'rewritten': return { ...s, rewriting: null, attempts: [...s.attempts, a.attempt], selected: a.attempt.id }
+    case 'rewriteFailed': return { ...s, rewriting: null, rewriteProblem: a.problem }
+    case 'select': return { ...s, selected: a.id }
     case 'attribution': return { ...s, attribution: { status: a.status, data: a.data ?? null, problem: a.problem ?? null } }
     default: return s
   }
@@ -47,6 +52,7 @@ function reduce(s, a) {
 export function EssayProvider({ children, lowestFlagLine }) {
   const [state, dispatch] = useReducer(reduce, undefined, initial)
   const run = useRef(0)                       // each scoring gets a number; an answer for an older number is ignored
+  const attempts = useRef(1)                  // numbers the attempts 1, 2, 3 ... (0 is the original essay)
 
   useEffect(() => {
     try { sessionStorage.setItem(KEY, JSON.stringify({ text: state.text, exampleId: state.exampleId, strictness: state.strictness })) } catch { /* ignore */ }
@@ -86,6 +92,19 @@ export function EssayProvider({ children, lowestFlagLine }) {
     edit: () => { run.current++; dispatch({ type: 'text', text: state.text, exampleId: state.exampleId }) },
     setStrictness: (/** @type {'strict' | 'standard'} */ value) => dispatch({ type: 'strictness', value }),
     retryExplain: () => loadExplain(state.scoredText, run.current),
+    /** one rewrite of the scored essay, scored again by the server. An answer for an essay that has since changed is dropped. */
+    async rewrite(method, seed) {
+      const id = run.current
+      dispatch({ type: 'rewriting', method, seed })
+      try {
+        const r = await api.rewrite(state.scoredText, method, seed)
+        if (id !== run.current) return
+        dispatch({ type: 'rewritten', attempt: { id: attempts.current++, method, seed, edited: r.edited, wordsChanged: r.words_changed, share: r.words_changed_share, logit: r.logit } })
+      } catch (problem) {
+        if (id === run.current) dispatch({ type: 'rewriteFailed', problem })
+      }
+    },
+    selectAttempt: (id) => dispatch({ type: 'select', id }),
     /** the "which AI" guess is fetched the first time the drawer opens, not for every flagged essay */
     async loadAttribution() {
       if (state.attribution.status === 'loading' || state.attribution.status === 'done') return

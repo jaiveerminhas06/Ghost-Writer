@@ -130,4 +130,5 @@ Also agreed: throwaway artboard renderer outside the repo; "Meaning: unchanged" 
 
 - Phase 2 (API and tests): done, `3c51bae`.
 - Phase 3 (tokens, fonts, shell, /components): done, `c01842a`.
-- Phase 4 (Check an essay, desktop and phone, wired to the API): done. Pen colour comparison (`pages/PenCompare.jsx`) is temporary and goes once the owner picks a hue.
+- Phase 4 (Check an essay, desktop and phone, wired to the API): done, `f53fa80`. Pen colour set to `oklch(0.45 0.148 255)`, comparison removed, `b819c21`.
+- Phase 5 (Try to fool it, with "Try different typos" and the seed recorded per attempt): done.

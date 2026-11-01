@@ -51,17 +51,21 @@ def rates():
                    "familiar_topics_percent": settings.FLAG_RATES[name] * 100} for name in settings.FLAG_RATES}
 
 
+# The rewrites the page offers, and the row of results/13_attack.csv that measured each.
+ATTACK_ROWS = {"typos5": "typos 5%", "typos10": "typos 10%", "t5": "T5 paraphrase (T=1.0)", "t5_heavy": "T5 paraphrase (T=1.5)"}
+
+
 @lru_cache(maxsize=1)
 def attacks():
-    """What notebook 13 measured (at the standard 1% line): AI essays still caught after each rewrite, and human essays flagged."""
+    """What notebook 13 measured, at the standard 1% flag line: the share of AI essays still caught after each rewrite (and before
+    any: "original"), the share of student essays flagged, and how many words each rewrite changed in the AI essays."""
     a = pd.read_csv(settings.RESULTS / "13_attack.csv", index_col=0)
-    caught, humans = "DistilRoBERTa: % AI caught (test)", "DistilRoBERTa: % humans flagged"
+    caught, humans, changed = "DistilRoBERTa: % AI caught (test)", "DistilRoBERTa: % humans flagged", "% words changed (AI essays)"
     return {
         "threshold": "standard",
-        "caught_after": {"typos10": float(a.loc["typos 10%", caught]), "t5": float(a.loc["T5 paraphrase (T=1.0)", caught]),
-                         "t5_heavy": float(a.loc["T5 paraphrase (T=1.5)", caught])},
-        "humans_flagged": {"original": float(a.loc["original", humans]), "t5": float(a.loc["T5 paraphrase (T=1.0)", humans]),
-                           "t5_heavy": float(a.loc["T5 paraphrase (T=1.5)", humans])},
+        "caught_after": {"original": float(a.loc["original", caught]), **{m: float(a.loc[row, caught]) for m, row in ATTACK_ROWS.items()}},
+        "humans_flagged": {"original": float(a.loc["original", humans]), **{m: float(a.loc[row, humans]) for m, row in ATTACK_ROWS.items()}},
+        "words_changed_percent": {m: float(a.loc[row, changed]) for m, row in ATTACK_ROWS.items()},
     }
 
 

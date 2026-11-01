@@ -9,7 +9,7 @@
  * @typedef {object} Meta
  * @property {{ strict: number, standard: number }} thresholds   flag lines, on the score scale
  * @property {{ strict: Rates, standard: Rates }} rates
- * @property {{ threshold: string, caught_after: Record<string, number>, humans_flagged: Record<string, number> }} attacks
+ * @property {{ threshold: string, caught_after: Record<string, number>, humans_flagged: Record<string, number>, words_changed_percent: Record<string, number> }} attacks   keys: original (before any rewrite), typos5, typos10, t5, t5_heavy
  * @property {number} trained_on
  * @property {{ min_words: number, max_chars: number, max_tokens: number, max_files: number, file_types: string[] }} limits
  * @property {boolean} t5_available

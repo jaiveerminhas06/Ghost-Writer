@@ -12,4 +12,5 @@
 .title { font-weight: 600; }
 .cost { font-size: var(--fs-tiny); color: var(--ink-3); }
 .desc { font-size: var(--fs-small); color: var(--ink-2); }
+.muted { color: var(--ink-3); }
 .result { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); font-size: var(--fs-caption); }

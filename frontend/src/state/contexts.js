@@ -7,7 +7,11 @@ import { createContext, useContext } from 'react'
  *  @property {'idle' | 'scoring' | 'scored' | 'error'} status
  *  @property {import('../types').ScoreResult | null} score  @property {string} scoredText
  *  @property {import('../api').ApiProblem | null} problem
- *  @property {Async} explain  @property {Async} attribution */
+ *  @property {Async} explain  @property {Async} attribution
+ *  @property {import('../lib/fool').Attempt[]} attempts   every rewrite tried on the scored essay, oldest first
+ *  @property {number | null} selected   id of the attempt shown on the Try to fool it page (null = none yet)
+ *  @property {{ method: string, seed: number } | null} rewriting   a rewrite is waiting for the server
+ *  @property {import('../api').ApiProblem | null} rewriteProblem */
 /** @typedef {object} EssayApi
  *  @property {EssayState} state
  *  @property {(text: string) => void} setText   typing or pasting: the old score no longer describes this text
@@ -15,6 +19,8 @@ import { createContext, useContext } from 'react'
  *  @property {() => void} submit  @property {() => void} edit
  *  @property {(value: 'strict' | 'standard') => void} setStrictness
  *  @property {() => void} retryExplain
+ *  @property {(method: 'typos5' | 'typos10' | 't5' | 't5_heavy', seed: number) => void} rewrite   rewrites the scored essay and scores the result; the seed is kept with the attempt
+ *  @property {(id: number | null) => void} selectAttempt
  *  @property {() => void} loadAttribution   the "which AI" guess is fetched the first time the drawer opens */
 
 export const MetaContext = createContext(/** @type {{ state: MetaState, retry: () => void } | null} */ (null))
