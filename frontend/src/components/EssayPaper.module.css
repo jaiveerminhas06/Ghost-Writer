@@ -28,7 +28,7 @@
 .para { margin: 0 0 1.4em; text-indent: 2.5em; white-space: pre-line; overflow-wrap: anywhere; }
 .rest { text-indent: 0; }
 /* both layers (see ParagraphRow) give a mark the same padding, so the words wrap identically and the yellow lines up with the text */
-.textCol mark { padding: 2px 1px; border-radius: var(--r-mark); background: transparent; color: inherit; }
+.textCol mark { padding: 2px; border-radius: var(--r-mark); background: transparent; color: inherit; }
 .stack { display: grid; }
 .stack > * { grid-area: 1 / 1; }
 /* an animated mark gets its own stacking context, which paints above plain text: lift the real text above the paint layer explicitly */

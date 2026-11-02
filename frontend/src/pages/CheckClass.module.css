@@ -1,4 +1,4 @@
-.page { box-sizing: content-box; padding-block: 56px 120px; display: flex; flex-direction: column; gap: 40px; }
+.page { box-sizing: content-box; padding-block: 56px 96px; display: flex; flex-direction: column; gap: 40px; }
 .page > * { min-width: 0; }     /* a flex item defaults to its content's width; the table must scroll inside its own box instead */
 .top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 24px 48px; }
 .intro { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
@@ -7,7 +7,7 @@
 .known { padding-top: 6px; color: var(--ink) !important; font-weight: 500; max-width: 62ch; }
 .notice { font-size: var(--fs-small); color: var(--ink-2); }
 
-.summary { background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 52px); display: flex; flex-direction: column; gap: 28px; }
+.summary { background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 28px; }
 .summaryTop { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 20px 48px; }
 .summaryText { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .summaryText p:last-child { max-width: 62ch; color: var(--ink-2); }

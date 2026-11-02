@@ -13,7 +13,7 @@
 .go { flex: 1 1 200px; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding-bottom: 16px; }
 .goButton { min-height: 52px; padding-inline: 24px; }
 
-.result { background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 52px); display: flex; flex-direction: column; gap: 28px; }
+.result { background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 28px; }
 .resultHead { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px 48px; }
 .resultText { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
 .resultText p { max-width: 58ch; color: var(--ink-2); }

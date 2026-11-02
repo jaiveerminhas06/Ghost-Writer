@@ -93,22 +93,21 @@ Generator attribution ([11](Notebooks/11_attribution.ipynb)) looks excellent on 
 ## Demo
 
 ```
-streamlit run demo/app.py
+bash scripts/demo.sh
 ```
 
-Paste an essay or load an example. The demo shows the detector's score against the validation-chosen threshold, which sentences pushed the score up, a clearly-warned "most similar training sources" panel (flagged essays only), and a **"try to fool it"** button that adds typos or paraphrases the essay with T5 and scores it again. It also works on human essays, where it shows that paraphrasing honest work can make it look machine-written. (`?sample=0`, `1` or `2` in the address opens a built-in example.)
+One command: it builds the page if needed, starts one server that serves the page and the API together, loads every model once and opens http://localhost:8000. A five-minute click-by-click path for presenting it is in [docs/viva-demo.md](docs/viva-demo.md).
+
+The web app has three pages:
+
+- **Check an essay:** paste an essay (or a .docx, .pdf or .txt file) or load an example. The score is shown on a ruler against the flag line chosen on validation data (strict or standard), with the false-flag rates measured on student essays, sentence highlights, and a collapsed, clearly-warned "which AI is it most like?" panel.
+- **Try to fool it:** rewrite the essay with typos (5% or 10% of words) or a pretrained T5 paraphraser (light or heavy) and score it again. Every attempt, with its seed and words changed, is kept in a list. On a human essay the detector wrongly flags, it shows the other side of the problem: edits that add nothing can flip the answer.
+- **Check a class:** score a set of essays at once and see how many cross the flag line, against how many flags you would expect even if every essay were written by a student (a range, not one number). The two built-in demo classes (30 held-out essays each, real authors known) show the result against the true labels.
+
+Every figure on the pages is read from the results files in `results/`; none is typed into the page. Uploaded files are read in memory and never saved; scores stay in the browser tab and are cleared when it closes (checked by tests). The API is explained in [docs/api.md](docs/api.md). The earlier Streamlit demo still works (`streamlit run demo/app.py`) but do not run it at the same time as the web app: the GPU has 4 GB.
 
 ![The demo on a human essay the detector wrongly flags](images/demo_screenshot.png)
 
-The screenshot is the third built-in example: a careful, fluent *human* essay that the detector flags. Its highlighting shows where the score comes from, the attribution panel states that it cannot identify the model, and 5% typos are enough to push this borderline essay below the threshold.
-
-## Limitations
-
-- **"Human" means student essay** (grades 6–12, US, Persuade corpus). Fluent adult writing was never seen as human, and polished student essays are the ones most often flagged.
-- **A threshold set on one set of topics does not hold its false-positive rate on new ones.**
-- **The AI essays are from 2023-era models** and the prompting styles of the dataset's contributors. Newer models and other genres are untested.
-- **Robustness is shown only against the attacks tried here**, not against LLM rewriting.
-- **Explanations are approximate.** Sentence highlights show what the model reacted to, not how the student wrote; the verdict is about the whole essay ([14](Notebooks/14_explain.ipynb)).
 - **This is a course project.** It must not be used to make decisions about real students. More in the [model card](MODEL_CARD.md).
 
 ## Project structure
@@ -118,7 +117,13 @@ Notebooks/   01–14, one topic each, run in order (each opens with its goal and
 src/         data.py (the one way to load data), evaluate.py (shared scoring),
              detector.py (fine-tuned detector + thresholds), paraphraser.py (attack tools),
              explain.py (sentence highlighting), attribution.py (demo's source-similarity panel)
-demo/        app.py (Streamlit demo) and samples.json (three built-in examples)
+api/         FastAPI over src/ (score, explain, attribution, rewrite, batch, demo classes)
+frontend/    Vite + React web app (plain JavaScript with JSDoc types); `npm run check` runs lint, types and tests
+design/      the design spec and artboards the web app was built to
+tests/       46 API tests, including the privacy tests; run `pytest`
+scripts/     demo.sh (one-command start), warm_up.py, motion_audit.py
+docs/        api.md, viva-demo.md, frontend plan and decisions
+demo/        samples.json (three examples), class_sample/ (the two demo classes), app.py (older Streamlit demo)
 data/        processed/: deduplicated essays, splits, on-topic flags, data card (raw data not committed)
 results/     metrics for every model, as CSV
 images/      plots produced by the notebooks
@@ -147,11 +152,11 @@ Archive/     the original, flawed 100%-accuracy version
 1. `pip install -r requirements.txt`
 2. Download the [DAIGT-V2 train dataset](https://www.kaggle.com/datasets/thedrcat/daigt-v2-train-dataset) and save it as `data/raw/train.csv`.
 3. Run the notebooks in order from inside `Notebooks/`. Notebooks 01–07 run on CPU. 08 onward need a CUDA GPU (developed on an RTX 3050 Laptop, 4 GB). Pretrained models (DistilRoBERTa, GPT-2, T5) download from Hugging Face on first use, and trained weights are saved to the git-ignored `models/`.
-4. Start the demo with `streamlit run demo/app.py` (needs notebooks 08 and 09 first, for the detector and its thresholds).
+4. Start the demo with `bash scripts/demo.sh` (needs notebooks 08 and 09 first, for the detector and its thresholds; needs Node for the first build, and `pip install -r requirements-dev.txt` to run the tests).
 
 ## Status
 
-Weeks 1–8 of the plan are done: all the modelling, the explanations, the demo and the model card. Still to come: the written report and slides, then final polish.
+Weeks 1–8 of the plan are done: all the modelling, the explanations, the demo (now a web app, on the `frontend` branch) and the model card. Still to come: the written report and slides, then final polish.
 
 ## Author
 
