@@ -68,6 +68,17 @@ On the class page the sentence "you would still expect about N to cross it, prob
 
 `tests/test_api.py` checks the claim against the project's own files: every essay is in the `heldout_prompt` split (not `train` or `val`), its text is exactly the dataset row, and its label is the dataset's label. **Caution for the viva:** the result on these 30 (no student essay flagged) is a demonstration, not a measurement. With 19 student essays, "0 flagged" is also consistent with a true rate of up to about 15%.
 
+## Checking the motion (`scripts/motion_audit.py`)
+
+The design says animate only transform and opacity (with colour/border changes and one drawer as listed exceptions), and every movement becomes a fade of at most 120 ms when the visitor asks for reduced motion. `scripts/motion_audit.py` checks that on the real app instead of trusting the CSS: it walks through scoring, highlights, Strict/Standard, the popover, the "Which AI" drawer, Try to fool it, and both demo classes (sort, page, hover), twice (normally and with `prefers-reduced-motion` emulated), records every animation and transition the browser runs, and exits 1 if one breaks the rules.
+
+    pip install playwright                       # a development tool, not in requirements.txt
+    npm run dev --prefix frontend &              # the page on :5173; the API must be running on :8000
+    python scripts/motion_audit.py               # add --url http://localhost:8000 to audit the built page instead
+    python scripts/motion_audit.py --self-test   # shows the judge rejecting bad animations; needs no running app
+
+It uses the system Chromium (`CHROMIUM=/path` to choose another). It also fails if it recorded nothing, so a broken recorder cannot pass.
+
 ## `limiter.py`: why it exists
 
 A public demo can be hammered by one visitor (or a script), and the model runs on one small GPU. The limiter keeps a list of each visitor's recent requests and refuses the next one if they have used 60 "units" in the last minute. It answers `429 Too many requests, wait N seconds`. Rules:
