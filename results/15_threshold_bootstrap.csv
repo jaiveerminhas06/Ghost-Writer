@@ -1,0 +1,13 @@
+target FPR,set,point,only threshold lo,only threshold hi,full lo,full hi,k,n,wilson lo,wilson hi
+0.005,THRESHOLD (logit),7.7965,5.4335,9.047,,,12,2291,,
+0.005,"held-out prompts, on-topic humans",2.3077,0.927,3.6657,0.8604,3.6389,102,4420,1.9047,2.7935
+0.005,"held-out prompts, all humans",2.2849,0.9179,3.6296,0.8402,3.627,102,4464,1.8859,2.766
+0.005,Summer projects (on-topic humans),5.1546,2.0604,7.5043,1.89,7.5601,90,1746,4.2124,6.2938
+0.005,Electoral college (on-topic humans),0.4488,0.187,1.1593,0.1117,1.2561,12,2674,0.2569,0.7828
+0.005,"test, on-topic humans",0.3961,0.1761,0.7053,0.0882,0.875,9,2272,0.2085,0.7512
+0.01,THRESHOLD (logit),4.666,2.1953,7.4753,,,23,2291,,
+0.01,"held-out prompts, on-topic humans",3.8462,2.5566,4.7059,2.4395,4.924,170,4420,3.3181,4.4543
+0.01,"held-out prompts, all humans",3.8082,2.5314,4.6819,2.3481,4.8754,170,4464,3.2853,4.4106
+0.01,Summer projects (on-topic humans),7.732,5.6128,9.2784,5.2119,9.7365,135,1746,6.5698,9.0797
+0.01,Electoral college (on-topic humans),1.3089,0.561,1.7203,0.4524,1.9572,35,2674,0.9426,1.8149
+0.01,"test, on-topic humans",0.9243,0.5282,1.1884,0.3527,1.3698,21,2272,0.6053,1.4089

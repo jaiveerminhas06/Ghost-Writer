@@ -1,0 +1,42 @@
+claim,where,k,n,value %,lo,hi,note
+"test humans flagged, strict (0.5%) threshold","README, MODEL_CARD, 09",9.0,2272.0,0.39613,0.20854,0.75117,
+"unseen-prompt humans flagged, strict (0.5%) threshold","README, MODEL_CARD, 09",102.0,4420.0,2.30769,1.90471,2.7935,
+"Summer projects humans flagged, strict (0.5%) threshold","README, MODEL_CARD, 09",90.0,1746.0,5.15464,4.21242,6.29377,
+"Electoral college humans flagged, strict (0.5%) threshold","README, MODEL_CARD, 09",12.0,2674.0,0.44877,0.2569,0.7828,
+"test humans flagged, standard (1%) threshold","README, MODEL_CARD, 09, 14",21.0,2272.0,0.9243,0.60534,1.40893,
+"unseen-prompt humans flagged, standard (1%) threshold","README, MODEL_CARD, 09, 14",170.0,4420.0,3.84615,3.31812,4.45435,
+"Summer projects humans flagged, standard (1%) threshold","README, MODEL_CARD, 09, 14",135.0,1746.0,7.73196,6.56983,9.07968,
+"Electoral college humans flagged, standard (1%) threshold","README, MODEL_CARD, 09, 14",35.0,2674.0,1.3089,0.94264,1.81487,
+"unseen AI generators detected, strict threshold","README headline, MODEL_CARD",2031.0,2048.0,99.16992,98.67463,99.4811,
+"unseen AI generators detected, standard threshold","README headline, MODEL_CARD",2043.0,2048.0,99.75586,99.42973,99.89568,
+"unseen AI generators detected, default threshold",README table (99.9%),2046.0,2048.0,99.90234,99.64461,99.97322,
+"false-flag rate is several times higher on unseen prompts (ratio, strict)","MODEL_CARD (""4-8x"")",,,5.82564,3.28151,15.63318,"ratio, not %"
+"Summer projects worse than Electoral college (difference in % flagged, standard)","MODEL_CARD (""7.7%"")",,,6.42306,5.04379,7.75479,percentage points
+DistilRoBERTa beats TF-IDF on unseen-prompt AUC (difference),README table (1.000 vs 0.997),,,0.00262,0.00193,0.00336,AUC difference
+"Skip-gram init vs random init, unseen-prompt AUC (difference)","README / 07 (""no head start"")",,,-0.00377,-0.00799,0.0006,AUC difference
+"BiGRU vs BiLSTM, unseen-prompt AUC (difference)",07,,,-0.01952,-0.02292,-0.0164,AUC difference
+"BiGRU: unseen generators detected, default threshold",README table / 07,1958.0,2048.0,95.60547,94.62907,96.4111,
+"BiLSTM: unseen generators detected, default threshold",README table / 07,1860.0,2048.0,90.82031,89.49218,91.99559,
+"TF-IDF + SVM: unseen generators detected, default threshold",README table / 07,1802.0,2048.0,87.98828,86.50867,89.32565,
+GPT-2 perplexity: unseen generators detected (val 1% threshold),"README (""17.8%"")",365.0,2048.0,17.82227,16.22548,19.53954,
+TF-IDF: unseen-prompt humans flagged at default (0),"MODEL_CARD / 09 (""2.1% -> 33.8%"")",93.0,4420.0,2.10407,1.72069,2.57064,
+TF-IDF: unseen-prompt humans flagged at val 1%,"MODEL_CARD / 09 (""2.1% -> 33.8%"")",1494.0,4420.0,33.8009,32.42095,35.20899,
+"AI caught, no attack (test)",13 / README / MODEL_CARD,471.0,473.0,99.57717,98.47154,99.88397,
+"AI caught, typos 10% (test)",13 / README / MODEL_CARD,468.0,473.0,98.94292,97.54957,99.54766,
+"AI caught, T5 light (test)",13 / README / MODEL_CARD,471.0,473.0,99.57717,98.47154,99.88397,
+"AI caught, T5 heavy (test)",13 / README / MODEL_CARD,456.0,473.0,96.40592,94.31998,97.74414,
+"humans flagged, no attack",13 / README / MODEL_CARD,2.0,300.0,0.66667,0.18301,2.39781,
+"humans flagged, after T5 light paraphrase",13 / README / MODEL_CARD,8.0,300.0,2.66667,1.35729,5.17295,
+"humans flagged, after T5 heavy paraphrase",13 / README / MODEL_CARD,1.0,300.0,0.33333,0.05886,1.86372,
+"median words, flagged humans minus other humans",MODEL_CARD / 14 (489 vs 441 words; 0.00% vs 0.56%),,,48.0,-12.025,131.0,191 flagged vs 6501 other humans; difference
+"misspelling % of words, flagged minus other humans",MODEL_CARD / 14 (489 vs 441 words; 0.00% vs 0.56%),,,-0.75995,-0.83896,-0.67852,191 flagged vs 6501 other humans; difference
+partly-AI essays (3 AI sentences inserted) flagged,"MODEL_CARD (""3%"")",6.0,200.0,3.0,1.38201,6.38951,
+IG precision@3 minus random precision@3 on spliced essays,14 (14.5% vs 22.8%),,,-8.2975,-10.79261,-5.42177,n=200 essays; percentage points
+attribution of unseen source radek_500 (TF-IDF + LinearSVM) correct family,"README / MODEL_CARD (""0-28%"")",0.0,500.0,0.0,0.0,0.76246,
+attribution of unseen source radek_500 (DistilRoBERTa) correct family,"README / MODEL_CARD (""0-28%"")",0.0,500.0,0.0,0.0,0.76246,
+attribution of unseen source palm-text-bison1 (TF-IDF + LinearSVM) correct family,"README / MODEL_CARD (""0-28%"")",98.0,349.0,28.08,23.6237,33.01406,
+attribution of unseen source palm-text-bison1 (DistilRoBERTa) correct family,"README / MODEL_CARD (""0-28%"")",86.0,349.0,24.64,20.41303,29.42282,
+attribution of unseen source NousResearch/Llama-2-7b-chat-hf (TF-IDF + LinearSVM) correct family,"README / MODEL_CARD (""0-28%"")",70.0,400.0,17.5,14.09036,21.52796,
+attribution of unseen source NousResearch/Llama-2-7b-chat-hf (DistilRoBERTa) correct family,"README / MODEL_CARD (""0-28%"")",1.0,400.0,0.25,0.04414,1.40236,
+attribution of unseen source mistralai/Mistral-7B-Instruct-v0.1 (TF-IDF + LinearSVM) correct family,"README / MODEL_CARD (""0-28%"")",7.0,399.0,1.75,0.85236,3.57658,
+attribution of unseen source mistralai/Mistral-7B-Instruct-v0.1 (DistilRoBERTa) correct family,"README / MODEL_CARD (""0-28%"")",0.0,399.0,0.0,0.0,0.95363,
