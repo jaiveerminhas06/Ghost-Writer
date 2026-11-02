@@ -1,15 +1,18 @@
 import styles from './ExampleList.module.css'
 
-/** "Load the demo class": one option, styled like the examples on Check an essay. It is selected once the demo class is what is on
- *  the page. @param {{ count: number, selected: boolean, disabled: boolean, onLoad: () => void }} props */
-export default function DemoClassOption({ count, selected, disabled, onLoad }) {
+/** "Demo classes": one option for each held-out topic, named by the topic and styled like the examples on Check an essay. The one that is
+ *  on the page is selected. Choosing one replaces whatever class is there.
+ *  @param {{ classes: { id: string, name: string, essays: number }[], selected: string | null, disabled: boolean, onLoad: (id: string) => void }} props */
+export default function DemoClassOption({ classes, selected, disabled, onLoad }) {
   return (
     <div className={styles.field}>
-      <p id="demo-class" className={styles.label}>Demo class</p>
+      <p id="demo-class" className={styles.label}>Load the demo class</p>
       <div role="group" aria-labelledby="demo-class" className={styles.list}>
-        <button type="button" className={styles.option} aria-pressed={selected} disabled={disabled} onClick={onLoad}>
-          <span>Load the demo class</span><span className={`${styles.words} num`}>{count} essays</span>
-        </button>
+        {classes.map((c) => (
+          <button key={c.id} type="button" className={styles.option} aria-pressed={selected === c.id} disabled={disabled} onClick={() => onLoad(c.id)}>
+            <span>{c.name}</span><span className={`${styles.words} num`}>{c.essays} essays</span>
+          </button>
+        ))}
       </div>
       <p className={styles.words} style={{ fontSize: 'var(--fs-caption)' }}>Student and AI essays on a topic the model never saw, with the real authors known.</p>
     </div>

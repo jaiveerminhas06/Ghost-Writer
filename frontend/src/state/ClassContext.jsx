@@ -26,6 +26,9 @@ export function ClassProvider({ children, maxFileBytes = 5 * 1024 * 1024 }) {
   const [labels, setLabels] = useState(() => {
     try { return /** @type {Record<string, string>} */ (JSON.parse(sessionStorage.getItem(LABELS) || '{}')) } catch { return {} }
   })
+  const [demoTopic, setDemoTopic] = useState(() => {
+    try { return sessionStorage.getItem(LABELS + '-topic') } catch { return null }
+  })
   const [working, setWorking] = useState(false)
   const [notice, setNotice] = useState(/** @type {string | null} */ (null))
   const [reveal, setReveal] = useState(0)
@@ -114,23 +117,27 @@ export function ClassProvider({ children, maxFileBytes = 5 * 1024 * 1024 }) {
     setItems([])
     setNotice(null)
     setLabels({})
-    try { sessionStorage.removeItem(KEY); sessionStorage.removeItem(LABELS) } catch { /* ignore */ }
+    setDemoTopic(null)
+    try { sessionStorage.removeItem(KEY); sessionStorage.removeItem(LABELS); sessionStorage.removeItem(LABELS + '-topic') } catch { /* ignore */ }
   }, [])
 
-  /** The demo class: 30 essays whose real authors are known. They go through the same path as files the visitor adds. */
-  const loadDemo = useCallback(async () => {
+  /** A demo class: 30 essays whose real authors are known. It replaces the class on the page (so two topics never mix in one summary)
+   *  and goes through the same path as files the visitor adds. */
+  const loadDemo = useCallback(async (/** @type {string} */ topic) => {
     try {
-      const d = await api.demoClass()
+      const d = await api.demoClass(topic)
+      clear()
       setLabels(d.labels)
-      try { sessionStorage.setItem(LABELS, JSON.stringify(d.labels)) } catch { /* ignore */ }
+      setDemoTopic(topic)
+      try { sessionStorage.setItem(LABELS, JSON.stringify(d.labels)); sessionStorage.setItem(LABELS + '-topic', topic) } catch { /* ignore */ }
       addFiles(d.essays.map((e) => new File([e.text], e.name, { type: 'text/plain' })))
     } catch (e) {
       toast.show({ kind: 'error', message: /** @type {api.ApiProblem} */ (e).title || "Couldn't load the demo class." })
     }
-  }, [addFiles, toast])
+  }, [addFiles, clear, toast])
 
   return (
-    <ClassContext.Provider value={{ items, working, notice, reveal, labels, loadDemo, addFiles, clear, showErrors: () => setReveal((n) => n + 1) }}>
+    <ClassContext.Provider value={{ items, working, notice, reveal, labels, demoTopic, loadDemo, addFiles, clear, showErrors: () => setReveal((n) => n + 1) }}>
       {children}
     </ClassContext.Provider>
   )

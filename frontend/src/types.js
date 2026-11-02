@@ -15,7 +15,7 @@
  * @property {{ min_words: number, max_chars: number, max_tokens: number, max_files: number, max_file_bytes: number, file_types: string[] }} limits
  * @property {boolean} t5_available
  * @property {Example[]} examples
- * @property {{ essays: number, human: number, ai: number }} [demo_class]   the demo class on the Check a class page
+ * @property {{ id: string, name: string, essays: number, human: number, ai: number }[]} [demo_classes]   the demo classes on the Check a class page, one per held-out topic
  */
 
 /**

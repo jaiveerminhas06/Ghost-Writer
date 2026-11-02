@@ -55,7 +55,7 @@ export const attribution = (text) => request('/attribution', { body: { text }, s
 export const rewrite = (text, method, seed) =>
   request('/rewrite', { body: { text, method, ...(seed === undefined ? {} : { seed }) }, seconds: method.startsWith('t5') ? SECONDS.t5 : SECONDS.typos })
 /** @returns {Promise<{ essays: { name: string, text: string }[], labels: Record<string, 'human' | 'ai'> }>} */
-export const demoClass = () => request('/demo-class', { seconds: SECONDS.meta })
+export const demoClass = (/** @type {string} */ topic) => request(`/demo-class/${encodeURIComponent(topic)}`, { seconds: SECONDS.meta })
 /** @param {File[]} files  @returns {Promise<{ results: import('./types').BatchItem[] }>} */
 export const batch = (files) => {
   const form = new FormData()

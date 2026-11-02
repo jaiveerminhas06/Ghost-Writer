@@ -47,7 +47,8 @@ export function useEssay() {
  *  @property {string | null} notice   why things are paused (the server asked us to slow down)
  *  @property {number} reveal   bumps when the "Show" button of the could-not-be-scored toast is pressed
  *  @property {Record<string, string>} labels   the true author (human or ai) of each file, for the demo class only; empty otherwise
- *  @property {() => Promise<void>} loadDemo   adds the 30 demo essays to the class
+ *  @property {string | null} demoTopic   which demo class is loaded (its id), or null
+ *  @property {(topic: string) => Promise<void>} loadDemo   replaces the class with one of the demo classes
  *  @property {(files: File[]) => void} addFiles
  *  @property {() => void} clear
  *  @property {() => void} showErrors */
