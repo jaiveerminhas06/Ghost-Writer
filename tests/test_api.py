@@ -23,7 +23,7 @@ def test_meta_reads_thresholds_and_rates_from_the_results_files(client):
     assert m["rates"]["standard"]["worst_topic"]["percent"] == 7.7
     assert m["trained_on"] == 28006
     assert m["limits"]["min_words"] == 40 and m["limits"]["max_tokens"] == 512 and m["limits"]["max_file_bytes"] == settings.MAX_FILE_BYTES
-    assert m["api_version"] == settings.API_VERSION == 2
+    assert m["api_version"] == settings.API_VERSION == 3
     assert m["attacks"]["caught_after"]["t5_heavy"] == 96.41 and m["attacks"]["humans_flagged"]["t5"] == 2.67
     assert m["attacks"]["caught_after"]["original"] == 99.58 and m["attacks"]["caught_after"]["typos5"] == 99.37
     assert m["attacks"]["words_changed_percent"] == {"typos5": 4.05, "typos10": 8.2, "t5": 15.33, "t5_heavy": 42.55}
@@ -229,26 +229,50 @@ def test_deep_links_get_index_html_and_api_paths_stay_json(client, monkeypatch, 
     assert client.get("/api/nope").json()["code"] == "not_found"
 
 
-# ---------- the demo class ----------
-def test_demo_class_is_served_with_its_labels(client):
-    d = client.get("/api/demo-class").json()
-    assert len(d["essays"]) == 30 and set(d["labels"]) == {e["name"] for e in d["essays"]}
-    assert sorted(set(d["labels"].values())) == ["ai", "human"] and list(d["labels"].values()).count("human") == 19
-    assert client.get("/api/meta").json()["demo_class"] == {"essays": 30, "human": 19, "ai": 11}
+# ---------- the demo classes ----------
+TOPICS = ["electoral_college", "summer_projects"]
 
 
-def test_demo_class_never_includes_an_essay_the_model_trained_or_tuned_on():
-    """The claim in the viva: every demo essay comes from the held-out prompt, checked against the project's own split file,
-    and each file is exactly the essay its row_id says it is, with the label the dataset gives it."""
+def test_demo_classes_are_listed_and_served_with_their_labels(client):
+    meta = client.get("/api/meta").json()
+    assert [d["id"] for d in meta["demo_classes"]] == TOPICS
+    assert [d["name"] for d in meta["demo_classes"]] == ["Does the electoral college work?", "Summer projects"]
+    assert all((d["essays"], d["human"], d["ai"]) == (30, 19, 11) for d in meta["demo_classes"])
+    for slug in TOPICS:
+        d = client.get(f"/api/demo-class/{slug}").json()
+        assert len(d["essays"]) == 30 and set(d["labels"]) == {e["name"] for e in d["essays"]}
+        assert list(d["labels"].values()).count("human") == 19 and d["topic"] == slug
+    names = [e["name"] for s_ in TOPICS for e in client.get(f"/api/demo-class/{s_}").json()["essays"]]
+    assert len(set(names)) == 60                                           # the two classes never share a file name
+    assert client.get("/api/demo-class/nope").status_code == 404
+
+
+def test_demo_classes_never_include_an_essay_the_model_trained_or_tuned_on():
+    """Every demo essay comes from the held-out prompts, checked against the project's own split file; each file is exactly the essay
+    its row_id says it is, with the label the dataset gives it, on the topic the class is named for."""
     import json
     import pandas as pd
-    spec = json.loads((settings.DEMO_CLASS / "labels.json").read_text())
     splits = pd.read_csv(settings.SPLITS_CSV, index_col="row_id")["split"]
     essays = pd.read_csv(settings.ROOT / "data" / "processed" / "train_deduped.csv", usecols=["text", "label", "prompt_name"])
     essays["text"] = essays["text"].str.strip()                           # the same stripping as src/data.py
-    for e in spec["essays"]:
-        assert splits.loc[e["row_id"]] == "heldout_prompt" and splits.loc[e["row_id"]] not in {"train", "val"}
-        row = essays.loc[e["row_id"]]
-        assert (settings.DEMO_CLASS / e["file"]).read_text() == row["text"]
-        assert e["label"] == ("human" if row["label"] == 0 else "ai") and row["prompt_name"] == spec["prompt"]
-    assert len({e["row_id"] for e in spec["essays"]}) == 30                # no essay twice
+    seen = set()
+    for slug in TOPICS:
+        spec = json.loads((settings.DEMO_CLASS / slug / "labels.json").read_text())
+        for e in spec["essays"]:
+            assert splits.loc[e["row_id"]] == "heldout_prompt"            # never train or val
+            row = essays.loc[e["row_id"]]
+            assert (settings.DEMO_CLASS / slug / e["file"]).read_text() == row["text"]
+            assert e["label"] == ("human" if row["label"] == 0 else "ai") and row["prompt_name"] == spec["prompt"]
+            seen.add(e["row_id"])
+    assert len(seen) == 60                                                 # no essay twice, in or across classes
+
+
+def test_rebuilding_a_class_gives_the_same_essays_in_the_same_order():
+    """The classes are reproducible: running the build function again picks the very rows that are saved."""
+    import json
+    from demo.class_sample import make_class_sample as build
+    for slug in TOPICS:
+        _, chosen, _ = build.build(slug)
+        saved = json.loads((settings.DEMO_CLASS / slug / "labels.json").read_text())["essays"]
+        assert [int(i) for i in chosen.index] == [e["row_id"] for e in saved]
+        assert list(chosen["file"]) == [e["file"] for e in saved]

@@ -103,5 +103,5 @@ def meta():
                    "max_files": settings.MAX_FILES_PER_REQUEST, "max_file_bytes": settings.MAX_FILE_BYTES, "file_types": [".docx", ".pdf", ".txt"]},
         "t5_available": t5_available(),
         "examples": examples(),
-        "demo_class": demo.counts(),
+        "demo_classes": demo.listing(),
     }

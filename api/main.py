@@ -118,10 +118,10 @@ def meta():
     return results.meta()
 
 
-@app.get("/api/demo-class")
-def demo_class():
-    """The demo class's essays and their true labels (see api/demo.py)."""
-    return demo.demo_class()
+@app.get("/api/demo-class/{topic}")
+def demo_class(topic: str):
+    """One demo class: its essays and their true labels (see api/demo.py)."""
+    return demo.demo_class(topic)
 
 
 @app.post("/api/score")

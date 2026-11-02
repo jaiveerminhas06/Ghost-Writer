@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 # Bump this when /api/meta or any response changes shape. The page knows which version it was built for and says so when they differ.
-API_VERSION = 2
+API_VERSION = 3          # 3: /api/meta lists demo_classes (two topics) instead of one demo_class
 
 # --- the detector's rules -------------------------------------------------------------------------
 MIN_WORDS = 40                 # below this a score would mean little (same rule as demo/app.py)
