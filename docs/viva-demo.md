@@ -45,12 +45,14 @@ Click **Try to fool it** on that essay. Choose **Typos in 5% of words**, press *
 Result: **+9.1 to −6.6**, not flagged, with 9 of 209 words changed. Say: "Nine misspellings took a flagged human essay below the line. The model reads polish as machine, so mistakes read as human. A pass is no proof of a human either." Press **Try different typos** once to show it is a seeded random edit (the seed is in the table).
 Then go back to the Claude essay (Check an essay, Claude example, Try to fool it) and run **Typos in 10%**: **+9.7 to +9.3**, still flagged. Run **Paraphrase with T5** (about 15% of words changed): **+9.7**, unchanged. Say: "Typos and a pretrained paraphraser barely move a clearly machine essay. Across the test set 98.9% of AI essays are still caught with 10% typos and 96.4% after the heavy T5 paraphrase. I did not test LLM 'humaniser' rewriting."
 
-**4:00 — Check a class** (60 s)
-Click **Check a class**, then **Load the demo class**, choose **Does the electoral college work?**.
-Result: **11 of 30 essays cross the flag line**. Point out the sentence "Known authors": **0 of the 19 student essays were flagged, 11 of the 11 AI essays were**. Say: "These 30 essays come from a topic held out of training, never from the training split. The selection rule is fixed in code (seed 42, the real student-to-AI ratio) and I did not choose them by score." If asked about the other topic: **Summer projects** gives 13 of 30, with 2 of the 19 student essays flagged: the same method, the worse result, shown anyway.
-Point out the expected-false-flags sentence: "If all 30 were students, about one would be flagged, probably between 0 and 3" (exact Poisson interval, explained in `docs/api.md`).
+**4:00 — Check a class** (75 s)
+Click **Check a class**, then **Load the demo class**, choose **Summer projects** first.
+Say in one line: "Both demo classes were picked before any score was seen: the same fixed rule (held-out topic, the real student-to-AI ratio, seed 42), never chosen by score."
+Result: **13 of 30 essays cross the flag line**. Point out the "Known authors" sentence: **2 of the 19 student essays were flagged, and 11 of the 11 AI essays were.** Say: "Summer projects is the topic where the detector does worst. At its measured 5.2% false-flag rate (strict) I would expect about one of 19 students flagged (19 × 5.2% ≈ 1), and I got two. The page's own sentence compares with the 2.3% average over both unseen topics, so it says 'about 0.4'; for this topic the fairer comparison is the 5.2%. Either way, two out of nineteen is a small count: one more or less would change the picture." Switch **Strict / Standard**: still 13 of 30 and 2 of 19 flagged, with the line moving from +7.8 to +4.7.
+Point out the expected-false-flags sentence: "If all 30 were students you would still expect about one to cross it, probably between 0 and 3" (exact Poisson interval, explained in `docs/api.md`).
+Then load **Does the electoral college work?** as the second class: **0 of the 19 student essays flagged, 11 of 11 AI essays flagged.** Say: "Same method, a better topic. I show both because showing only this one would flatter the detector." These 30 essays come from topics held out of training, never from the training split.
 
-**4:45 — Close** (15 s)
+**5:15 — Close** (15 s; the whole path runs about five and a half minutes, so drop the typos-10% run if you are short)
 Say: "What I would not claim: it works on non-native writers, adults, newer models, or partly AI-written essays. Nobody has measured that. The model card says so." (This list is on the Check an essay page, bottom.)
 
 ## If the API is slow
