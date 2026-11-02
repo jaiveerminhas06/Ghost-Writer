@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Components</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-hover:oklch(from var(--pen) calc(l - 0.05) c h);--pen-active:oklch(from var(--pen) calc(l - 0.09) calc(c - 0.01) h);--pen-tint:oklch(from var(--pen) 0.94 0.035 h);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-1:oklch(0.965 0.07 100);--hl-2:oklch(0.925 0.12 95);--hl-3:oklch(0.865 0.15 85);--brick:oklch(0.50 0.16 32);--brick-tint:oklch(from var(--brick) 0.955 0.03 h);--sh-1:inset 0 1px 0 oklch(1 0 0 / 0.55),0 1px 1px oklch(0.30 0.04 265 / 0.10),0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);--sh-3:0 1px 2px oklch(0.30 0.04 265 / 0.12),0 28px 64px -18px oklch(0.30 0.06 265 / 0.32);--sh-pen:inset 0 1px 0 oklch(1 0 0 / 0.22),0 1px 1px oklch(0.30 0.06 265 / 0.20),0 4px 12px -4px oklch(0.45 0.17 265 / 0.45)}
+body{margin:0;background:var(--desk)}
+h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
+@keyframes gwspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 1440px; min-height: 2700px; box-sizing: border-box; padding: 72px 80px 80px; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 17px; line-height: 1.55; font-weight: 420; display: flex; flex-direction: column; gap: 64px">
+
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 64px">
+<h1 style="margin: 0; font-size: 52px; line-height: 1.05; letter-spacing: -0.028em; font-weight: 650">Components</h1>
+<p style="margin: 0; max-width: 60ch; color: var(--ink-2)">Each state is drawn, not described. Hover exists only on pointer devices; on touch, the pressed state shows while the finger is down. Every target is at least 44 px tall, including icon buttons whose glyph is 18 px.</p>
+</div>
+
+<section aria-labelledby="buttons" style="display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 48px">
+<h2 id="buttons" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Buttons</h2>
+<div style="display: grid; grid-template-columns: 120px repeat(6, minmax(0, 1fr)); gap: 16px 16px; align-items: center">
+<p style="margin: 0"></p>
+<p style="margin: 0; font-size: 13px; color: var(--ink-3)">Rest</p><p style="margin: 0; font-size: 13px; color: var(--ink-3)">Hover (pointer)</p><p style="margin: 0; font-size: 13px; color: var(--ink-3)">Pressed, 0.97</p><p style="margin: 0; font-size: 13px; color: var(--ink-3)">Keyboard focus</p><p style="margin: 0; font-size: 13px; color: var(--ink-3)">Working</p><p style="margin: 0; font-size: 13px; color: var(--ink-3)">Disabled</p>
+
+<p style="margin: 0; font-weight: 600; font-size: 15px">Primary</p>
+<button type="button" style="min-height: 48px; border: 0; border-radius: 10px; background: var(--pen); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font: inherit; font-weight: 600">Score essay</button>
+<button type="button" style="min-height: 48px; border: 0; border-radius: 10px; background: var(--pen-hover); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font: inherit; font-weight: 600">Score essay</button>
+<button type="button" style="min-height: 48px; border: 0; border-radius: 10px; background: var(--pen-active); box-shadow: inset 0 1px 2px oklch(0.20 0.06 265 / 0.35); color: oklch(0.99 0.005 265); font: inherit; font-weight: 600; transform: scale(0.97)">Score essay</button>
+<button type="button" style="min-height: 48px; border: 0; border-radius: 10px; background: var(--pen); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font: inherit; font-weight: 600; outline: 2px solid var(--pen); outline-offset: 3px">Score essay</button>
+<button type="button" aria-busy="true" style="display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; border: 0; border-radius: 10px; background: var(--pen); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font: inherit; font-weight: 600"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="animation: gwspin 900ms linear infinite"><circle cx="8" cy="8" r="6.25" stroke="oklch(1 0 0 / 0.35)" stroke-width="1.75"></circle><path d="M14.25 8A6.25 6.25 0 0 0 8 1.75" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></svg>Scoring…</button>
+<button type="button" disabled style="min-height: 48px; border: 0; border-radius: 10px; background: var(--desk-2); color: var(--ink-3); font: inherit; font-weight: 600">Score essay</button>
+
+<p style="margin: 0; font-weight: 600; font-size: 15px">Secondary</p>
+<button type="button" style="min-height: 44px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 15px; font-weight: 500">Edit essay</button>
+<button type="button" style="min-height: 44px; border: 1px solid var(--line-2); border-radius: 8px; background: oklch(0.97 0.004 265); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 15px; font-weight: 500">Edit essay</button>
+<button type="button" style="min-height: 44px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--desk-2); box-shadow: inset 0 1px 1px oklch(0.30 0.04 265 / 0.12); color: var(--ink); font: inherit; font-size: 15px; font-weight: 500; transform: scale(0.97)">Edit essay</button>
+<button type="button" style="min-height: 44px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 15px; font-weight: 500; outline: 2px solid var(--pen); outline-offset: 3px">Edit essay</button>
+<button type="button" aria-busy="true" style="min-height: 44px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink-2); font: inherit; font-size: 15px; font-weight: 500">Saving…</button>
+<button type="button" disabled style="min-height: 44px; border: 1px dashed var(--line-2); border-radius: 8px; background: transparent; color: var(--ink-3); font: inherit; font-size: 15px; font-weight: 500">Edit essay</button>
+
+<p style="margin: 0; font-weight: 600; font-size: 15px">Icon</p>
+<div style="display: flex; gap: 8px; align-items: center"><button type="button" aria-label="Copy essay" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="transform: translate(0.5px, 0.5px)"><rect x="5.75" y="5.75" width="9.5" height="9.5" rx="2" stroke="currentColor" stroke-width="1.5"></rect><path d="M12.25 3.5v-.25a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></button></div>
+<div style="display: flex; gap: 8px; align-items: center"><button type="button" aria-label="Copy essay" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: oklch(0.925 0.008 265); color: var(--ink)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="transform: translate(0.5px, 0.5px)"><rect x="5.75" y="5.75" width="9.5" height="9.5" rx="2" stroke="currentColor" stroke-width="1.5"></rect><path d="M12.25 3.5v-.25a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></button></div>
+<div style="display: flex; gap: 8px; align-items: center"><button type="button" aria-label="Copy essay" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: var(--desk-2); color: var(--ink); transform: scale(0.97)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="transform: translate(0.5px, 0.5px)"><rect x="5.75" y="5.75" width="9.5" height="9.5" rx="2" stroke="currentColor" stroke-width="1.5"></rect><path d="M12.25 3.5v-.25a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></button></div>
+<div style="display: flex; gap: 8px; align-items: center"><button type="button" aria-label="Copy essay" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); outline: 2px solid var(--pen); outline-offset: 3px"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="transform: translate(0.5px, 0.5px)"><rect x="5.75" y="5.75" width="9.5" height="9.5" rx="2" stroke="currentColor" stroke-width="1.5"></rect><path d="M12.25 3.5v-.25a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></button></div>
+<div style="display: flex; gap: 8px; align-items: center"><button type="button" aria-label="Copied" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: var(--pen-tint); color: var(--pen)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3.75 9.5l3.25 3.25 7.25-7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+<div style="display: flex; gap: 8px; align-items: center"><button type="button" aria-label="Copy essay" disabled style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: oklch(0.70 0.012 265)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="transform: translate(0.5px, 0.5px)"><rect x="5.75" y="5.75" width="9.5" height="9.5" rx="2" stroke="currentColor" stroke-width="1.5"></rect><path d="M12.25 3.5v-.25a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></button></div>
+</div>
+</section>
+
+<p style="margin: -40px 0 0 268px; max-width: 80ch; font-size: 14px; color: var(--ink-3)">Optical alignment: the copy glyph's two squares put its visual weight low and right, so it is nudged 0.5 px down and right inside its 44 px box. The info icon in the verdict panel sits 1 px low so its circle lines up with the label's x-height, not its cap height.</p>
+
+<section aria-labelledby="inputs" style="display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 48px">
+<h2 id="inputs" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Inputs</h2>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; align-items: start">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="c-e1" style="font-weight: 550; font-size: 15px">Essay</label>
+<textarea id="c-e1" rows="5" placeholder="Paste an essay of at least 40 words" style="box-sizing: border-box; width: 100%; padding: 14px 16px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: inset 0 1px 2px oklch(0.30 0.04 265 / 0.06); color: var(--ink); font: 400 17px/1.7 Tinos, serif; resize: none"></textarea>
+<p style="margin: 0; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums">0 words</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="c-e2" style="font-weight: 550; font-size: 15px">Essay</label>
+<textarea id="c-e2" rows="5" style="box-sizing: border-box; width: 100%; padding: 14px 16px; border: 1px solid var(--pen); border-radius: 8px; background: var(--paper); box-shadow: 0 0 0 3px var(--pen-ring); color: var(--ink); font: 400 17px/1.7 Tinos, serif; resize: none">A driverless car is a scary concept. Some say that it is</textarea>
+<p style="margin: 0; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums">12 words. 28 more to go.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="c-e3" style="font-weight: 550; font-size: 15px">Essay</label>
+<textarea id="c-e3" rows="5" aria-invalid="true" aria-describedby="c-e3-msg" style="box-sizing: border-box; width: 100%; padding: 14px 16px; border: 1.5px solid var(--brick); border-radius: 8px; background: var(--paper); color: var(--ink); font: 400 17px/1.7 Tinos, serif; resize: none">Ceci est un essai en français sur les voitures sans conducteur.</textarea>
+<p id="c-e3-msg" style="margin: 0; font-size: 13px; color: var(--brick); font-weight: 550">This looks like French. The detector was only trained on English essays, so its score would mean nothing.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="c-s1" style="font-weight: 550; font-size: 15px; color: var(--ink-3)">Rewrite with</label>
+<select id="c-s1" disabled style="min-height: 44px; padding: 0 12px; border: 1px dashed var(--line-2); border-radius: 8px; background: transparent; color: var(--ink-3); font: inherit; font-size: 15px"><option>Paraphrase with T5</option></select>
+<p style="margin: 0; font-size: 13px; color: var(--ink-3)">Paraphrasing needs the T5 model, which isn't loaded on this machine. Typos still work.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="nav" style="display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 48px">
+<h2 id="nav" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Navigation and segments</h2>
+<div style="display: flex; flex-direction: column; gap: 28px">
+<nav aria-label="Example navigation" style="display: flex; gap: 28px; border-bottom: 1px solid var(--line); padding: 0 8px">
+<a href="#" aria-current="page" style="display: flex; align-items: center; min-height: 56px; box-sizing: border-box; border-bottom: 2px solid var(--pen); color: var(--ink); font-weight: 550; text-decoration: none">Check an essay</a>
+<a href="#" style="display: flex; align-items: center; min-height: 56px; box-sizing: border-box; border-bottom: 2px solid transparent; color: var(--ink); font-weight: 450; text-decoration: none">Try to fool it <span style="margin-left: 8px; font-size: 13px; color: var(--ink-3)">(hover: ink)</span></a>
+<a href="#" style="display: flex; align-items: center; min-height: 56px; box-sizing: border-box; border-bottom: 2px solid transparent; color: var(--ink-2); font-weight: 450; text-decoration: none; outline: 2px solid var(--pen); outline-offset: -2px; border-radius: 6px; padding: 0 8px">Check a class</a>
+</nav>
+<div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap">
+<div role="group" aria-label="How strict" style="display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: var(--desk-2); box-shadow: inset 0 0 0 1px var(--line)">
+<button type="button" aria-pressed="true" style="min-height: 44px; min-width: 104px; border: 0; border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 15px; font-weight: 600">Strict</button>
+<button type="button" aria-pressed="false" style="min-height: 44px; min-width: 104px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); font: inherit; font-size: 15px">Standard</button>
+</div>
+<p style="margin: 0; max-width: 56ch; font-size: 14px; color: var(--ink-3)">The selected segment is the only raised thing in the track: paper, sh-1, weight 600. The track is a well (desk 2 with an inset hairline), so the two levels never compete.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="cards" style="display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="cards" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Method cards</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Siblings share a subgrid, so titles, results and buttons line up even when descriptions differ in length.</p>
+</div>
+<div role="radiogroup" aria-label="Rewrite method" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto 1fr auto; column-gap: 16px">
+<sc-for list="{{methods}}" as="m" hint-placeholder-count="3">
+<div role="radio" aria-checked="{{m.checked}}" tabindex="{{m.tab}}" style="grid-row: span 4; display: grid; grid-template-rows: subgrid; row-gap: 8px; padding: 20px; border-radius: 18px; background: var(--paper); cursor: pointer; {{m.style}}">
+<p style="margin: 0; font-weight: 600">{{m.title}}</p>
+<p style="margin: 0; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums">{{m.cost}}</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">{{m.desc}}</p>
+<p style="margin: 8px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; font-variant-numeric: tabular-nums">{{m.result}}</p>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="rows" style="display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="rows" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Essay rows</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">One row per essay in a class check. Long file names end in an ellipsis; the full name is in the detail panel. Names are made-up examples.</p>
+</div>
+<div style="border-radius: 14px; background: var(--paper); box-shadow: var(--sh-2); overflow: hidden">
+<sc-for list="{{rowStates}}" as="r" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 90px 180px 44px; gap: 16px; align-items: center; min-height: 56px; padding: 0 12px 0 20px; border-top: 1px solid var(--line); {{r.style}}">
+<p style="margin: 0; font-size: 13px; color: var(--ink-3)">{{r.state}}</p>
+<p style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500">{{r.name}}</p>
+<p style="margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: {{r.scoreColor}}">{{r.score}}</p>
+<p style="margin: 0; font-size: 15px; color: {{r.verdictColor}}">{{r.verdict}}</p>
+<p aria-hidden="true" style="margin: 0; display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink-3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="transform: translateX(1px)"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></p>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="overlays" style="display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="overlays" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Popover and toast</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Both float on sh-3 with a translucent hairline. Toasts never carry a verdict; they confirm actions.</p>
+</div>
+<div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; padding: 40px; border-radius: 18px; background: var(--desk-2)">
+<div role="dialog" aria-label="What is the flag line?" style="width: 360px; box-sizing: border-box; padding: 20px; border-radius: 14px; background: var(--paper); box-shadow: var(--sh-3), inset 0 0 0 1px var(--line); display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-weight: 600">The flag line is a choice, not a fact</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">It is the score that about 0.5% (strict) or 1% (standard) of student essays reached in validation. On new topics, more honest essays cross it.</p>
+<a href="#" style="font-size: 15px; color: var(--pen); min-height: 44px; display: flex; align-items: center">How it was chosen (notebook 09)</a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div role="status" style="display: flex; align-items: center; gap: 12px; width: 400px; box-sizing: border-box; padding: 8px 8px 8px 16px; border-radius: 14px; background: var(--ink); box-shadow: var(--sh-3); color: oklch(0.97 0.006 265)">
+<p style="flex: 1 1 auto; margin: 0; font-size: 15px">Rewrite saved as attempt 3.</p>
+<button type="button" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: oklch(0.85 0.09 265); font: inherit; font-size: 15px; font-weight: 600">Undo</button>
+<button type="button" aria-label="Dismiss" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: oklch(0.80 0.01 265)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></button>
+</div>
+<div role="alert" style="display: flex; align-items: center; gap: 12px; width: 400px; box-sizing: border-box; padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--paper); box-shadow: var(--sh-3), inset 0 0 0 1px var(--line); color: var(--ink)">
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="flex: none; color: oklch(0.50 0.16 32)"><circle cx="10" cy="10" r="8.25" stroke="currentColor" stroke-width="1.6"></circle><path d="M10 5.75v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><circle cx="10" cy="13.9" r="1.05" fill="currentColor"></circle></svg><p style="flex: 1 1 auto; margin: 0; font-size: 15px">3 files couldn't be read. They're marked in the list.</p>
+<button type="button" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--pen); font: inherit; font-size: 15px; font-weight: 600">Show</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: 'typo5' }; }
+  renderVals() {
+    const on = 'box-shadow: var(--sh-2), inset 0 0 0 2px var(--pen); background: var(--paper)';
+    const off = 'box-shadow: inset 0 0 0 1px var(--line-2); background: var(--paper)';
+    const list = [
+      { id: 'typo5', title: 'Typos in 5% of words', cost: 'Instant, on this machine', desc: 'Swaps or doubles letters in one word in twenty.', result: 'Last run: +9.1 to +3.3' },
+      { id: 'typo10', title: 'Typos in 10% of words', cost: 'Instant, on this machine', desc: 'One word in ten. In testing, 98.9% of AI essays were still caught.', result: 'Not run yet' },
+      { id: 't5', title: 'Paraphrase with T5', cost: 'Slower: runs the T5 model', desc: 'Rewrites each sentence with a pretrained paraphraser. Heavy rewrites still left 96.4% of AI essays caught, and pushed more student essays over the line.', result: 'Not run yet' }
+    ];
+    const s = (o) => o;
+    return {
+      methods: list.map((m) => s({ ...m, checked: this.state.picked === m.id ? 'true' : 'false', tab: this.state.picked === m.id ? '0' : '-1', style: this.state.picked === m.id ? on : off })),
+      rowStates: [
+        { state: 'Rest', name: 'essay_17_martin.docx', score: '−6.2', verdict: 'Not flagged', scoreColor: 'var(--ink)', verdictColor: 'var(--ink-2)', style: 'background: var(--paper)' },
+        { state: 'Hover (pointer)', name: 'essay_04_okafor.docx', score: '+8.4', verdict: 'Flagged, strict', scoreColor: 'var(--pen)', verdictColor: 'var(--pen)', style: 'background: oklch(0.97 0.004 265)' },
+        { state: 'Selected', name: 'essay_22_nguyen.txt', score: '+5.1', verdict: 'Flagged, standard only', scoreColor: 'var(--pen)', verdictColor: 'var(--pen)', style: 'background: var(--pen-tint); font-weight: 600' },
+        { state: 'Queued (optimistic)', name: 'final_draft_FINAL_v3_really_final_essay_on_the_electoral_college_mehta.pdf', score: '…', verdict: 'Waiting to score', scoreColor: 'var(--ink-3)', verdictColor: 'var(--ink-3)', style: 'background: var(--paper)' },
+        { state: 'Error', name: 'scan_0007.jpg', score: '–', verdict: 'No text found in image', scoreColor: 'var(--ink-3)', verdictColor: 'var(--brick)', style: 'background: var(--brick-tint)' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

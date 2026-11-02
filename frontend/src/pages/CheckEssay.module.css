@@ -1,0 +1,61 @@
+.page { box-sizing: content-box; padding-block: 56px 96px; display: flex; flex-direction: column; gap: 48px; }
+.intro { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px 64px; }
+.lede { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.lede h1 { max-width: 16ch; }
+.long { max-width: 56ch; color: var(--ink-2); font-size: var(--fs-heading); line-height: 1.5; }
+.course { color: var(--ink-3); font-size: var(--fs-small); letter-spacing: 0.005em; }
+.controls { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.strictRow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.strictLabel { font-weight: 550; font-size: var(--fs-small); }
+
+.bench { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 32px 40px; }
+.paper { flex: 999 1 640px; min-width: 0; max-width: 900px; display: flex; flex-direction: column; gap: 14px; }
+.locked { padding: 28px 32px; border-radius: var(--r-sheet); background: var(--paper); box-shadow: var(--sh-2); font: 400 1.0625rem/2 var(--font-essay); color: var(--ink-2); white-space: pre-line; max-height: 520px; overflow: hidden; }
+.invite { font-size: var(--fs-small); color: var(--ink-2); }
+.status { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: var(--fs-small); color: var(--ink-2); }
+.status[role="alert"] { color: var(--brick); }
+
+.aside { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.legend { display: flex; flex-direction: column; gap: 12px; }
+.legend p, .card p { font-size: var(--fs-small); color: var(--ink-2); }
+.legend ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-small); }
+.legend li { display: flex; align-items: center; gap: 10px; }
+.legendText { display: flex; flex-direction: column; line-height: 1.3; }
+.swatch { width: 28px; height: 14px; border-radius: var(--r-mark); flex: none; }
+.swatch[data-tier="1"] { background: var(--hl-1); } .swatch[data-tier="2"] { background: var(--hl-2); } .swatch[data-tier="3"] { background: var(--hl-3); }
+.range { color: var(--ink-3); font-size: var(--fs-caption); }
+.card { padding: 20px; border-radius: var(--r-panel); background: var(--paper); box-shadow: var(--sh-2); display: flex; flex-direction: column; gap: 12px; }
+.card a { align-self: stretch; }
+
+.footer { display: flex; flex-wrap: wrap; gap: 20px 64px; padding-top: 32px; border-top: 1px solid var(--line-2); }
+.promise { flex: 1 1 280px; max-width: 20ch; font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem); line-height: 1.25; letter-spacing: -0.012em; font-weight: 600; }
+.limits { flex: 999 1 520px; min-width: 0; max-width: 66ch; display: flex; flex-direction: column; gap: 10px; color: var(--ink-2); font-size: var(--fs-small); }
+.limits ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
+
+.bar { display: none; }
+.phoneLimits { display: none; }
+
+/* phone: a short intro, example chips full width, and a fixed bar with the two actions (Phone.dc.html) */
+@media (max-width: 639px) {
+  .page { padding-block: 24px 96px; gap: 20px; }
+  .intro { gap: 0; padding: 0; }
+  .long { display: none; }
+  .course { font-size: var(--fs-caption); }
+  .controls { flex-basis: 100%; margin-inline: calc(-1 * clamp(16px, 4vw, 40px)); }
+  .lede { gap: 12px; margin-bottom: 20px; }
+  .strictRow { display: none; }
+  .paper { flex-basis: 100%; }
+  .aside { gap: 20px; }
+  .card { display: none; }                      /* the fixed bar already has "Try to fool it" */
+  .footer { padding-top: 0; border-top: 0; gap: 10px; }
+  .promise { font-size: 1.25rem; max-width: none; }
+  .limits { display: none; }
+  .phoneLimits { display: block; font-size: var(--fs-caption); color: var(--ink-2); }
+  .bar {
+    display: flex; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: oklch(from var(--desk) l c h / 0.92); backdrop-filter: blur(8px);
+    box-shadow: 0 -1px 0 var(--line), 0 -12px 24px -16px oklch(0.30 0.05 265 / 0.25);
+  }
+  .bar > :first-child { flex: 1 1 0; min-height: 48px; border-radius: var(--r-primary); }
+  .bar > :last-child { flex: 1.4 1 0; }
+}

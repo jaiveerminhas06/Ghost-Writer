@@ -1,0 +1,17 @@
+.field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.label { font-weight: 550; font-size: var(--fs-small); }
+.muted { color: var(--ink-3); }
+.area {
+  width: 100%; padding: 14px 16px; border: 1px solid var(--line-2); border-radius: var(--r-control); background: var(--paper);
+  box-shadow: inset 0 1px 2px oklch(0.30 0.04 265 / 0.06); color: var(--ink); font: 400 var(--fs-body)/1.7 var(--font-essay); resize: none;
+}
+.area::placeholder { color: var(--ink-3); }
+.area:focus, .area[data-force="focus"] { outline: none; border-color: var(--pen); box-shadow: 0 0 0 3px var(--pen-ring); }
+.area[aria-invalid="true"] { border: 1.5px solid var(--brick); box-shadow: none; }
+.hint { font-size: var(--fs-tiny); color: var(--ink-3); }
+.error { font-size: var(--fs-tiny); color: var(--brick); font-weight: 550; }
+.select {
+  min-height: 44px; padding: 0 12px; border: 1px solid var(--line-2); border-radius: var(--r-control); background: var(--paper);
+  font-size: var(--fs-small); color: var(--ink);
+}
+.select:disabled { border-style: dashed; background: transparent; color: var(--ink-3); cursor: not-allowed; }

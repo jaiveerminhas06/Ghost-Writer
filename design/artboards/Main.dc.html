@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Check an essay</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-hover:oklch(from var(--pen) calc(l - 0.05) c h);--pen-active:oklch(from var(--pen) calc(l - 0.09) calc(c - 0.01) h);--pen-tint:oklch(from var(--pen) 0.94 0.035 h);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-1:oklch(0.965 0.07 100);--hl-2:oklch(0.925 0.12 95);--hl-3:oklch(0.865 0.15 85);--brick:oklch(0.50 0.16 32);--brick-tint:oklch(from var(--brick) 0.955 0.03 h);--sh-1:inset 0 1px 0 oklch(1 0 0 / 0.55),0 1px 1px oklch(0.30 0.04 265 / 0.10),0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);--sh-3:0 1px 2px oklch(0.30 0.04 265 / 0.12),0 28px 64px -18px oklch(0.30 0.06 265 / 0.32);--ease-out:cubic-bezier(.22,1,.36,1);--ease-in:cubic-bezier(.55,0,.75,.3)}
+body{margin:0;background:var(--desk)}
+a{color:var(--pen)}a:hover{color:var(--pen-active)}
+h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
+mark{color:inherit;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.gw-btn{transition:transform 120ms var(--ease-out),background-color 180ms var(--ease-out),border-color 180ms var(--ease-out),color 180ms var(--ease-out)}
+.gw-btn:active:not(:disabled){transform:scale(.97)}
+.gw-primary:active:not(:disabled){background:var(--pen-active) !important}
+.gw-secondary:active:not(:disabled),.gw-quiet:active:not(:disabled){background:var(--desk-2) !important}
+@media (hover:hover){.gw-primary:hover:not(:disabled){background:var(--pen-hover) !important}.gw-secondary:hover:not(:disabled){background:oklch(from var(--paper) calc(l - 0.025) c h) !important}.gw-quiet:hover:not(:disabled){background:oklch(from var(--desk) calc(l - 0.03) c h) !important}.gw-tab:hover{color:var(--ink) !important}}
+.gw-move{transition:opacity 150ms var(--ease-out)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0ms !important;animation:none !important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 1.0625rem; line-height: 1.55; font-weight: 420">
+
+<header style="border-bottom: 1px solid var(--line)">
+<div style="max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); display: flex; flex-wrap: wrap; align-items: center; gap: 0 40px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 64px; color: var(--ink); text-decoration: none; font-weight: 650; font-size: 1.1875rem; letter-spacing: -0.01em">
+<svg width="22" height="26" viewBox="0 0 22 26" fill="none" aria-hidden="true"><path d="M2.5 1.5h12l5 5v18h-17z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M6.5 1.5v23" stroke="oklch(0.45 0.17 265)" stroke-width="1.6"></path><path d="M9.5 10h6M9.5 14h6M9.5 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+Ghost Writer</a>
+<nav aria-label="Main" style="display: flex; flex: 1 1 auto; gap: 28px; overflow-x: auto">
+<a href="Main.dc.html" aria-current="page" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid var(--pen); padding-top: 2px; color: var(--ink); font-weight: 550; text-decoration: none; white-space: nowrap">Check an essay</a>
+<a href="Fool.dc.html" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid transparent; padding-top: 2px; color: var(--ink-2); font-weight: 450; text-decoration: none; white-space: nowrap">Try to fool it</a>
+<a href="Class.dc.html" class="gw-tab" style="display: flex; align-items: center; min-height: 64px; box-sizing: border-box; border-bottom: 2px solid transparent; padding-top: 2px; color: var(--ink-2); font-weight: 450; text-decoration: none; white-space: nowrap">Check a class</a>
+</nav>
+<a href="https://github.com/jaiveerminhas06/AI-Generated-Text-Detection/blob/main/MODEL_CARD.md" style="display: flex; align-items: center; min-height: 44px; font-weight: 500">Model card</a>
+</div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 56px clamp(16px, 4vw, 40px) 96px; display: flex; flex-direction: column; gap: 48px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px 64px">
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<h1 style="margin: 0; font-size: clamp(2.25rem, 1.55rem + 2.4vw, 3.5rem); line-height: 1.05; letter-spacing: -0.028em; font-weight: 650; max-width: 16ch">Did a student or an AI write this essay?</h1>
+<p style="margin: 0; max-width: 56ch; color: var(--ink-2); font-size: 1.125rem; line-height: 1.5">Paste an essay or load an example. The detector compares it with the 28,006 essays it was trained on and says which side of its flag line it falls.</p>
+<p style="margin: 0; color: var(--ink-3); font-size: 0.9375rem; letter-spacing: 0.005em">A course project for CSE472 at ISEP Paris. Don't use it to judge real students.</p>
+</div>
+<div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p id="examples" style="margin: 0; font-weight: 550; font-size: 0.9375rem">Examples</p>
+<div role="radiogroup" aria-labelledby="examples" style="display: flex; flex-direction: column; gap: 2px; padding: 6px; border-radius: 14px; background: var(--desk-2); box-shadow: inset 0 0 0 1px var(--line)">
+<button type="button" role="radio" aria-checked="false" class="gw-btn gw-quiet" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-size: 0.9375rem; text-align: left; cursor: pointer"><span>AI essay by Claude</span><span style="color: var(--ink-3); font-size: 0.8125rem; font-variant-numeric: tabular-nums">316 words</span></button>
+<button type="button" role="radio" aria-checked="false" class="gw-btn gw-quiet" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-size: 0.9375rem; text-align: left; cursor: pointer"><span>Student essay</span><span style="color: var(--ink-3); font-size: 0.8125rem; font-variant-numeric: tabular-nums">232 words</span></button>
+<button type="button" role="radio" aria-checked="true" class="gw-btn" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 0.9375rem; font-weight: 550; text-align: left; cursor: pointer"><span>Student essay it wrongly flags</span><span style="color: var(--ink-3); font-size: 0.8125rem; font-weight: 420; font-variant-numeric: tabular-nums">209 words</span></button>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px">
+<p id="strictness" style="margin: 0; font-weight: 550; font-size: 0.9375rem">How strict</p>
+<div role="group" aria-labelledby="strictness" style="display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: var(--desk-2); box-shadow: inset 0 0 0 1px var(--line)">
+<button type="button" aria-pressed="{{strictPressed}}" onClick="{{setStrict}}" class="gw-btn" style="min-height: 44px; min-width: 104px; padding: 8px 16px; border: 0; border-radius: 8px; font: inherit; font-size: 0.9375rem; cursor: pointer; {{strictStyle}}">Strict</button>
+<button type="button" aria-pressed="{{standardPressed}}" onClick="{{setStandard}}" class="gw-btn" style="min-height: 44px; min-width: 104px; padding: 8px 16px; border: 0; border-radius: 8px; font: inherit; font-size: 0.9375rem; cursor: pointer; {{standardStyle}}">Standard</button>
+</div>
+</div>
+</div>
+</div>
+
+<section aria-labelledby="verdict" style="background: var(--paper); border-radius: 18px; box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 44px) clamp(20px, 4vw, 52px) clamp(20px, 3vw, 32px); display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 48px">
+<h2 id="verdict" style="flex: 999 1 480px; margin: 0; font-size: clamp(1.75rem, 1.35rem + 1.5vw, 2.5rem); line-height: 1.1; letter-spacing: -0.02em; font-weight: 650; max-width: 24ch">{{verdictText}}</h2>
+<p style="flex: 1 1 200px; margin: 6px 0 0; max-width: 24ch; color: var(--pen); font-style: italic; font-size: 1.125rem; line-height: 1.4">This example was written by a student.</p>
+</div>
+
+<div style="position: relative; height: 152px; margin: 0 4px" role="img" aria-label="Score scale from minus 10 to plus 10. This essay scores plus 9.1. The flag line is at plus {{thresholdText}}.">
+<div class="gw-move" style="position: absolute; top: 73px; left: {{thresholdPos}}; right: 0; height: 20px; background: var(--hl-2)"></div>
+<div style="position: absolute; top: 82px; left: 0; right: 0; height: 2px; background: var(--ink)"></div>
+<sc-for list="{{ticks}}" as="t" hint-placeholder-count="5">
+<div style="position: absolute; top: 76px; left: {{t.pos}}; width: 2px; height: 14px; margin-left: -1px; background: var(--ink)"></div>
+<p style="position: absolute; top: 98px; left: {{t.pos}}; transform: translateX(-50%); margin: 0; font-size: 0.875rem; color: var(--ink-3); font-variant-numeric: tabular-nums">{{t.label}}</p>
+</sc-for>
+<div style="position: absolute; top: 70px; left: 99%; height: 28px; border-left: 2px dotted var(--ink-3)"></div>
+<div class="gw-move" style="position: absolute; top: 28px; left: {{thresholdPos}}; width: 3px; height: 72px; margin-left: -1.5px; background: var(--pen)"></div>
+<p class="gw-move" style="position: absolute; top: 28px; left: {{thresholdPos}}; transform: translateX(calc(-100% - 10px)); margin: 0; white-space: nowrap; color: var(--pen); font-weight: 600; font-size: 0.9375rem; font-variant-numeric: tabular-nums">Flag line +{{thresholdText}}</p>
+<div style="position: absolute; top: 56px; left: 95.5%; width: 0; height: 0; margin-left: -9px; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 14px solid var(--ink)"></div>
+<div style="position: absolute; top: 68px; left: 95.5%; width: 3px; height: 30px; margin-left: -1.5px; background: var(--ink)"></div>
+<p style="position: absolute; top: 0; left: 95.5%; transform: translateX(calc(-100% + 12px)); margin: 0; white-space: nowrap; font-weight: 700; font-size: 1rem; font-variant-numeric: tabular-nums">This essay +9.1</p>
+<p style="position: absolute; top: 128px; left: 0; max-width: 45%; margin: 0; font-size: 0.875rem; line-height: 1.3; color: var(--ink-3)">More like the student essays</p>
+<p style="position: absolute; top: 128px; right: 0; max-width: 45%; margin: 0; font-size: 0.875rem; line-height: 1.3; color: var(--ink-3); text-align: right">Scores stop near +9.8</p>
+</div>
+
+<div style="position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding-top: 20px; border-top: 1px solid var(--line)">
+<p style="flex: 1 1 420px; margin: 0; max-width: 72ch; font-size: 0.9375rem; color: var(--ink-2)">{{fprText}}</p>
+<button type="button" aria-expanded="{{popExpanded}}" aria-controls="flagpop" onClick="{{togglePop}}" class="gw-btn gw-quiet" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 10px; border: 0; border-radius: 8px; background: transparent; color: var(--pen); font: inherit; font-size: 0.9375rem; font-weight: 550; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="margin-top: 1px"><circle cx="9" cy="9" r="7.25" stroke="currentColor" stroke-width="1.5"></circle><path d="M9 8v4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="9" cy="5.4" r="0.95" fill="currentColor"></circle></svg>
+What is the flag line?</button>
+<sc-if value="{{showPop}}" hint-placeholder-val="{{ false }}">
+<div id="flagpop" role="dialog" aria-label="What is the flag line?" style="position: absolute; right: 0; bottom: 56px; width: min(380px, 100%); box-sizing: border-box; padding: 20px; border-radius: 14px; background: var(--paper); box-shadow: var(--sh-3), inset 0 0 0 1px var(--line); display: flex; flex-direction: column; gap: 10px; z-index: 2">
+<p style="margin: 0; font-weight: 600">The flag line is a choice, not a fact</p>
+<p style="margin: 0; font-size: 0.9375rem; color: var(--ink-2)">It is the score that about 0.5% (strict) or 1% (standard) of student essays reached in validation. It was set on familiar topics. On new topics, more honest essays cross it.</p>
+<a href="https://github.com/jaiveerminhas06/AI-Generated-Text-Detection/blob/main/Notebooks/09_threshold.ipynb" style="font-size: 0.9375rem; min-height: 44px; display: flex; align-items: center">How it was chosen (notebook 09)</a>
+</div>
+</sc-if>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 32px 40px">
+
+<article aria-labelledby="essay-title" style="flex: 999 1 640px; min-width: 0; max-width: 900px; background: var(--paper); border-radius: 6px; box-shadow: var(--sh-2)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 12px 12px clamp(20px, 5vw, 64px); border-bottom: 1px solid var(--line)">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px">
+<h2 id="essay-title" style="margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: 0">Student essay it wrongly flags</h2>
+<p style="margin: 0; font-size: 0.875rem; color: var(--ink-3); font-variant-numeric: tabular-nums">209 words, all of them read</p>
+</div>
+<div style="display: flex; gap: 4px">
+<button type="button" class="gw-btn gw-secondary" style="min-height: 44px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 0.9375rem; font-weight: 500; cursor: pointer">Edit essay</button>
+<button type="button" aria-label="Copy essay" class="gw-btn gw-quiet" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); cursor: pointer"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="transform: translate(0.5px, 0.5px)"><rect x="5.75" y="5.75" width="9.5" height="9.5" rx="2" stroke="currentColor" stroke-width="1.5"></rect><path d="M12.25 3.5v-.25a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></button>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; padding: 40px 0 0">
+<div style="flex: 999 1 460px; min-width: 0; padding: 0 clamp(20px, 5vw, 64px) 0 clamp(20px, 5vw, 64px); font-family: Tinos, 'Times New Roman', serif; font-size: 1.1875rem; line-height: 2.05; font-weight: 400">
+<p style="margin: 0 0 1.4em; text-indent: 2.5em">A driverless car is a scary concept. Some say that it is completely insane, but that is what they said when Neil Armstrong came up with the idea of walking on the moon, and now walking on the moon is no big deal. <mark style="background: {{hl2}}; padding: 2px 1px; border-radius: 2px">In my opinion, with a lot of hard work and problem solving, driverless cars could become the next big thing.</mark></p>
+</div>
+<p style="flex: 1 1 200px; margin: 0 0 24px; padding: 6px clamp(20px, 3vw, 32px) 0 20px; border-left: 1px solid var(--pen-ring); color: var(--pen); font-style: italic; font-size: 0.9375rem; line-height: 1.5">Yellow marks what I reacted to. It says nothing about how the student wrote.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap">
+<div style="flex: 999 1 460px; min-width: 0; padding: 0 clamp(20px, 5vw, 64px); font-family: Tinos, 'Times New Roman', serif; font-size: 1.1875rem; line-height: 2.05">
+<p style="margin: 0 0 1.4em; text-indent: 2.5em">There are many things that have been done to make this idea become reality. <mark style="background: {{hl2}}; padding: 2px 1px; border-radius: 2px">For example, Google's modified Toyota Prius uses position-estimating sensors on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, and a GPS receiver.</mark> With modifications on these resources, they could <span style="text-decoration: underline wavy var(--pen); text-underline-offset: 5px; text-decoration-thickness: 1.5px">potentually</span> work. Of course, the driverless car will not be 100% driverless. The driver would need to be alert and ready to take control when needed. GM has developed ways to alert the driver. For example, they have made driver's seats that vibrate when the vehicle is in danger of backing into an object. <mark style="background: {{hl1}}; padding: 2px 1px; border-radius: 2px">Google and GM have taken great precautions in developing the driverless car.</mark></p>
+</div>
+<p style="flex: 1 1 200px; margin: 0 0 24px; padding: 96px clamp(20px, 3vw, 32px) 0 20px; border-left: 1px solid var(--pen-ring); color: var(--pen); font-style: italic; font-size: 0.9375rem; line-height: 1.5">One misspelling. The student essays I wrongly flag have almost none: 0.00% of words, against 0.56% in other student essays. Polish is what I mistake for a machine.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap">
+<div style="flex: 999 1 460px; min-width: 0; padding: 0 clamp(20px, 5vw, 64px) 48px; font-family: Tinos, 'Times New Roman', serif; font-size: 1.1875rem; line-height: 2.05">
+<p style="margin: 0; text-indent: 2.5em"><mark style="background: {{hl3}}; padding: 2px 1px; border-radius: 2px">In conclusion, driverless cars may seem scary at first, but I believe that with hard work and dedication, driverless cars will one day be no big deal.</mark></p>
+</div>
+<p style="flex: 1 1 200px; margin: 0; padding: 6px clamp(20px, 3vw, 32px) 48px 20px; border-left: 1px solid var(--pen-ring); color: var(--pen); font-style: italic; font-size: 0.9375rem; line-height: 1.5">The sentence I lean on most. Take it out and the score falls further than for any other.</p>
+</div>
+</article>
+
+<aside aria-label="What to do next" style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 1.125rem; line-height: 1.35; font-weight: 600; letter-spacing: -0.005em">Reading the highlights</h2>
+<p style="margin: 0; font-size: 0.9375rem; color: var(--ink-2)">Each sentence was removed in turn and the essay scored again. The bigger the drop, the darker the mark.</p>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.9375rem">
+<p style="margin: 0; display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 28px; height: 14px; border-radius: 2px; background: {{hl1}}"></span>Small drop</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 28px; height: 14px; border-radius: 2px; background: {{hl2}}"></span>Larger drop</p>
+<p style="margin: 0; display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 28px; height: 14px; border-radius: 2px; background: {{hl3}}"></span>Largest drop</p>
+</div>
+</div>
+
+<div style="padding: 20px; border-radius: 18px; background: var(--paper); box-shadow: var(--sh-2); display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 1.125rem; line-height: 1.35; font-weight: 600">Could a few edits change the answer?</h2>
+<p style="margin: 0; font-size: 0.9375rem; color: var(--ink-2)">Add typos or paraphrase this essay, then score it again.</p>
+<a href="Fool.dc.html" class="gw-btn gw-primary" style="display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; border-radius: 10px; background: var(--pen); box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.22), 0 1px 1px oklch(0.30 0.06 265 / 0.20), 0 4px 12px -4px oklch(0.45 0.17 265 / 0.45); color: oklch(0.99 0.005 265); font-weight: 600; text-decoration: none">Try to fool it</a>
+</div>
+
+<div style="padding: 20px; border-radius: 18px; box-shadow: inset 0 0 0 1px var(--line-2); display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 1.125rem; line-height: 1.35; font-weight: 600">Which AI is it most like?</h2>
+<p style="margin: 0; font-size: 0.9375rem; color: var(--ink-2)">It can't tell you which model wrote an essay. For a source it never saw, it picked the right family 0 to 28% of the time, at or below chance. Here the flag is a false alarm, so this means nothing at all.</p>
+<div>
+<button type="button" aria-expanded="{{attrExpanded}}" onClick="{{toggleAttr}}" class="gw-btn gw-secondary" style="min-height: 44px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 0.9375rem; font-weight: 500; cursor: pointer">{{attrLabel}}</button>
+</div>
+<sc-if value="{{showAttr}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; color: var(--ink-3); font-size: 0.875rem">
+<sc-for list="{{families}}" as="f" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 40px; align-items: center; gap: 4px 12px">
+<p style="margin: 0">{{f.name}}-based sources</p>
+<p style="margin: 0; text-align: right; font-variant-numeric: tabular-nums">{{f.pct}}</p>
+<div style="grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--desk-2)"><div style="height: 4px; border-radius: 2px; width: {{f.pct}}; background: var(--ink-3)"></div></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</aside>
+</div>
+
+<footer style="display: flex; flex-wrap: wrap; gap: 20px 64px; padding-top: 32px; border-top: 1px solid var(--line-2)">
+<p style="flex: 1 1 280px; margin: 0; font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem); line-height: 1.25; letter-spacing: -0.012em; font-weight: 600; max-width: 20ch">A flag is a reason to ask questions, not evidence.</p>
+<div style="flex: 999 1 520px; min-width: 0; max-width: 66ch; display: flex; flex-direction: column; gap: 10px; color: var(--ink-2); font-size: 0.9375rem">
+<p style="margin: 0">It learned to separate US school essays, grades 6 to 12, from essays written by 2023-era AI models. Nobody has measured how it treats:</p>
+<ul style="margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px">
+<li>Writers whose first language isn't English</li>
+<li>Adults, or any genre other than school essays</li>
+<li>Newer AI models, and humaniser tools that rewrite whole paragraphs</li>
+<li>Essays that are only partly AI-written</li>
+</ul>
+</div>
+</footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"highlighter":{"editor":"enum","default":"yellow","options":["yellow","green","pink"]},"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { strict: true, showAttr: false, showPop: false };
+  }
+  renderVals() {
+    const pos = (v) => ((v + 10) / 20 * 100).toFixed(2) + '%';
+    const strict = this.state.strict;
+    const threshold = strict ? 7.8 : 4.7;
+    const on = 'background: var(--paper); color: var(--ink); font-weight: 600; box-shadow: var(--sh-1)';
+    const off = 'background: transparent; color: var(--ink-2); font-weight: 450; box-shadow: none';
+    const sets = {
+      yellow: ['var(--hl-1)', 'var(--hl-2)', 'var(--hl-3)'],
+      green: ['oklch(0.965 0.06 135)', 'oklch(0.925 0.10 135)', 'oklch(0.865 0.13 135)'],
+      pink: ['oklch(0.965 0.03 350)', 'oklch(0.925 0.06 350)', 'oklch(0.865 0.09 350)']
+    };
+    const hl = sets[this.props.highlighter ?? 'yellow'] || sets.yellow;
+    return {
+      strictPressed: strict ? 'true' : 'false',
+      standardPressed: strict ? 'false' : 'true',
+      strictStyle: strict ? on : off,
+      standardStyle: strict ? off : on,
+      setStrict: () => this.setState({ strict: true }),
+      setStandard: () => this.setState({ strict: false }),
+      thresholdPos: pos(threshold),
+      thresholdText: threshold.toFixed(1),
+      verdictText: 'Flagged. This reads like the AI essays I was trained on, but that isn’t proof.',
+      fprText: strict
+        ? 'Strict: about 0.5% of student essays on familiar topics cross this line. On the two topics it never saw in training, 2.3% did.'
+        : 'Standard: about 1% of student essays on familiar topics cross this line. On one topic it never saw in training, 7.7% did.',
+      ticks: [-10, -5, 0, 5, 10].map((v) => ({ pos: pos(v), label: v > 0 ? '+' + v : (v < 0 ? '−' + Math.abs(v) : '0') })),
+      hl1: hl[0], hl2: hl[1], hl3: hl[2],
+      showAttr: this.state.showAttr,
+      attrExpanded: this.state.showAttr ? 'true' : 'false',
+      attrLabel: this.state.showAttr ? 'Hide the guess' : 'Show the guess anyway',
+      toggleAttr: () => this.setState({ showAttr: !this.state.showAttr }),
+      showPop: this.state.showPop,
+      popExpanded: this.state.showPop ? 'true' : 'false',
+      togglePop: () => this.setState({ showPop: !this.state.showPop }),
+      families: [
+        { name: 'Mistral', pct: '37%' },
+        { name: 'Llama 2', pct: '18%' },
+        { name: 'GPT-3.5', pct: '13%' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

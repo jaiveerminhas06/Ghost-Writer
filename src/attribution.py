@@ -45,6 +45,8 @@ def train_and_save():
 
 
 def load():
+    from src.detector import model_path
+    model_path(PATH.name)         # fetches it from the Hub repo if GW_MODEL_REPO is set and the file is missing
     return joblib.load(PATH) if PATH.exists() else train_and_save()
 
 

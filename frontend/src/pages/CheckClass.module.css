@@ -1,0 +1,29 @@
+.page { box-sizing: content-box; padding-block: 56px 96px; display: flex; flex-direction: column; gap: 40px; }
+.page > * { min-width: 0; }     /* a flex item defaults to its content's width; the table must scroll inside its own box instead */
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 24px 48px; }
+.intro { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.intro p { max-width: 58ch; color: var(--ink-2); font-size: var(--fs-heading); line-height: 1.5; }
+.demo { max-width: 400px; margin-top: 8px; }
+.known { padding-top: 6px; color: var(--ink) !important; font-weight: 500; max-width: 62ch; }
+.notice { font-size: var(--fs-small); color: var(--ink-2); }
+
+.summary { background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2); padding: clamp(24px, 3.5vw, 40px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 28px; }
+.summaryTop { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 20px 48px; }
+.summaryText { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.summaryText p:last-child { max-width: 62ch; color: var(--ink-2); }
+.caption { font-size: var(--fs-small); color: var(--ink-3); }
+
+.card { background: var(--paper); border-radius: var(--r-panel); box-shadow: var(--sh-2); padding: 28px 32px; display: flex; flex-direction: column; gap: 14px; }
+.cardTitle { font-size: 1.375rem; font-weight: 650; letter-spacing: -0.01em; }
+.card p { font-size: var(--fs-small); color: var(--ink-2); max-width: 64ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.essays { display: flex; flex-direction: column; gap: 14px; }
+.essaysHead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; }
+.essaysHead p { margin-right: auto; font-size: var(--fs-caption); color: var(--ink-3); }
+.promise { max-width: 72ch; font-size: var(--fs-small); color: var(--ink-3); }
+
+@media (max-width: 639px) {
+  .page { padding-block: 24px 64px; gap: 28px; }
+  .card { padding: 20px; }
+}

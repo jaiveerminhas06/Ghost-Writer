@@ -1,0 +1,18 @@
+.card {
+  width: min(380px, 100%); padding: 20px; border-radius: var(--r-list); background: var(--paper);
+  box-shadow: var(--sh-3), inset 0 0 0 1px var(--line); display: flex; flex-direction: column; gap: 10px;
+}
+.card > p:first-child { font-weight: 600; }
+.card p { font-size: var(--fs-small); color: var(--ink-2); }
+.card > p:first-child { color: var(--ink); font-size: var(--fs-body); }
+.card a { font-size: var(--fs-small); min-height: 44px; display: flex; align-items: center; }
+
+.anchor { position: absolute; right: 0; bottom: 56px; z-index: 2; width: min(380px, 100%); transform-origin: bottom right; animation: pop-in 180ms var(--ease-out) both; }
+.anchor[data-state="closed"] { animation: pop-out 120ms var(--ease-in) both; }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.96); } }
+@keyframes pop-out { to { opacity: 0; transform: scale(0.96); } }
+/* reduced motion: fade only, 120 ms or less */
+@media (prefers-reduced-motion: reduce) {
+  .anchor { animation: fade-in 120ms linear both; } .anchor[data-state="closed"] { animation: fade-out 100ms linear both; }
+  @keyframes fade-in { from { opacity: 0; } } @keyframes fade-out { to { opacity: 0; } }
+}

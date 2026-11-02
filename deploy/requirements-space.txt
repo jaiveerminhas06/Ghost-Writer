@@ -1,0 +1,16 @@
+# Only what the hosted API needs (the notebooks need more). Versions match the ones the models were built and tested with.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.12.0
+transformers==5.18.0
+sentencepiece==0.2.2
+scikit-learn==1.8.0
+joblib
+numpy
+pandas
+scipy
+huggingface_hub
+fastapi
+uvicorn
+python-multipart
+python-docx
+pypdf

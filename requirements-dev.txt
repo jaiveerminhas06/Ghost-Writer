@@ -1,0 +1,5 @@
+# For running the API tests: pytest api tests (no GPU needed)
+pytest
+httpx
+
+# Optional, for tests/test_frontend.py (skipped when missing): playwright (with a Chromium), pillow

@@ -223,3 +223,8 @@ models/
 
 # Downloaded third-party corpora (paraphrase pairs etc.)
 data/external/
+
+# Design tooling installed for the frontend work (23 MB of skills and a binary; reinstall with npx)
+.claude/
+.agents/
+skills-lock.json

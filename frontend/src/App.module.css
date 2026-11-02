@@ -1,0 +1,6 @@
+.skip {
+  position: absolute; left: 16px; top: -64px; z-index: 20; min-height: 44px; display: flex; align-items: center; padding: 0 16px;
+  border-radius: var(--r-control); background: var(--paper); box-shadow: var(--sh-3); font-weight: 550;
+}
+.skip:focus { top: 8px; }
+.main { min-height: calc(100vh - 64px); outline: none; }

@@ -72,7 +72,14 @@ Ghost_Writer/
 ├── images/                   plots saved by the notebooks
 ├── README.md                 public overview, results, demo, limitations (rewritten 2026-10-18, updated 2026-10-25)
 ├── MODEL_CARD.md             what the detector is, how it was evaluated, failure modes, intended use (2026-10-25)
-├── demo/                     app.py (Streamlit) + samples.json
+├── api/                      FastAPI over src/ (score, explain, attribution, rewrite, batch, demo classes); `frontend` branch
+├── frontend/                 Vite + React web app, plain JS + JSDoc types; `npm run check`
+├── design/                   the design spec and artboards the web app was built to
+├── tests/                    46 API tests incl. privacy tests (`pytest`; needs requirements-dev.txt)
+├── scripts/                  demo.sh (one-command start), warm_up.py, motion_audit.py
+├── docs/                     api.md, viva-demo.md (5-minute demo path), frontend plan, rejected redesigns
+├── deploy/                   Hugging Face Spaces files; never built, hosting parked
+├── demo/                     app.py (older Streamlit demo), samples.json, class_sample/ (two demo classes, 30 essays each)
 └── requirements.txt          (renamed from `requirements .txt` on 2026-10-04)
 ```
 
@@ -96,7 +103,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics, demo, model card). Week 9 (report + slides) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics, demo, model card). The web front end (branch `frontend`, phases 1–8) is finished and waiting for the owner's review before it is merged into `main`. Week 9 (report + slides) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -205,15 +212,26 @@ Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
   - Observation (one essay, one seed, not a finding): 5% typos took the wrongly flagged human essay from +9.1 to +3.3, below the threshold. Typo robustness in `13` may hold mainly for clearly AI essays.
   - Tooling: Streamlit does not hot-reload the main script reliably in headless mode: restart the server after editing `demo/app.py`. Snap Chromium cannot write to `/tmp`. `playwright` was pip-installed for screenshots only (not in `requirements.txt`; the system Chromium is used via `executable_path`). Do not use `pkill -f` with a pattern that appears in your own command line.
 
+- 2026-10-25 — `frontend` branch: `api/main.py` (FastAPI over the detector, explainer, attribution, paraphraser) and `frontend/` (Vite + React, one page with every demo panel). Node comes from nvm. See `docs/frontend-plan.md` for run steps and what is left (done: design pass). Do not run the API and Streamlit together (4 GB GPU).
+- 2026-10-25 — hosting prep for Hugging Face Spaces (academic, free CPU): CPU support in `src/`, rate limit + serialised model calls in the API, API serves `frontend/dist`, `deploy/` (Dockerfile, requirements, upload and push scripts). Docker image untested; not pushed. Details and the steps that need the owner's account: `docs/frontend-plan.md`.
+
+- 2026-11-02 — front end finished on branch `frontend` (not merged into `main`; owner reviews the diff first):
+  - Built to `design/` ("paper and margin"): Check an essay (`/`), Try to fool it (`/fool`), Check a class (`/class`), `/components`. API in `api/` (api_version 3), `bash scripts/demo.sh` starts page and API on :8000. Details and decisions: `docs/plan-paper-and-margin.md`, `docs/api.md`.
+  - Honesty rules kept: every figure comes from `results/` via `/api/meta`; false-flag rates (strict 2.3%, standard 3.9% on unseen topics; worst topic Summer projects 5.2% / 7.7%); class estimate is an exact Poisson range; uploads are read in memory only and tested.
+  - Two demo classes (held-out topics, 30 essays each, seed 42, selected before scores were seen): electoral college 0/19 student and 11/11 AI flagged; Summer projects 2/19 and 11/11.
+  - Checks: 46 API tests, 32 front-end tests, lint and types clean, motion audit passes (only transform and opacity; reduced motion opacity-only), side-by-side artboard comparison at 1440 and 390.
+  - Hosting on Hugging Face Spaces is parked (free-tier quota refused); nothing is deployed.
+  - Tooling: `frontend/dist` is git-ignored and built by `demo.sh`; restart the API after Python edits (no `--reload`); snap Chromium cannot read `/tmp`.
+
 **Not done**
 
-- Weeks 9–10: written report, slides, polish, viva rehearsal.
+- Merge `frontend` into `main` (after the owner's review), then Weeks 9–10: written report, slides, polish, viva rehearsal (use `docs/viva-demo.md` for the live demo).
 
 ## Next up
 
 ### Week 9 — short report and slides
 
-Report and slides for the course, built from the README, `MODEL_CARD.md` and the Key takeaways of each notebook. Suggested storyline for the viva: the fake 100% → leakage-safe split → each model's honest score → what looked good but wasn't (topic shortcut, attribution, threshold shift) → the demo. Nothing further is needed from the modelling side. Possible extras if time allows: confirm that `radek_500` is GPT-3.5 (not verified), and the professor's answer on the BiLSTM-NER practical (decision 8).
+First review and merge the `frontend` branch. Then report and slides for the course, built from the README, `MODEL_CARD.md` and the Key takeaways of each notebook. Suggested storyline for the viva: the fake 100% → leakage-safe split → each model's honest score → what looked good but wasn't (topic shortcut, attribution, threshold shift) → the demo. Nothing further is needed from the modelling side. Possible extras if time allows: confirm that `radek_500` is GPT-3.5 (not verified), and the professor's answer on the BiLSTM-NER practical (decision 8).
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.

@@ -1,0 +1,19 @@
+.scroll { overflow-x: auto; border-radius: var(--r-list); background: var(--paper); box-shadow: var(--sh-2); }
+.table { min-width: 700px; position: relative; }
+.row {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) 64px 130px 80px 120px; gap: 16px; align-items: center; width: 100%; min-height: 56px; padding: 0 20px;
+  border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; text-align: left; font-variant-numeric: tabular-nums;
+  transition: background-color var(--t-fast) var(--ease-out);
+}
+button.row { cursor: pointer; }
+.header { min-height: 44px; border-top: 0; font-size: var(--fs-tiny); color: var(--ink-3); }
+.right { text-align: right; }
+.muted { color: var(--ink-3); }
+.method { font-weight: 500; }
+.score { font-weight: 600; }
+.of { color: var(--ink-3); font-weight: 420; }
+.row[aria-pressed="true"] { background: var(--pen-tint); font-weight: 600; }
+.origin:not([aria-pressed="true"]) { color: var(--ink-3); }
+@media (hover: hover) { button.row[aria-pressed="false"]:hover { background: oklch(from var(--paper) calc(l - 0.025) c h); } }
+button.row:active { transform: none; }
+.row:focus-visible { outline-offset: -2px; }

@@ -1,6 +1,6 @@
 # Model card: Ghost Writer detector
 
-A fine-tuned DistilRoBERTa that scores how much a student essay resembles the AI-written essays in the DAIGT-V2 dataset. It is a **course project (CSE472, ISEP Paris)**, not a product. Every number below comes from the notebooks in this repository; the notebook is named next to each claim.
+A fine-tuned DistilRoBERTa that scores how much a student essay resembles the AI-written essays in the DAIGT-V2 dataset. It is a **course project (CSE472)**, not a product. Every number below comes from the notebooks in this repository; the notebook is named next to each claim.
 
 ## Model
 
@@ -58,6 +58,18 @@ At the 1% threshold, "Summer projects", one of the two unseen prompts, had **7.7
 
 Sentence highlights use occlusion (remove a sentence, re-score) or integrated gradients when occlusion shows no contrast. Both beat random sentence deletion, but only modestly, and each fails in one situation (integrated gradients on essays that look human; occlusion on essays at the score ceiling). Highlights show what the model reacted to. They are not evidence of how the student wrote ([14](Notebooks/14_explain.ipynb)).
 
+## Front end
+
+The web app (`api/` and `frontend/`) does not change the model or its thresholds. What it adds around the model:
+
+- **Refusals:** essays under 40 words are not scored, and an essay that does not look English (checked by script and common-word share; it wrongly refused 1 of 44,866 real essays) is refused with a plain message, because the score would mean nothing. Only the first 512 tokens are read, and the page says so when it stops early.
+- **Files:** .docx, .pdf and .txt up to 5 MB each. They are read in memory and never written to disk, and essay text is not logged (tests in `tests/test_privacy.py`). A scanned PDF with no text is reported as such.
+- **Figures:** the false-flag rates, attack results and class estimates shown on the pages are read from `results/` (notebooks 09, 13 and 14), not typed into the page. The expected number of false flags in a class is a Poisson range (the exact central 95% interval) using the average rate on unseen topics.
+- **Demo classes:** two sets of 30 essays (held-out prompts only, never training data; the real student-to-AI ratio; seed 42; selected before any score was seen) with known authors. On "Does the electoral college work?" 0 of 19 student essays and 11 of 11 AI essays were flagged; on "Summer projects" 2 of 19 and 11 of 11. Thirty essays is a demonstration, not a measurement.
+- **Rate limit:** 60 requests a minute per client, one model call at a time. This protects a small GPU, not users' data.
+
+Not tested in the front end: screen readers beyond automated checks and keyboard use; browsers other than Chromium.
+
 ## Ethical considerations
 
 - A false accusation is a real harm, and the error falls hardest on careful, fluent writers.
@@ -66,4 +78,4 @@ Sentence highlights use occlusion (remove a sentence, re-score) or integrated gr
 
 ## Contact
 
-Jaiveer Singh Minhas, ISEP Paris. Source: <https://github.com/jaiveerminhas06/Ghost-Writer>
+Jaiveer Singh Minhas. Source: <https://github.com/jaiveerminhas06/Ghost-Writer>

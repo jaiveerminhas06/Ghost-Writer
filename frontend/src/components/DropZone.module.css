@@ -1,0 +1,8 @@
+.zone {
+  flex: 1 1 360px; min-width: 0; display: flex; align-items: center; gap: 16px; padding: 12px 12px 12px 16px; border-radius: var(--r-list);
+  border: 1.5px dashed var(--line-2); background: oklch(from var(--paper) l c h / 0.5);
+  transition: background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+}
+.over { background: var(--pen-tint); border-color: var(--pen); }
+.icon { display: grid; color: var(--ink-2); flex: none; }
+.zone p { flex: 1 1 auto; font-size: var(--fs-small); color: var(--ink-2); }

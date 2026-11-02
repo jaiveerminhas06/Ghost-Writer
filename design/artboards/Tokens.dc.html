@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Design tokens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-hover:oklch(from var(--pen) calc(l - 0.05) c h);--pen-active:oklch(from var(--pen) calc(l - 0.09) calc(c - 0.01) h);--pen-tint:oklch(from var(--pen) 0.94 0.035 h);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-1:oklch(0.965 0.07 100);--hl-2:oklch(0.925 0.12 95);--hl-3:oklch(0.865 0.15 85);--brick:oklch(0.50 0.16 32);--brick-tint:oklch(from var(--brick) 0.955 0.03 h);--sh-1:inset 0 1px 0 oklch(1 0 0 / 0.55),0 1px 1px oklch(0.30 0.04 265 / 0.10),0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);--sh-3:0 1px 2px oklch(0.30 0.04 265 / 0.12),0 28px 64px -18px oklch(0.30 0.06 265 / 0.32)}
+body{margin:0;background:var(--desk)}
+h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
+</style>
+</helmet>
+<div style="width: 1440px; min-height: 2250px; box-sizing: border-box; padding: 72px 80px 80px; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 17px; line-height: 1.55; font-weight: 420; display: flex; flex-direction: column; gap: 64px">
+
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 64px">
+<h1 style="margin: 0; font-size: 52px; line-height: 1.05; letter-spacing: -0.028em; font-weight: 650">Design tokens</h1>
+<p style="margin: 0; max-width: 60ch; color: var(--ink-2)">Every colour is OKLCH with the neutrals pulled slightly toward the pen's hue (265). States are derived from their base with relative colour syntax, so changing the pen changes its hover, press, tint and focus ring with it.</p>
+</div>
+
+<section aria-labelledby="color" style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="color" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Colour</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">No pure white, black or grey anywhere. Lightness steps for ink are 0.23, 0.38 and 0.50, so each one still passes 4.5:1 on the desk.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 28px">
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{neutrals}}" as="c" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="height: 72px; border-radius: 12px; background: {{c.v}}; box-shadow: inset 0 0 0 1px var(--line)"></div>
+<p style="margin: 0; font-weight: 600; font-size: 15px">{{c.name}}</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: var(--ink-3); font-variant-numeric: tabular-nums">{{c.val}}</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: var(--ink-2)">{{c.use}}</p>
+</div>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{accents}}" as="c" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="height: 72px; border-radius: 12px; background: {{c.v}}; box-shadow: inset 0 0 0 1px var(--line)"></div>
+<p style="margin: 0; font-weight: 600; font-size: 15px">{{c.name}}</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: var(--ink-3); font-variant-numeric: tabular-nums">{{c.val}}</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: var(--ink-2)">{{c.use}}</p>
+</div>
+</sc-for>
+</div>
+<div style="padding: 20px 24px; border-radius: 14px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 40px; font-size: 15px">
+<p style="margin: 0"><strong style="font-weight: 600">Pen hover</strong> = pen, L −0.05</p>
+<p style="margin: 0"><strong style="font-weight: 600">Pen pressed</strong> = pen, L −0.09, C −0.01</p>
+<p style="margin: 0"><strong style="font-weight: 600">Pen tint</strong> = pen hue at L 0.94, C 0.035 (selected rows, drop target)</p>
+<p style="margin: 0"><strong style="font-weight: 600">Focus ring</strong> = pen, 2 px solid, 3 px offset; margin rule = pen at 35% alpha</p>
+<p style="margin: 0"><strong style="font-weight: 600">Hairline</strong> = ink hue at L 0.30, 14% alpha; strong hairline 28%</p>
+<p style="margin: 0"><strong style="font-weight: 600">Quiet hover</strong> = surface, L −0.025 (paper) or −0.03 (desk)</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="type" style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="type" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Type</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Atkinson Hyperlegible Next is variable, so weights sit between the usual stops: 420 for body, 450 for inactive tabs, 550 for labels, 650 for headings. Tracking tightens as size grows. Every number uses tabular figures.</p>
+</div>
+<div style="display: flex; flex-direction: column; border-top: 1px solid var(--line)">
+<sc-for list="{{scale}}" as="s" hint-placeholder-count="7">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--line)">
+<p style="margin: 0; font-size: {{s.px}}; line-height: {{s.lh}}; letter-spacing: {{s.ls}}; font-weight: {{s.w}}; font-family: {{s.ff}}; font-style: {{s.fs}}; color: {{s.color}}">{{s.sample}}</p>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.45; color: var(--ink-3); font-variant-numeric: tabular-nums">
+<p style="margin: 0; color: var(--ink); font-weight: 600; font-size: 14px">{{s.name}}</p>
+<p style="margin: 0">{{s.spec}}</p>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="space" style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="space" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Space and radius</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">2 px steps up to 16 (for gaps next to type), 4 px steps to 32, then 8 and 16. Radii grow with an element's size and importance; nothing shares one radius by default.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; align-items: flex-end; gap: 20px">
+<sc-for list="{{spaces}}" as="sp" hint-placeholder-count="18">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<div style="width: {{sp.px}}; height: {{sp.px}}; background: var(--hl-2); box-shadow: inset 0 0 0 1px oklch(0.70 0.12 90 / 0.5)"></div>
+<p style="margin: 0; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums">{{sp.n}}</p>
+</div>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{radii}}" as="r" hint-placeholder-count="7">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="height: 64px; border-radius: {{r.px}}; background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--line-2)"></div>
+<p style="margin: 0; font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums">{{r.px}}</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: var(--ink-2)">{{r.use}}</p>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 40px; align-items: center">
+<div style="display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: var(--desk-2); box-shadow: inset 0 0 0 1px var(--line)">
+<p style="margin: 0; min-width: 96px; padding: 10px 16px; border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); font-weight: 600; font-size: 15px; text-align: center">Strict</p>
+<p style="margin: 0; min-width: 96px; padding: 10px 16px; border-radius: 8px; font-size: 15px; color: var(--ink-2); text-align: center">Standard</p>
+</div>
+<p style="margin: 0; max-width: 60ch; font-size: 15px; color: var(--ink-2)"><strong style="color: var(--ink); font-weight: 600">Concentric radii:</strong> 8 px inside + 4 px inset = 12 px outside here, and 8 + 6 = 14 for the example list. When padding is larger than the outer radius (cards with 20 px padding), the corners are far enough apart that matching them doesn't read, so inner controls keep their own radius.</p>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="depth" style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="depth" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Depth</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Each shadow is a tight contact layer plus a wide soft layer, tinted with the desk's blue instead of black. Raised elements get a 1 px inset highlight on top. There are no gradients, so no grain is needed to hide banding.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding: 40px; border-radius: 18px; background: var(--desk-2)">
+<div style="display: flex; flex-direction: column; gap: 14px"><div style="height: 96px; border-radius: 10px; background: var(--paper); box-shadow: var(--sh-1)"></div><p style="margin: 0; font-weight: 600; font-size: 15px">Raised, sh-1</p><p style="margin: 0; font-size: 13px; line-height: 1.45; color: var(--ink-3)">Buttons, the selected segment. Inset top 55% white, 0 1 1 at 10%, 0 2 6 −2 at 14%.</p></div>
+<div style="display: flex; flex-direction: column; gap: 14px"><div style="height: 96px; border-radius: 10px; background: var(--paper); box-shadow: var(--sh-2)"></div><p style="margin: 0; font-weight: 600; font-size: 15px">Resting paper, sh-2</p><p style="margin: 0; font-size: 13px; line-height: 1.45; color: var(--ink-3)">The essay, the verdict panel. Inset top 80% white, 0 1 1 at 8%, 0 10 28 −10 at 20%.</p></div>
+<div style="display: flex; flex-direction: column; gap: 14px"><div style="height: 96px; border-radius: 10px; background: var(--paper); box-shadow: var(--sh-3)"></div><p style="margin: 0; font-weight: 600; font-size: 15px">Floating, sh-3</p><p style="margin: 0; font-size: 13px; line-height: 1.45; color: var(--ink-3)">Popovers, toasts. 0 1 2 at 12%, 0 28 64 −18 at 32%.</p></div>
+</div>
+</section>
+
+<section aria-labelledby="motion" style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="motion" style="margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -0.015em; font-weight: 650">Motion</h2>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Only transform and opacity animate. One moment gets a spring: the score marker landing on the ruler. Under reduced motion, movement becomes an opacity change of 120 ms or less.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line)">
+<sc-for list="{{motion}}" as="m" hint-placeholder-count="6">
+<div style="padding: 16px 24px 16px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px">
+<p style="margin: 0; font-weight: 600; font-size: 15px">{{m.name}}</p>
+<p style="margin: 0; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums">{{m.val}}</p>
+<p style="margin: 0; font-size: 13px; color: var(--ink-3)">{{m.use}}</p>
+</div>
+</sc-for>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2250}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const ui = "'Atkinson Hyperlegible Next', sans-serif";
+    return {
+      neutrals: [
+        { name: 'Desk', v: 'var(--desk)', val: '0.955 0.008 265', use: 'Page background' },
+        { name: 'Desk 2', v: 'var(--desk-2)', val: '0.925 0.011 265', use: 'Wells, tracks, segmented controls' },
+        { name: 'Paper', v: 'var(--paper)', val: '0.995 0.003 265', use: 'Essay, panels, raised controls' },
+        { name: 'Ink', v: 'var(--ink)', val: '0.23 0.022 265', use: 'Text, ruler, essay marker' },
+        { name: 'Ink 2', v: 'var(--ink-2)', val: '0.38 0.020 265', use: 'Secondary text' },
+        { name: 'Ink 3', v: 'var(--ink-3)', val: '0.50 0.018 265', use: 'Captions, axis labels' }
+      ],
+      accents: [
+        { name: 'Pen', v: 'var(--pen)', val: '0.45 0.17 265', use: 'The detector’s voice, flag line, primary action' },
+        { name: 'Pen tint', v: 'var(--pen-tint)', val: '0.94 0.035 265', use: 'Selected rows, drop target' },
+        { name: 'Highlighter 1', v: 'var(--hl-1)', val: '0.965 0.07 100', use: 'Small score drop' },
+        { name: 'Highlighter 2', v: 'var(--hl-2)', val: '0.925 0.12 95', use: 'Larger drop, over-the-line zone' },
+        { name: 'Highlighter 3', v: 'var(--hl-3)', val: '0.865 0.15 85', use: 'Largest drop' },
+        { name: 'Brick', v: 'var(--brick)', val: '0.50 0.16 32', use: 'Errors only, never a verdict' }
+      ],
+      scale: [
+        { name: 'Display', spec: 'clamp(2.25rem, 1.55rem + 2.4vw, 3.5rem), 36–56 px. LH 1.05, tracking −0.028em, weight 650', px: '56px', lh: '1.05', ls: '-0.028em', w: '650', ff: ui, fs: 'normal', color: 'var(--ink)', sample: 'Did a student or an AI write this?' },
+        { name: 'Verdict', spec: 'clamp(1.75rem, 1.35rem + 1.5vw, 2.5rem), 28–40 px. LH 1.1, tracking −0.02em, weight 650', px: '40px', lh: '1.1', ls: '-0.02em', w: '650', ff: ui, fs: 'normal', color: 'var(--ink)', sample: 'Flagged, but that isn’t proof.' },
+        { name: 'Section', spec: '1.625rem, 26 px. LH 1.15, tracking −0.015em, weight 650', px: '26px', lh: '1.15', ls: '-0.015em', w: '650', ff: ui, fs: 'normal', color: 'var(--ink)', sample: 'Try to fool it' },
+        { name: 'Essay', spec: 'Tinos 1.1875rem, 19 px. LH 2.05 (double-spaced), weight 400', px: '19px', lh: '2.05', ls: '0', w: '400', ff: 'Tinos, serif', fs: 'normal', color: 'var(--ink)', sample: 'A driverless car is a scary concept.' },
+        { name: 'Body', spec: '1.0625rem, 17 px. LH 1.55, tracking 0, weight 420', px: '17px', lh: '1.55', ls: '0', w: '420', ff: ui, fs: 'normal', color: 'var(--ink)', sample: 'Paste an essay or load an example.' },
+        { name: 'Margin note', spec: '0.9375rem italic, 15 px. LH 1.5, weight 420, pen', px: '15px', lh: '1.5', ls: '0', w: '420', ff: ui, fs: 'italic', color: 'var(--pen)', sample: 'The sentence I lean on most.' },
+        { name: 'Caption', spec: '0.875rem, 14 px. LH 1.45, tracking +0.005em, weight 420, tabular', px: '14px', lh: '1.45', ls: '0.005em', w: '420', ff: ui, fs: 'normal', color: 'var(--ink-3)', sample: 'Test set: 3,501 essays. 0.40% of students flagged' }
+      ],
+      spaces: [2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56, 64, 80, 96].map((n) => ({ n: String(n), px: n + 'px' })),
+      radii: [
+        { px: '2px', use: 'Highlighter marks' },
+        { px: '6px', use: 'The essay sheet' },
+        { px: '8px', use: 'Buttons, inputs, segments' },
+        { px: '10px', use: 'Primary button' },
+        { px: '12px', use: 'Segmented track (8 + 4)' },
+        { px: '14px', use: 'Option list (8 + 6), popovers' },
+        { px: '18px', use: 'Panels, cards' }
+      ],
+      motion: [
+        { name: 'Press', val: '120 ms, ease-out, scale 0.97', use: 'Every button, row and chip' },
+        { name: 'Fast', val: '150 ms, ease-out', use: 'Colour and border changes' },
+        { name: 'Base', val: '200 ms, ease-out', use: 'Fades, list items entering' },
+        { name: 'Move', val: '240 ms, cubic-bezier(.22, 1, .36, 1)', use: 'Flag line, panels opening' },
+        { name: 'Exit', val: '120–160 ms, cubic-bezier(.55, 0, .75, .3)', use: 'Popovers, toasts, removed rows' },
+        { name: 'Marker spring', val: '320 ms, stiffness 380, damping 32', use: 'The score landing on the ruler' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -12,3 +12,8 @@ transformers
 accelerate
 sentencepiece
 streamlit
+fastapi
+uvicorn
+python-multipart
+python-docx
+pypdf

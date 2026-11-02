@@ -1,0 +1,54 @@
+/* Positions are percentages of the ruler's width (--t flag line, --s essay). They are written as cqw (1% of the container's
+   width) so they can move with transform, which the spec allows to animate; left/width never animate. */
+.fit { container-type: inline-size; }
+.ruler { position: relative; height: 152px; margin: 0 4px; }
+.ruler > * { position: absolute; }
+.zone {
+  top: 73px; left: 0; right: 0; height: 20px; background: var(--hl-2); transform-origin: right;
+  transform: scaleX(calc((100 - var(--t)) / 100)); transition: transform var(--t-move) var(--ease-out);
+}
+.axis { top: 82px; left: 0; right: 0; height: 2px; background: var(--ink); }
+.tickWrap { top: 76px; width: 0; }
+.tick { position: absolute; top: 0; left: -1px; width: 2px; height: 14px; background: var(--ink); }
+.tickLabel { position: absolute; top: 22px; left: 0; transform: translateX(-50%); font-size: var(--fs-caption); color: var(--ink-3); }
+.ceiling { top: 70px; left: 99%; height: 28px; border-left: 2px dotted var(--ink-3); }
+.flagLine { top: 28px; left: 0; width: 3px; height: 72px; margin-left: -1.5px; background: var(--pen); transform: translateX(calc(var(--t) * 1cqw)); transition: transform var(--t-move) var(--ease-out); }
+.flagLabel {
+  top: 28px; left: 0; white-space: nowrap; color: var(--pen); font-weight: 600; font-size: var(--fs-small);
+  transform: translateX(calc(var(--t) * 1cqw - 100% - 10px)); transition: transform var(--t-move) var(--ease-out);
+}
+
+/* the essay's marker: lands from the left end of the ruler, then follows --s */
+.marker { top: 0; left: 0; width: 0; height: 100px; transform: translateX(calc(var(--s) * 1cqw)); transition: transform var(--t-spring) var(--spring); animation: land var(--t-spring) var(--spring); }
+@keyframes land { from { transform: translateX(0); } }
+.triangle { position: absolute; top: 56px; left: -9px; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 14px solid var(--ink); }
+.stem { position: absolute; top: 68px; left: -1.5px; width: 3px; height: 30px; background: var(--ink); }
+.here { position: absolute; top: 0; margin: 0; white-space: nowrap; font-weight: 700; font-size: var(--fs-body); transform: translateX(calc(-100% + 12px)); }
+.flip .here { transform: translateX(-12px); }          /* a low score is near the left edge: the label reads rightwards from the marker */
+.waiting { top: 66px; left: -1px; width: 14px; height: 14px; border: 2px dashed var(--ink-3); border-radius: 50%; background: var(--paper); box-sizing: border-box; }
+
+.capLeft, .capRight { top: 128px; max-width: 45%; font-size: var(--fs-caption); line-height: 1.3; color: var(--ink-3); }
+.capLeft { left: 0; } .capRight { right: 0; text-align: right; }
+
+/* phone: a 96 px ruler with three tick labels and no captions (Phone.dc.html) */
+@container (max-width: 520px) {
+  .ruler { height: 96px; margin: 0 6px; }
+  .zone { top: 46px; height: 16px; }
+  .axis { top: 53px; }
+  .tickWrap { top: 48px; } .tick { height: 12px; } .tickLabel { top: 18px; font-size: var(--fs-tiny); }
+  .mid, .ceiling, .capLeft, .capRight { display: none; }
+  .flagLine { top: 22px; height: 40px; }
+  .flagLabel { top: 18px; font-size: var(--fs-tiny); transform: translateX(calc(var(--t) * 1cqw - 100% - 8px)); }
+  .marker { height: 62px; }
+  .triangle { top: 30px; left: -7px; border-left-width: 7px; border-right-width: 7px; border-top-width: 11px; }
+  .stem { display: none; }
+  .here { font-size: var(--fs-caption); transform: translateX(calc(-100% + 10px)); }
+  .flip .here { transform: translateX(-10px); }
+  .waiting { top: 46px; }
+}
+/* reduced motion: nothing slides. The marker appears where it belongs with a fade of at most 120 ms; the flag line jumps. */
+@media (prefers-reduced-motion: reduce) {
+  .marker { animation: appear 120ms linear; transition: none; }
+  @keyframes appear { from { opacity: 0; } }
+  .flagLine, .flagLabel, .zone { transition: none; }
+}

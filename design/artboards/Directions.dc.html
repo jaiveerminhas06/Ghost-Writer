@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Two directions</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Libre+Franklin:wght@400..800&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-1:oklch(0.965 0.07 100);--hl-2:oklch(0.925 0.12 95);--hl-3:oklch(0.865 0.15 85);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20)}
+body{margin:0;background:var(--desk)}
+h1,h2,h3{text-wrap:balance}p,li{text-wrap:pretty}
+mark{color:inherit;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+</style>
+</helmet>
+<div style="width: 1440px; min-height: 1350px; box-sizing: border-box; padding: 72px 80px 80px; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 17px; line-height: 1.55; font-weight: 420; display: flex; flex-direction: column; gap: 48px">
+
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 64px">
+<h1 style="margin: 0; font-size: 52px; line-height: 1.05; letter-spacing: -0.028em; font-weight: 650; max-width: 14ch">Two ways Ghost Writer could look</h1>
+<p style="margin: 0; max-width: 52ch; color: var(--ink-2)">Both start from the same subject: a detector reading a student's essay and admitting where it is unsure. They differ in which part of the writing world they borrow from.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: start">
+
+<section aria-labelledby="dir-a" style="display: flex; flex-direction: column; gap: 24px; padding: 32px; border-radius: 22px; background: var(--paper); box-shadow: var(--sh-2), inset 0 0 0 2px var(--pen)">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px">
+<h2 id="dir-a" style="margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; font-weight: 650">Paper and margin</h2>
+<p style="margin: 0; color: var(--pen); font-style: italic; font-size: 17px; font-weight: 600">The one I picked</p>
+</div>
+<p style="margin: 0; color: var(--ink-2)">The essay is a typed page on a cool, blotter-grey desk. The detector writes in the page's margin in blue pen and marks sentences with highlighter, the way a careful teacher reads. One ruler from −10 to +10 carries every score, so the verdict is a position, not a badge.</p>
+
+<div style="border-radius: 14px; background: var(--desk); padding: 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="background: var(--paper); border-radius: 4px; box-shadow: var(--sh-2); display: flex">
+<p style="flex: 1 1 auto; margin: 0; padding: 22px 24px; font-family: Tinos, serif; font-size: 17px; line-height: 2">Of course, the driverless car will not be 100% driverless. <mark style="background: var(--hl-3); padding: 1px">In conclusion, driverless cars may seem scary at first.</mark></p>
+<p style="flex: 0 0 150px; margin: 0; padding: 22px 16px; border-left: 1px solid var(--pen-ring); color: var(--pen); font-style: italic; font-size: 14px; line-height: 1.45">The sentence I lean on most.</p>
+</div>
+<div style="position: relative; height: 46px" aria-hidden="true">
+<div style="position: absolute; top: 18px; left: 89%; right: 0; height: 14px; background: var(--hl-2)"></div>
+<div style="position: absolute; top: 24px; left: 0; right: 0; height: 2px; background: var(--ink)"></div>
+<div style="position: absolute; top: 4px; left: 89%; width: 3px; height: 38px; background: var(--pen)"></div>
+<div style="position: absolute; top: 12px; left: 95.5%; width: 0; height: 0; margin-left: -7px; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 11px solid var(--ink)"></div>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<p style="margin: 0; font-weight: 600">Atkinson Hyperlegible Next</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The detector's voice. Made by the Braille Institute so similar letters can't be confused, which also helps on a projector.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<p style="margin: 0; font-family: Tinos, serif; font-size: 19px">Tinos</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The essay itself. Same metrics as Times New Roman, the font students actually submit in.</p>
+</div>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: var(--desk); box-shadow: inset 0 0 0 1px var(--line)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Desk<br>0.955 0.008 265</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Paper<br>0.995 0.003 265</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: var(--ink)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Ink<br>0.23 0.022 265</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: var(--pen)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Pen<br>0.45 0.17 265</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: var(--hl-2)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Highlighter<br>0.925 0.12 95</p></div>
+</div>
+</section>
+
+<section aria-labelledby="dir-b" style="display: flex; flex-direction: column; gap: 24px; padding: 32px; border-radius: 22px; box-shadow: inset 0 0 0 1px var(--line-2)">
+<h2 id="dir-b" style="margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; font-weight: 650">Galley proof</h2>
+<p style="margin: 0; color: var(--ink-2)">The essay is set as a printer's galley: one narrow column on warm newsprint stock, every line numbered. The detector answers in proofreaders' marks and red queries in the margin, and the score is stamped at the foot of the galley like a press slug.</p>
+
+<div style="border-radius: 14px; background: oklch(0.93 0.014 85); padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: grid; grid-template-columns: 28px minmax(0, 1fr) 120px; column-gap: 14px; font-family: 'Courier Prime', monospace; font-size: 15px; line-height: 1.9; color: oklch(0.25 0.012 85)">
+<p style="margin: 0; color: oklch(0.55 0.015 85); text-align: right">41</p><p style="margin: 0">Of course, the driverless car will</p><p style="margin: 0"></p>
+<p style="margin: 0; color: oklch(0.55 0.015 85); text-align: right">42</p><p style="margin: 0">not be 100% driverless. <span style="text-decoration: underline 2px oklch(0.52 0.19 28); text-underline-offset: 4px">In conclusion,</span></p><p style="margin: 0; font-family: 'Libre Franklin', sans-serif; font-size: 13px; color: oklch(0.52 0.19 28); font-weight: 600">Query: AI-like?</p>
+<p style="margin: 0; color: oklch(0.55 0.015 85); text-align: right">43</p><p style="margin: 0"><span style="text-decoration: underline 2px oklch(0.52 0.19 28); text-underline-offset: 4px">driverless cars may seem scary</span></p><p style="margin: 0"></p>
+</div>
+<p style="margin: 0; padding-top: 10px; border-top: 1px solid oklch(0.25 0.012 85 / 0.3); font-family: 'Libre Franklin', sans-serif; font-weight: 700; font-size: 14px; color: oklch(0.25 0.012 85)">Galley 1 of 1. Score +9.1, over the line at +7.8</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<p style="margin: 0; font-family: 'Libre Franklin', sans-serif; font-weight: 650">Libre Franklin</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">The newsroom's Franklin Gothic, for the interface and queries.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<p style="margin: 0; font-family: 'Courier Prime', monospace">Courier Prime</p>
+<p style="margin: 0; font-size: 15px; color: var(--ink-2)">Typewriter galley text for the essay.</p>
+</div>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: oklch(0.93 0.014 85); box-shadow: inset 0 0 0 1px var(--line)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Newsprint<br>0.93 0.014 85</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: oklch(0.25 0.012 85)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Press ink<br>0.25 0.012 85</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: oklch(0.52 0.19 28)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Proof red<br>0.52 0.19 28</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px; width: 96px"><div style="height: 44px; border-radius: 8px; background: oklch(0.55 0.015 85)"></div><p style="margin: 0; font-size: 12px; line-height: 1.35; color: var(--ink-3); font-variant-numeric: tabular-nums">Slug grey<br>0.55 0.015 85</p></div>
+</div>
+</section>
+</div>
+
+<section aria-labelledby="why" style="display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 48px; padding-top: 40px; border-top: 1px solid var(--line-2)">
+<h2 id="why" style="margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; font-weight: 650">Why paper and margin wins</h2>
+<ul style="margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 12px; color: var(--ink-2); max-width: 72ch">
+<li><strong style="color: var(--ink); font-weight: 600">Everyone already reads it.</strong> Highlighter and margin notes are a habit every student and teacher shares. Proofreaders' marks need a key, and your viva panel won't have one.</li>
+<li><strong style="color: var(--ink); font-weight: 600">Blue is a comment, red is a correction.</strong> Red proof marks say "this is wrong", a verdict the detector can't support. Blue pen says "I noticed this", which matches your model card's own caveats.</li>
+<li><strong style="color: var(--ink); font-weight: 600">It survives a projector.</strong> Atkinson Hyperlegible stays clear from the back of a room; Courier at body size doesn't.</li>
+<li><strong style="color: var(--ink); font-weight: 600">It avoids a current AI default.</strong> The galley's narrow ruled columns sit close to the broadsheet look AI tools now reach for. Paper and margin doesn't.</li>
+</ul>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+/* The paper: radius 6, resting-paper shadow. The essay is set in Tinos at 19 px on a double-spaced line (2.05). */
+.sheet { background: var(--paper); border-radius: var(--r-sheet); box-shadow: var(--sh-2); container-type: inline-size; min-width: 0; }
+
+/* ---- edit mode (States.dc.html, "Empty" and "Too short") ---- */
+.editor { display: flex; flex-direction: column; gap: 14px; padding: 28px 32px; }
+.editLabel { font-weight: 600; font-size: var(--fs-small); }
+.input {
+  display: block; width: 100%; min-height: 300px; padding: 0; border: 0; background: transparent; resize: none; outline: none;
+  color: var(--ink); font: 400 1.125rem/2 var(--font-essay); field-sizing: content; caret-color: var(--pen);
+}
+.input::placeholder { color: var(--ink-3); }
+.editor:focus-within { box-shadow: inset 3px 0 0 -1px var(--pen-ring); }
+.editFoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.count { display: flex; align-items: center; gap: 10px; font-size: var(--fs-tiny); color: var(--ink-3); }
+.bar { width: 120px; height: 4px; border-radius: 2px; background: var(--desk-2); }
+.bar i { display: block; height: 4px; border-radius: 2px; background: var(--pen); }
+.count p { color: var(--ink-3); }
+
+/* ---- read mode ---- */
+.head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 12px 12px clamp(20px, 5vw, 64px); border-bottom: 1px solid var(--line); }
+.titles { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; min-width: 0; }
+.title { font-size: var(--fs-body); font-weight: 600; letter-spacing: 0; }
+.caption { font-size: var(--fs-caption); color: var(--ink-3); }
+.actions { display: flex; gap: 4px; }
+.body { padding: 40px 0 16px; }
+.row { display: flex; flex-wrap: wrap; }
+.textCol { flex: 999 1 460px; min-width: 0; padding: 0 clamp(20px, 5vw, 64px); font-family: var(--font-essay); font-size: var(--fs-essay); line-height: 2.05; }
+.para { margin: 0 0 1.4em; text-indent: 2.5em; white-space: pre-line; overflow-wrap: anywhere; }
+.rest { text-indent: 0; }
+/* both layers (see ParagraphRow) give a mark the same padding, so the words wrap identically and the yellow lines up with the text */
+.textCol mark { padding: 2px; border-radius: var(--r-mark); background: transparent; color: inherit; }
+.stack { display: grid; }
+.stack > * { grid-area: 1 / 1; }
+/* an animated mark gets its own stacking context, which paints above plain text: lift the real text above the paint layer explicitly */
+.stack > :last-child { position: relative; z-index: 1; }
+.paint { color: transparent; pointer-events: none; user-select: none; }
+.paint mark[data-tier="1"] { background: var(--hl-1); }
+.paint mark[data-tier="2"] { background: var(--hl-2); }
+.paint mark[data-tier="3"] { background: var(--hl-3); }
+/* highlights paint top to bottom: each mark fades in over 180 ms, 40 ms after the one above it (capped at 1.2 s); its note follows 120 ms later */
+.paint mark { animation: arrive 180ms var(--ease-out) min(calc(var(--i, 0) * 40ms), 1200ms) both; }
+.note { animation: arrive 180ms var(--ease-out) calc(min(calc(var(--i, 0) * 40ms), 1200ms) + 120ms) both; }
+@keyframes arrive { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .paint mark, .note { animation: arrive 120ms linear both; } }
+.dim { color: var(--ink-3); }
+
+/* where the detector stopped reading: a dashed pen rule with its note; marks end here and the rest is dimmed */
+.cut { display: flex; align-items: center; gap: 12px; margin: 14px calc(-1 * clamp(20px, 5vw, 64px)); padding: 0 clamp(20px, 5vw, 64px); }
+.cut i { flex: 1 1 auto; border-top: 2px dashed var(--pen); }
+.cut p { white-space: nowrap; font-family: var(--font-ui); font-size: var(--fs-caption); font-style: italic; color: var(--pen); }
+
+/* margin notes: blue-pen italics, in the page's right margin */
+/* 252 = the artboard's 200 px basis plus the note's own padding (20 + 32) and rule */
+.notesCol { flex: 1 1 253px; margin-bottom: 24px; }
+.note { margin-top: var(--note-top, 0px); padding: 6px clamp(20px, 3vw, 32px) 0 20px; border-left: 1px solid var(--pen-ring); font-size: var(--fs-small); line-height: 1.5; font-style: italic; color: var(--pen); }
+
+/* narrow paper (a phone, or a narrow window): each note moves under its paragraph, indented, without the rule */
+@container (max-width: 699px) {
+  .head { padding-left: 20px; }
+  .body { padding-top: 28px; }
+  .textCol { padding: 0 20px; font-size: 1.0625rem; line-height: 1.9; }
+  .para { text-indent: 2em; }
+  .cut { margin-inline: -20px; padding-inline: 20px; }
+  .notesCol { flex-basis: 100%; margin-bottom: 0; }
+  .note { margin: 12px 0 24px; padding: 0 20px 0 calc(20px + 2em); border-left: 0; font-size: var(--fs-caption); }
+  .note + .note { margin-top: 0; }
+  .editor { padding: 20px; }
+}
+@media (max-width: 639px) { .editor { padding: 20px; } .head { display: none; } }   /* on a phone the fixed bar carries Edit essay */

@@ -1,0 +1,278 @@
+{
+ "seed": 42,
+ "split": "heldout_prompt",
+ "prompt": "Summer projects",
+ "student_share_in_split": 0.6256,
+ "essays": [
+  {
+   "file": "summer_01.txt",
+   "label": "ai",
+   "row_id": 30213,
+   "split": "heldout_prompt",
+   "source": "darragh_claude_v7",
+   "prompt": "Summer projects",
+   "words": 299
+  },
+  {
+   "file": "summer_02.txt",
+   "label": "ai",
+   "row_id": 39827,
+   "split": "heldout_prompt",
+   "source": "chat_gpt_moth",
+   "prompt": "Summer projects",
+   "words": 317
+  },
+  {
+   "file": "summer_03.txt",
+   "label": "human",
+   "row_id": 4827,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 491
+  },
+  {
+   "file": "summer_04.txt",
+   "label": "ai",
+   "row_id": 32972,
+   "split": "heldout_prompt",
+   "source": "llama2_chat",
+   "prompt": "Summer projects",
+   "words": 294
+  },
+  {
+   "file": "summer_05.txt",
+   "label": "human",
+   "row_id": 3477,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 325
+  },
+  {
+   "file": "summer_06.txt",
+   "label": "human",
+   "row_id": 4468,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 371
+  },
+  {
+   "file": "summer_07.txt",
+   "label": "human",
+   "row_id": 4044,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 589
+  },
+  {
+   "file": "summer_08.txt",
+   "label": "ai",
+   "row_id": 35087,
+   "split": "heldout_prompt",
+   "source": "falcon_180b_v1",
+   "prompt": "Summer projects",
+   "words": 241
+  },
+  {
+   "file": "summer_09.txt",
+   "label": "human",
+   "row_id": 4500,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 328
+  },
+  {
+   "file": "summer_10.txt",
+   "label": "human",
+   "row_id": 3290,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 351
+  },
+  {
+   "file": "summer_11.txt",
+   "label": "ai",
+   "row_id": 31405,
+   "split": "heldout_prompt",
+   "source": "mistral7binstruct_v2",
+   "prompt": "Summer projects",
+   "words": 389
+  },
+  {
+   "file": "summer_12.txt",
+   "label": "human",
+   "row_id": 4410,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 548
+  },
+  {
+   "file": "summer_13.txt",
+   "label": "human",
+   "row_id": 4262,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 440
+  },
+  {
+   "file": "summer_14.txt",
+   "label": "ai",
+   "row_id": 38750,
+   "split": "heldout_prompt",
+   "source": "llama_70b_v1",
+   "prompt": "Summer projects",
+   "words": 530
+  },
+  {
+   "file": "summer_15.txt",
+   "label": "human",
+   "row_id": 4596,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 639
+  },
+  {
+   "file": "summer_16.txt",
+   "label": "ai",
+   "row_id": 37551,
+   "split": "heldout_prompt",
+   "source": "llama_70b_v1",
+   "prompt": "Summer projects",
+   "words": 463
+  },
+  {
+   "file": "summer_17.txt",
+   "label": "human",
+   "row_id": 3888,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 707
+  },
+  {
+   "file": "summer_18.txt",
+   "label": "human",
+   "row_id": 3351,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 735
+  },
+  {
+   "file": "summer_19.txt",
+   "label": "human",
+   "row_id": 3276,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 569
+  },
+  {
+   "file": "summer_20.txt",
+   "label": "human",
+   "row_id": 3281,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 542
+  },
+  {
+   "file": "summer_21.txt",
+   "label": "human",
+   "row_id": 4024,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 742
+  },
+  {
+   "file": "summer_22.txt",
+   "label": "ai",
+   "row_id": 36004,
+   "split": "heldout_prompt",
+   "source": "mistral7binstruct_v2",
+   "prompt": "Summer projects",
+   "words": 310
+  },
+  {
+   "file": "summer_23.txt",
+   "label": "human",
+   "row_id": 4618,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 513
+  },
+  {
+   "file": "summer_24.txt",
+   "label": "human",
+   "row_id": 4379,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 273
+  },
+  {
+   "file": "summer_25.txt",
+   "label": "human",
+   "row_id": 4339,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 167
+  },
+  {
+   "file": "summer_26.txt",
+   "label": "ai",
+   "row_id": 26939,
+   "split": "heldout_prompt",
+   "source": "darragh_claude_v6",
+   "prompt": "Summer projects",
+   "words": 374
+  },
+  {
+   "file": "summer_27.txt",
+   "label": "human",
+   "row_id": 4455,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 409
+  },
+  {
+   "file": "summer_28.txt",
+   "label": "ai",
+   "row_id": 28518,
+   "split": "heldout_prompt",
+   "source": "mistral7binstruct_v2",
+   "prompt": "Summer projects",
+   "words": 279
+  },
+  {
+   "file": "summer_29.txt",
+   "label": "ai",
+   "row_id": 36918,
+   "split": "heldout_prompt",
+   "source": "mistral7binstruct_v1",
+   "prompt": "Summer projects",
+   "words": 421
+  },
+  {
+   "file": "summer_30.txt",
+   "label": "human",
+   "row_id": 3878,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Summer projects",
+   "words": 503
+  }
+ ]
+}

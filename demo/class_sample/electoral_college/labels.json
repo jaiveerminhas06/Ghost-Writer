@@ -1,0 +1,278 @@
+{
+ "seed": 42,
+ "split": "heldout_prompt",
+ "prompt": "Does the electoral college work?",
+ "student_share_in_split": 0.6256,
+ "essays": [
+  {
+   "file": "electoral_01.txt",
+   "label": "ai",
+   "row_id": 40440,
+   "split": "heldout_prompt",
+   "source": "NousResearch/Llama-2-7b-chat-hf",
+   "prompt": "Does the electoral college work?",
+   "words": 293
+  },
+  {
+   "file": "electoral_02.txt",
+   "label": "ai",
+   "row_id": 44814,
+   "split": "heldout_prompt",
+   "source": "kingki19_palm",
+   "prompt": "Does the electoral college work?",
+   "words": 415
+  },
+  {
+   "file": "electoral_03.txt",
+   "label": "human",
+   "row_id": 43332,
+   "split": "heldout_prompt",
+   "source": "train_essays",
+   "prompt": "Does the electoral college work?",
+   "words": 899
+  },
+  {
+   "file": "electoral_04.txt",
+   "label": "ai",
+   "row_id": 40730,
+   "split": "heldout_prompt",
+   "source": "NousResearch/Llama-2-7b-chat-hf",
+   "prompt": "Does the electoral college work?",
+   "words": 309
+  },
+  {
+   "file": "electoral_05.txt",
+   "label": "human",
+   "row_id": 19129,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 416
+  },
+  {
+   "file": "electoral_06.txt",
+   "label": "human",
+   "row_id": 42191,
+   "split": "heldout_prompt",
+   "source": "train_essays",
+   "prompt": "Does the electoral college work?",
+   "words": 463
+  },
+  {
+   "file": "electoral_07.txt",
+   "label": "human",
+   "row_id": 20009,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 328
+  },
+  {
+   "file": "electoral_08.txt",
+   "label": "ai",
+   "row_id": 44232,
+   "split": "heldout_prompt",
+   "source": "kingki19_palm",
+   "prompt": "Does the electoral college work?",
+   "words": 442
+  },
+  {
+   "file": "electoral_09.txt",
+   "label": "human",
+   "row_id": 42280,
+   "split": "heldout_prompt",
+   "source": "train_essays",
+   "prompt": "Does the electoral college work?",
+   "words": 445
+  },
+  {
+   "file": "electoral_10.txt",
+   "label": "human",
+   "row_id": 18839,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 168
+  },
+  {
+   "file": "electoral_11.txt",
+   "label": "ai",
+   "row_id": 40574,
+   "split": "heldout_prompt",
+   "source": "mistralai/Mistral-7B-Instruct-v0.1",
+   "prompt": "Does the electoral college work?",
+   "words": 383
+  },
+  {
+   "file": "electoral_12.txt",
+   "label": "human",
+   "row_id": 20577,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 388
+  },
+  {
+   "file": "electoral_13.txt",
+   "label": "human",
+   "row_id": 20351,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 473
+  },
+  {
+   "file": "electoral_14.txt",
+   "label": "ai",
+   "row_id": 44683,
+   "split": "heldout_prompt",
+   "source": "kingki19_palm",
+   "prompt": "Does the electoral college work?",
+   "words": 336
+  },
+  {
+   "file": "electoral_15.txt",
+   "label": "human",
+   "row_id": 42591,
+   "split": "heldout_prompt",
+   "source": "train_essays",
+   "prompt": "Does the electoral college work?",
+   "words": 522
+  },
+  {
+   "file": "electoral_16.txt",
+   "label": "ai",
+   "row_id": 44563,
+   "split": "heldout_prompt",
+   "source": "kingki19_palm",
+   "prompt": "Does the electoral college work?",
+   "words": 425
+  },
+  {
+   "file": "electoral_17.txt",
+   "label": "human",
+   "row_id": 19769,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 194
+  },
+  {
+   "file": "electoral_18.txt",
+   "label": "human",
+   "row_id": 18932,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 569
+  },
+  {
+   "file": "electoral_19.txt",
+   "label": "human",
+   "row_id": 18817,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 452
+  },
+  {
+   "file": "electoral_20.txt",
+   "label": "human",
+   "row_id": 18825,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 493
+  },
+  {
+   "file": "electoral_21.txt",
+   "label": "human",
+   "row_id": 19976,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 305
+  },
+  {
+   "file": "electoral_22.txt",
+   "label": "ai",
+   "row_id": 44351,
+   "split": "heldout_prompt",
+   "source": "kingki19_palm",
+   "prompt": "Does the electoral college work?",
+   "words": 433
+  },
+  {
+   "file": "electoral_23.txt",
+   "label": "human",
+   "row_id": 42686,
+   "split": "heldout_prompt",
+   "source": "train_essays",
+   "prompt": "Does the electoral college work?",
+   "words": 399
+  },
+  {
+   "file": "electoral_24.txt",
+   "label": "human",
+   "row_id": 20529,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 452
+  },
+  {
+   "file": "electoral_25.txt",
+   "label": "human",
+   "row_id": 20469,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 617
+  },
+  {
+   "file": "electoral_26.txt",
+   "label": "ai",
+   "row_id": 29667,
+   "split": "heldout_prompt",
+   "source": "radek_500",
+   "prompt": "Does the electoral college work?",
+   "words": 617
+  },
+  {
+   "file": "electoral_27.txt",
+   "label": "human",
+   "row_id": 42136,
+   "split": "heldout_prompt",
+   "source": "train_essays",
+   "prompt": "Does the electoral college work?",
+   "words": 719
+  },
+  {
+   "file": "electoral_28.txt",
+   "label": "ai",
+   "row_id": 35414,
+   "split": "heldout_prompt",
+   "source": "darragh_claude_v7",
+   "prompt": "Does the electoral college work?",
+   "words": 373
+  },
+  {
+   "file": "electoral_29.txt",
+   "label": "ai",
+   "row_id": 44448,
+   "split": "heldout_prompt",
+   "source": "kingki19_palm",
+   "prompt": "Does the electoral college work?",
+   "words": 287
+  },
+  {
+   "file": "electoral_30.txt",
+   "label": "human",
+   "row_id": 19754,
+   "split": "heldout_prompt",
+   "source": "persuade_corpus",
+   "prompt": "Does the electoral college work?",
+   "words": 466
+  }
+ ]
+}

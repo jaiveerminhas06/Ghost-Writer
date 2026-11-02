@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Check an essay, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&amp;family=Tinos:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{--desk:oklch(0.955 0.008 265);--desk-2:oklch(0.925 0.011 265);--paper:oklch(0.995 0.003 265);--ink:oklch(0.23 0.022 265);--ink-2:oklch(0.38 0.02 265);--ink-3:oklch(0.50 0.018 265);--line:oklch(0.30 0.03 265 / 0.14);--line-2:oklch(0.30 0.03 265 / 0.28);--pen:oklch(0.45 0.17 265);--pen-ring:oklch(from var(--pen) l c h / 0.35);--hl-1:oklch(0.965 0.07 100);--hl-2:oklch(0.925 0.12 95);--hl-3:oklch(0.865 0.15 85);--sh-1:inset 0 1px 0 oklch(1 0 0 / 0.55),0 1px 1px oklch(0.30 0.04 265 / 0.10),0 2px 6px -2px oklch(0.30 0.04 265 / 0.14);--sh-2:inset 0 1px 0 oklch(1 0 0 / 0.8),0 1px 1px oklch(0.30 0.04 265 / 0.08),0 10px 28px -10px oklch(0.30 0.05 265 / 0.20);--sh-pen:inset 0 1px 0 oklch(1 0 0 / 0.22),0 1px 1px oklch(0.30 0.06 265 / 0.20),0 4px 12px -4px oklch(0.45 0.17 265 / 0.45)}
+body{margin:0;background:var(--desk)}
+h1,h2{text-wrap:balance}p{text-wrap:pretty}
+mark{color:inherit;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.gw-chips{mask-image:linear-gradient(to right,transparent 0,#000 16px,#000 calc(100% - 24px),transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0,#000 16px,#000 calc(100% - 24px),transparent 100%)}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 2450px; overflow: hidden; background: var(--desk); color: var(--ink); font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 16px; line-height: 1.55; font-weight: 420">
+
+<header style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--line)">
+<p style="margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 650; font-size: 18px; letter-spacing: -0.01em"><svg width="18" height="22" viewBox="0 0 22 26" fill="none" aria-hidden="true"><path d="M2.5 1.5h12l5 5v18h-17z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><path d="M6.5 1.5v23" stroke="oklch(0.45 0.17 265)" stroke-width="1.8"></path><path d="M9.5 10h6M9.5 14h6M9.5 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Ghost Writer</p>
+<button type="button" aria-label="Menu" style="display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 8px; background: transparent; color: var(--ink)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.5 6h13M3.5 10h13M3.5 14h13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></button>
+</header>
+
+<div style="padding: 28px 16px 0; display: flex; flex-direction: column; gap: 10px">
+<h1 style="margin: 0; font-size: 34px; line-height: 1.06; letter-spacing: -0.026em; font-weight: 650">Did a student or an AI write this essay?</h1>
+<p style="margin: 0; font-size: 14px; color: var(--ink-3)">A course project for CSE472. Don't use it to judge real students.</p>
+</div>
+
+<div class="gw-chips" role="radiogroup" aria-label="Examples" style="display: flex; gap: 8px; overflow-x: auto; padding: 20px 16px 4px">
+<button type="button" role="radio" aria-checked="true" style="flex: none; min-height: 44px; padding: 0 14px; border: 0; border-radius: 22px; background: var(--paper); box-shadow: var(--sh-1), inset 0 0 0 1.5px var(--ink); color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; white-space: nowrap">Student essay it wrongly flags</button>
+<button type="button" role="radio" aria-checked="false" style="flex: none; min-height: 44px; padding: 0 14px; border: 0; border-radius: 22px; background: transparent; box-shadow: inset 0 0 0 1px var(--line-2); color: var(--ink); font: inherit; font-size: 15px; white-space: nowrap">AI essay by Claude</button>
+<button type="button" role="radio" aria-checked="false" style="flex: none; min-height: 44px; padding: 0 14px; border: 0; border-radius: 22px; background: transparent; box-shadow: inset 0 0 0 1px var(--line-2); color: var(--ink); font: inherit; font-size: 15px; white-space: nowrap">Student essay</button>
+</div>
+
+<section aria-labelledby="pv" style="margin: 20px 12px 0; padding: 24px 16px 16px; border-radius: 18px; background: var(--paper); box-shadow: var(--sh-2); display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 id="pv" style="margin: 0; font-size: 26px; line-height: 1.12; letter-spacing: -0.018em; font-weight: 650">Flagged, but that isn't proof.</h2>
+<p style="margin: 0; color: var(--pen); font-style: italic; font-size: 15px">This example was written by a student.</p>
+</div>
+<div style="position: relative; height: 96px; margin: 0 6px" role="img" aria-label="This essay scores plus 9.1. The strict flag line is at plus 7.8.">
+<div style="position: absolute; top: 46px; left: 89%; right: 0; height: 16px; background: var(--hl-2)"></div>
+<div style="position: absolute; top: 53px; left: 0; right: 0; height: 2px; background: var(--ink)"></div>
+<div style="position: absolute; top: 48px; left: 0; width: 2px; height: 12px; background: var(--ink)"></div>
+<div style="position: absolute; top: 48px; left: 50%; width: 2px; height: 12px; margin-left: -1px; background: var(--ink)"></div>
+<div style="position: absolute; top: 48px; right: 0; width: 2px; height: 12px; background: var(--ink)"></div>
+<p style="position: absolute; top: 66px; left: 0; margin: 0; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums">−10</p>
+<p style="position: absolute; top: 66px; left: 50%; transform: translateX(-50%); margin: 0; font-size: 13px; color: var(--ink-3)">0</p>
+<p style="position: absolute; top: 66px; right: 0; margin: 0; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums">+10</p>
+<div style="position: absolute; top: 22px; left: 89%; width: 3px; height: 40px; margin-left: -1.5px; background: var(--pen)"></div>
+<p style="position: absolute; top: 18px; left: 89%; transform: translateX(calc(-100% - 8px)); margin: 0; white-space: nowrap; color: var(--pen); font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums">Flag line +7.8</p>
+<div style="position: absolute; top: 30px; left: 95.5%; width: 0; height: 0; margin-left: -7px; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 11px solid var(--ink)"></div>
+<p style="position: absolute; top: 0; left: 95.5%; transform: translateX(calc(-100% + 10px)); margin: 0; white-space: nowrap; font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums">This essay +9.1</p>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line)">
+<p style="margin: 0; font-size: 14px; color: var(--ink-2)">Strict line. 2.3% of students crossed it on new topics.</p>
+<div role="group" aria-label="How strict" style="flex: none; display: flex; gap: 2px; padding: 3px; border-radius: 11px; background: var(--desk-2)">
+<button type="button" aria-pressed="true" style="min-height: 44px; padding: 0 10px; border: 0; border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600">Strict</button>
+<button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); font: inherit; font-size: 14px">Standard</button>
+</div>
+</div>
+</section>
+
+<article aria-label="Essay" style="margin: 20px 12px 0; padding: 28px 20px 8px; border-radius: 6px; background: var(--paper); box-shadow: var(--sh-2); font-family: Tinos, 'Times New Roman', serif; font-size: 17px; line-height: 1.9">
+<p style="margin: 0; text-indent: 2em">A driverless car is a scary concept. Some say that it is completely insane, but that is what they said when Neil Armstrong came up with the idea of walking on the moon, and now walking on the moon is no big deal. <mark style="background: var(--hl-2); padding: 1px">In my opinion, with a lot of hard work and problem solving, driverless cars could become the next big thing.</mark></p>
+<p style="margin: 12px 0 24px; padding-left: 2em; font-family: 'Atkinson Hyperlegible Next', sans-serif; color: var(--pen); font-style: italic; font-size: 14px; line-height: 1.5">Yellow marks what I reacted to, not how the student wrote.</p>
+<p style="margin: 0; text-indent: 2em">There are many things that have been done to make this idea become reality. <mark style="background: var(--hl-2); padding: 1px">For example, Google's modified Toyota Prius uses position-estimating sensors on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, and a GPS receiver.</mark> With modifications on these resources, they could <span style="text-decoration: underline wavy var(--pen); text-underline-offset: 4px">potentually</span> work. Of course, the driverless car will not be 100% driverless. The driver would need to be alert and ready to take control when needed. GM has developed ways to alert the driver. For example, they have made driver's seats that vibrate when the vehicle is in danger of backing into an object. <mark style="background: var(--hl-1); padding: 1px">Google and GM have taken great precautions in developing the driverless car.</mark></p>
+<p style="margin: 12px 0 24px; padding-left: 2em; font-family: 'Atkinson Hyperlegible Next', sans-serif; color: var(--pen); font-style: italic; font-size: 14px; line-height: 1.5">One misspelling. The essays I wrongly flag have almost none. Polish is what I mistake for a machine.</p>
+<p style="margin: 0; text-indent: 2em"><mark style="background: var(--hl-3); padding: 1px">In conclusion, driverless cars may seem scary at first, but I believe that with hard work and dedication, driverless cars will one day be no big deal.</mark></p>
+<p style="margin: 12px 0 24px; padding-left: 2em; font-family: 'Atkinson Hyperlegible Next', sans-serif; color: var(--pen); font-style: italic; font-size: 14px; line-height: 1.5">The sentence I lean on most.</p>
+</article>
+
+<section aria-labelledby="pw" style="margin: 20px 12px 0; padding: 20px 16px; border-radius: 18px; box-shadow: inset 0 0 0 1px var(--line-2); display: flex; flex-direction: column; gap: 10px">
+<h2 id="pw" style="margin: 0; font-size: 17px; font-weight: 600">Which AI is it most like?</h2>
+<p style="margin: 0; font-size: 14px; color: var(--ink-2)">It can't tell. For sources it never saw, it was right 0 to 28% of the time. Here the flag is a false alarm, so the guess means nothing.</p>
+<button type="button" aria-expanded="false" style="align-self: flex-start; min-height: 44px; padding: 0 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-size: 15px; font-weight: 500">Show the guess anyway</button>
+</section>
+
+<p style="margin: 28px 16px 0; font-size: 20px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 600">A flag is a reason to ask questions, not evidence.</p>
+<p style="margin: 10px 16px 0; font-size: 14px; color: var(--ink-2)">Trained on US school essays and 2023-era AI. Untested on non-native writers, adults, newer AI models and partly AI-written essays.</p>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 12px 30px; background: oklch(from var(--desk) l c h / 0.92); box-shadow: 0 -1px 0 var(--line), 0 -12px 24px -16px oklch(0.30 0.05 265 / 0.25); display: flex; gap: 8px">
+<button type="button" style="flex: 1 1 0; min-height: 48px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--paper); box-shadow: var(--sh-1); color: var(--ink); font: inherit; font-weight: 500">Edit essay</button>
+<a href="Fool.dc.html" style="flex: 1.4 1 0; display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 10px; background: var(--pen); box-shadow: var(--sh-pen); color: oklch(0.99 0.005 265); font-weight: 600; text-decoration: none">Try to fool it</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2450}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
