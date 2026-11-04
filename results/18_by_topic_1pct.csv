@@ -1,0 +1,53 @@
+rule,topic,tau,false flags %,AI caught %
+a,"""A Cowboy Who Rode the Waves""",0.01,16.837,100.0
+a,Car-free cities,0.01,1.688,99.944
+a,Cell phones at school,0.01,0.181,99.31
+a,Community service,0.01,2.983,99.751
+a,Distance learning,0.01,2.921,99.673
+a,Driverless cars,0.01,0.901,98.352
+a,Exploring Venus,0.01,5.102,100.0
+a,Facial action coding system,0.01,1.477,99.551
+a,Grades for extracurricular activities,0.01,2.337,99.308
+a,Mandatory extracurricular activities,0.01,1.976,99.509
+a,Phones and driving,0.01,1.627,100.0
+a,Seeking multiple opinions,0.01,5.348,99.384
+a,The Face on Mars,0.01,0.379,100.0
+b,"""A Cowboy Who Rode the Waves""",0.005,12.609,99.703
+b,Car-free cities,0.003,0.113,99.722
+b,Cell phones at school,0.003,0.0,98.621
+b,Community service,0.003,0.713,99.254
+b,Distance learning,0.003,1.252,99.476
+b,Driverless cars,0.003,0.159,96.154
+b,Exploring Venus,0.003,1.719,100.0
+b,Facial action coding system,0.003,0.277,98.952
+b,Grades for extracurricular activities,0.003,0.431,97.924
+b,Mandatory extracurricular activities,0.003,0.299,98.855
+b,Phones and driving,0.003,0.685,99.405
+b,Seeking multiple opinions,0.003,2.062,99.208
+b,The Face on Mars,0.003,0.253,99.286
+c,"""A Cowboy Who Rode the Waves""",0.002,3.207,98.813
+c,Car-free cities,0.0,0.0,0.0
+c,Cell phones at school,0.0,0.0,0.0
+c,Community service,0.0,0.0,0.0
+c,Distance learning,0.0,0.0,0.0
+c,Driverless cars,0.0,0.0,0.0
+c,Exploring Venus,0.0,0.0,0.0
+c,Facial action coding system,0.0,0.0,0.0
+c,Grades for extracurricular activities,0.0,0.0,0.0
+c,Mandatory extracurricular activities,0.0,0.0,0.0
+c,Phones and driving,0.0,0.086,98.81
+c,Seeking multiple opinions,0.0,0.0,0.0
+c,The Face on Mars,0.0,0.0,0.0
+d,"""A Cowboy Who Rode the Waves""",0.002,4.373,99.11
+d,Car-free cities,0.002,0.113,99.611
+d,Cell phones at school,0.002,0.0,98.276
+d,Community service,0.002,0.584,99.254
+d,Distance learning,0.002,0.51,99.411
+d,Driverless cars,0.002,0.159,96.154
+d,Exploring Venus,0.002,1.611,100.0
+d,Facial action coding system,0.002,0.185,98.952
+d,Grades for extracurricular activities,0.002,0.308,97.924
+d,Mandatory extracurricular activities,0.002,0.18,98.692
+d,Phones and driving,0.002,0.342,99.405
+d,Seeking multiple opinions,0.002,2.062,99.178
+d,The Face on Mars,0.002,0.063,95.714
