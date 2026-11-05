@@ -1,4 +1,6 @@
-# Proposed edits after the model-improvement pass (NOT applied)
+# Proposed edits after the model-improvement pass (APPLIED 2026-11-05, with changes)
+
+**Status:** sections 1-4 were applied with these changes by the owner: the middle zone is named "above usual" and the label "cannot tell" is dropped, with the wording *"Higher than most student essays, but most essays that score here are written by students (about 7 in 10 at a one-third AI share, about 9 in 10 at 10%)"*; the fairness paragraph reports every attribute raw and prompt-adjusted (`21b`) instead of English learners only; the variant A mechanism numbers were added (Cowboy essays with >2% misspellings: 32 of 409 vs 3). Section 5 (demo switch) is approved in principle and deferred to the front-end work (CLAUDE.md, Next up). The text below is the original proposal and is kept as a record.
 
 Branch `model-improvements`. Nothing in `README.md`, `MODEL_CARD.md` or `CLAUDE.md` has been changed; this file proposes the changes, with every number taken from a results file (named next to it). Apply on approval.
 
@@ -16,9 +18,9 @@ Branch `model-improvements`. Nothing in `README.md`, `MODEL_CARD.md` or `CLAUDE.
 | AI essays on the held-out prompts, caught | 99.70% (on-topic, pooled) | `results/20_heldout_tables.csv` |
 | **AI essays of unseen generators, caught** (Claude v6, v7, Falcon-180B; on-topic) | **94.92% [93.95, 95.80]** (1,944/2,048); old threshold 99.76% | same, H3 and H4 |
 | ... by source | v6 94.83%, v7 92.92%, Falcon 98.82% | same |
-| ... flagged **or** in the cannot-tell band | 98.97% | same |
+| ... flagged **or** in the "above usual" zone | 98.97% | same |
 | Cannot-tell band: humans / AI essays in it | 2.62% / 2.21% | same |
-| P(AI \| cannot tell) at 34.6% / 10% / 5% AI share | 30.8% [24.9, 36.7] / 8.6% / 4.2% | same, H6 |
+| P(AI \| above usual) at 34.6% / 10% / 5% AI share | 30.8% [24.9, 36.7] / 8.6% / 4.2% | same, H6 |
 | P(AI \| flagged) at 34.6% / 10% / 5% | 98.7% / 93.9% / 88.0% | same, H6 |
 | Val-chosen 1% logit threshold of the three seeds | +4.67 / +5.28 / +7.82 | `15_claims_audit.csv`, `19_ensemble_stability.ipynb` |
 | Humans flagged by one seed that all three flag | 14% (fold 7), 16% (fold 11), 40% (held-out; 21 of 52) | `results/19_agreement.csv`, `15_claims_audit.csv` |
@@ -51,7 +53,7 @@ Branch `model-improvements`. Nothing in `README.md`, `MODEL_CARD.md` or `CLAUDE.
 | Human essays wrongly flagged on two unseen prompts, final system at its "1%" operating point | **0.70%** [0.48, 0.95] pooled; 0.11% on one prompt and **1.60%** [1.11, 2.31] on the other |
 | The same essays with the earlier single-model "1%" threshold | 3.85% |
 | AI essays on those prompts caught | 99.70% |
-| AI essays from three AI models never seen in training caught | **94.92%** [93.95, 95.80] (98.97% flagged or in the "cannot tell" band); 99.8% with the earlier threshold |
+| AI essays from three AI models never seen in training caught | **94.92%** [93.95, 95.80] (98.97% flagged or in the "above usual" band); 99.8% with the earlier threshold |
 
 Add two sentences under it: *"The stricter threshold cuts false flags on new topics fivefold and costs about five points of detection on AI models it has never seen. The single-model threshold of earlier notebooks was set on familiar topics and flagged 3.85% of unseen-topic students."*
 
@@ -70,7 +72,7 @@ Add two sentences under it: *"The stricter threshold cuts false flags on new top
 
 ## 3 · MODEL_CARD.md: proposed changes
 
-- **Model table, "Decision rule":** replace the strict/standard logit thresholds with: *"A three-seed ensemble. Each seed's score is converted to its val-human tail probability p; the ensemble is the mean of the three p-values, re-calibrated on the validation humans. Flag if p <= 0.00235 ('1%' operating point); essays with 0.00235 < p <= 0.01032 are 'cannot tell' (not evidence of AI writing); the strict point flags at p <= 0.00093. The thresholds were chosen by a rule declared in advance and judged leave-one-topic-out over 13 topics (18b)."*
+- **Model table, "Decision rule":** replace the strict/standard logit thresholds with: *"A three-seed ensemble. Each seed's score is converted to its val-human tail probability p; the ensemble is the mean of the three p-values, re-calibrated on the validation humans. Flag if p <= 0.00235 ('1%' operating point); essays with 0.00235 < p <= 0.01032 are 'above usual' (not evidence of AI writing); the strict point flags at p <= 0.00093. The thresholds were chosen by a rule declared in advance and judged leave-one-topic-out over 13 topics (18b)."*
 - **Evaluation table:** replace the two false-positive-rate rows with the held-out numbers of section 0 (including both prompts, the unseen-generator detection, and the band).
 - **Known failure modes:** rewrite bullet 1 ("A threshold does not carry over to new topics") as *"A threshold in logits belongs to one trained model (three seeds: +4.67, +5.28, +7.82 at AUC 0.9998) and does not carry over to new topics; the p-scale rule narrows the topic spread but one of two held-out prompts is still above 1% (1.60%)."* Replace bullet 2 ("the wrongly flagged essays are the best writers ... longer") with *"False flags fall on more predictable, better-spelled, more formulaic essays within a topic (GPT-2 perplexity -0.95 SD, misspellings -0.43 SD; 16b); they are **not** longer within a topic (long essays are flagged less than short ones, -1.6 points prompt-adjusted)."* Add: unseen-generator detection 94.9%; seed instability (14-40%); near-threshold flips (26-40%); the band is mostly, not entirely, human (about 7 in 10 at one third AI).
 - **Not tested -> Partly tested:** *"US school English learners: 0 of 340 flagged (upper bound 1.12%, about twice the other students' rate); no evidence of a higher rate; power limited; not a test of TOEFL-style non-native writers. Adults, other genres and languages, newer AI models and humanisers: not tested."*
@@ -107,6 +109,6 @@ I chose to **add `requirements-lock.txt`** (exact installed versions of everythi
 ## 7 · Open items for the owner
 
 - Rule (b) vs (d) for variant A is moot (variant A is rejected); the original recipe's rule (d) was applied unchanged.
-- The cannot-tell band wording: adopt the revised fractions from `20` or drop the middle label.
+- The "above usual" zone wording: adopt the revised fractions from `20` or drop the middle label.
 - Whether to report the held-out numbers per prompt in the README headline (recommended: yes, both prompts, because one is above target).
 - Optional later work: the repair-versus-injection ablation for variant A; a third and fourth held-out topic.
