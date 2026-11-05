@@ -1,0 +1,53 @@
+rule,topic,false flags %,AI caught %
+a,"""A Cowboy Who Rode the Waves""",3.571,99.407
+a,Car-free cities,1.313,99.944
+a,Cell phones at school,0.362,98.276
+a,Community service,4.994,99.751
+a,Distance learning,5.239,99.673
+a,Driverless cars,0.689,97.802
+a,Exploring Venus,4.672,100.0
+a,Facial action coding system,2.446,99.701
+a,Grades for extracurricular activities,1.538,99.308
+a,Mandatory extracurricular activities,3.413,99.673
+a,Phones and driving,1.37,100.0
+a,Seeking multiple opinions,5.09,99.501
+a,The Face on Mars,0.569,100.0
+b,"""A Cowboy Who Rode the Waves""",1.166,99.407
+b,Car-free cities,0.225,99.944
+b,Cell phones at school,0.121,97.931
+b,Community service,1.427,99.502
+b,Distance learning,2.643,99.509
+b,Driverless cars,0.265,97.253
+b,Exploring Venus,1.557,100.0
+b,Facial action coding system,0.415,99.701
+b,Grades for extracurricular activities,0.554,98.962
+b,Mandatory extracurricular activities,1.677,99.509
+b,Phones and driving,0.856,99.405
+b,Seeking multiple opinions,3.222,99.325
+b,The Face on Mars,0.063,98.571
+c,"""A Cowboy Who Rode the Waves""",0.656,99.11
+c,Car-free cities,0.038,98.832
+c,Cell phones at school,0.06,97.931
+c,Community service,0.389,99.005
+c,Distance learning,1.205,99.345
+c,Driverless cars,0.0,95.055
+c,Exploring Venus,0.269,95.804
+c,Facial action coding system,0.138,99.401
+c,Grades for extracurricular activities,0.185,98.962
+c,Mandatory extracurricular activities,0.539,99.182
+c,Phones and driving,0.171,98.214
+c,Seeking multiple opinions,0.773,99.031
+c,The Face on Mars,0.0,95.714
+d,"""A Cowboy Who Rode the Waves""",0.802,99.407
+d,Car-free cities,0.038,99.778
+d,Cell phones at school,0.06,97.931
+d,Community service,1.038,99.005
+d,Distance learning,1.344,99.345
+d,Driverless cars,0.053,96.154
+d,Exploring Venus,0.537,98.601
+d,Facial action coding system,0.185,99.701
+d,Grades for extracurricular activities,0.308,98.962
+d,Mandatory extracurricular activities,0.898,99.509
+d,Phones and driving,0.514,99.405
+d,Seeking multiple opinions,1.74,99.237
+d,The Face on Mars,0.0,97.143
