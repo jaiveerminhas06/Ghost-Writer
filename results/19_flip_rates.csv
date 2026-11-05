@@ -1,0 +1,11 @@
+,,near-threshold essays,flip rate near %,flip rate all essays %
+test + val AI,seed 0,21.0,33.333,0.86
+test + val AI,seed 1,26.0,26.923,0.488
+test + val AI,seed 2,21.0,16.667,5.678
+test + val AI,ensemble,32.0,29.688,1.263
+test + val AI,singles (mean of 3),22.667,25.641,2.342
+fold 11 left-out,seed 0,107.0,43.458,1.442
+fold 11 left-out,seed 1,62.0,40.323,1.331
+fold 11 left-out,seed 2,87.0,36.782,10.355
+fold 11 left-out,ensemble,94.0,32.979,2.601
+fold 11 left-out,singles (mean of 3),85.333,40.187,4.376
