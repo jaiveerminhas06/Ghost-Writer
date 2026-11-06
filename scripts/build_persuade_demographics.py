@@ -5,15 +5,20 @@ economic disadvantage, disability). Our `persuade_corpus` human essays ARE PERSU
 
 Inputs: the two public files of https://github.com/scrosseye/persuade_corpus_2.0 (hosted on Google Drive, see that README):
   persuade_corpus_2.0_train.csv                        (~617 MB)
-  persuade_corpus_2.0_test.csv, inside persuade_corpus_2.0_test.zip, password "persuade_test" (published in the README)
+  persuade_corpus_2.0_test.csv, distributed inside a password-protected zip. The password is in the PERSUADE 2.0 README; it is deliberately NOT
+  written in this repository (it exists to keep the test set out of web scrapes). Pass the zip as --test and set the environment variable
+  PERSUADE_ZIP_PASSWORD, or unzip it yourself and pass the extracted .csv.
 Usage:  python scripts/build_persuade_demographics.py --train /path/persuade_corpus_2.0_train.csv --test /path/persuade_corpus_2.0_test.csv
+        PERSUADE_ZIP_PASSWORD=<from the README> python scripts/build_persuade_demographics.py --train ... --test /path/persuade_corpus_2.0_test.zip
 Output: data/external/persuade_demographics.csv  (git-ignored): row_id -> essay_id_comp, grade_level, gender, ell_status, race_ethnicity,
         economically_disadvantaged, student_disability_status. Matching is by exact text after collapsing whitespace.
 Only aggregate results are committed; the per-essay mapping is not.
 """
 import argparse
+import os
 import re
 import sys
+import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -26,6 +31,20 @@ COLS = ['essay_id_comp', 'full_text', 'gender', 'grade_level', 'ell_status', 'ra
 norm = lambda t: re.sub(r"\s+", " ", str(t)).strip()
 
 
+def read_persuade(path):
+    """Read a PERSUADE csv, or the first csv inside a password-protected zip (password from the PERSUADE_ZIP_PASSWORD environment variable)."""
+    if not str(path).lower().endswith('.zip'):
+        return pd.read_csv(path, usecols=COLS, low_memory=False)
+    pw = os.environ.get('PERSUADE_ZIP_PASSWORD')
+    if not pw:
+        sys.exit('The test file is a password-protected zip. Set the environment variable PERSUADE_ZIP_PASSWORD; '
+                 'the password is given in the README of the PERSUADE 2.0 release (https://github.com/scrosseye/persuade_corpus_2.0).')
+    with zipfile.ZipFile(path) as z:
+        name = next(n for n in z.namelist() if n.lower().endswith('.csv'))
+        with z.open(name, pwd=pw.encode()) as f:
+            return pd.read_csv(f, usecols=COLS, low_memory=False)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--train', required=True)
@@ -33,7 +52,7 @@ def main():
     a = ap.parse_args()
     parts = []
     for path, name in ((a.train, 'train'), (a.test, 'test')):
-        df = pd.read_csv(path, usecols=COLS, low_memory=False).drop_duplicates('essay_id_comp')
+        df = read_persuade(path).drop_duplicates('essay_id_comp')
         df['persuade_set'] = name
         parts.append(df)
         print(f'{name}: {len(df):,} essays')
