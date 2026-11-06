@@ -1,0 +1,8 @@
+,estimate,lo,hi
+human flagged %,0.58,0.44,0.88
+human in band %,2.49,1.84,2.98
+human not flagged %,96.93,96.42,97.45
+AI flagged %,98.78,97.74,99.21
+AI in band %,0.69,0.39,1.69
+AI missed %,0.53,0.26,0.75
+topics over target (flagged),23.08,23.08,23.08

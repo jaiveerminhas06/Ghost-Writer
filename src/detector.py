@@ -58,3 +58,49 @@ class Detector:
                 logits = self.model(input_ids=x.to(self.device), attention_mask=(x != pad).long().to(self.device)).logits
             out[chunk] = logits.squeeze(1).float().cpu().numpy()
         return out
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Windowed scoring (added for 16_long_essays.ipynb). Detector.score above is unchanged.
+# ---------------------------------------------------------------------------------------------------------------
+
+def _score_windows(self, texts, stride=256, batch_size=64):
+    """Score an essay in overlapping windows instead of only its first 512 tokens.
+
+    The model sees at most 512 tokens (510 of text plus the start and end markers). An essay longer than that is cut by
+    Detector.score. Here the essay is tokenised once, without cutting, and read in windows of 510 text tokens whose starts
+    are `stride` tokens apart; the last window ends at the end of the essay. An essay of at most 510 tokens gets one window
+    that is identical to Detector.score's input, so its score is the same.
+
+    Returns two lists, one entry per essay: the logit of each window, and each window's length in tokens.
+    """
+    body = self.max_len - 2
+    all_ids = self.tok(list(texts), add_special_tokens=False)["input_ids"]
+    wins, owner = [], []
+    for e, ids in enumerate(all_ids):
+        starts = [0]
+        while starts[-1] + body < len(ids):
+            starts.append(starts[-1] + stride)
+        for s in starts:
+            wins.append([self.tok.cls_token_id] + ids[s:s + body] + [self.tok.sep_token_id])
+            owner.append(e)
+    logits = np.empty(len(wins), dtype=np.float32)
+    order = np.argsort([len(w) for w in wins], kind="stable")
+    pad = self.tok.pad_token_id
+    with torch.no_grad():
+        for s in range(0, len(order), batch_size):
+            chunk = order[s:s + batch_size]
+            x = torch.full((len(chunk), max(len(wins[i]) for i in chunk)), pad, dtype=torch.long)
+            for r, i in enumerate(chunk):
+                x[r, :len(wins[i])] = torch.tensor(wins[i])
+            with torch.autocast("cuda", dtype=torch.float16, enabled=self.device == "cuda"):
+                out = self.model(input_ids=x.to(self.device), attention_mask=(x != pad).long().to(self.device)).logits
+            logits[chunk] = out.squeeze(1).float().cpu().numpy()
+            del out
+    owner = np.array(owner)
+    lengths = np.array([len(w) for w in wins])
+    cut = np.r_[0, np.flatnonzero(np.diff(owner)) + 1, len(owner)]
+    return [logits[a:b] for a, b in zip(cut[:-1], cut[1:])], [lengths[a:b] for a, b in zip(cut[:-1], cut[1:])]
+
+
+Detector.score_windows = _score_windows

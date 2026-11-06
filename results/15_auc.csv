@@ -1,0 +1,37 @@
+subset,slice,model,auc,lo,hi,n
+all essays,test,DistilRoBERTa (fine-tuned),0.99947,0.99866,0.99994,3501
+all essays,test,TF-IDF + LinearSVM,0.99978,0.99946,0.99999,3501
+all essays,test,BiGRU (Skip-gram init),0.99982,0.99963,0.99994,3501
+all essays,test,BiLSTM (Skip-gram init),0.99913,0.99846,0.99964,3501
+all essays,test,BiLSTM (random init),0.99887,0.99748,0.9997,3501
+all essays,test,GPT-2 perplexity (zero-shot),0.97144,0.96605,0.97617,3501
+all essays,held-out prompts,DistilRoBERTa (fine-tuned),0.99972,0.99952,0.99988,7135
+all essays,held-out prompts,TF-IDF + LinearSVM,0.99709,0.99581,0.99798,7135
+all essays,held-out prompts,BiGRU (Skip-gram init),0.95039,0.94586,0.95463,7135
+all essays,held-out prompts,BiLSTM (Skip-gram init),0.96437,0.96016,0.96829,7135
+all essays,held-out prompts,BiLSTM (random init),0.96657,0.96244,0.96997,7135
+all essays,held-out prompts,GPT-2 perplexity (zero-shot),0.94799,0.94256,0.95375,7135
+all essays,paired generators,DistilRoBERTa (fine-tuned),0.99965,0.99932,0.99988,5012
+all essays,paired generators,TF-IDF + LinearSVM,0.99972,0.99956,0.99985,5012
+all essays,paired generators,BiGRU (Skip-gram init),0.99827,0.99757,0.99888,5012
+all essays,paired generators,BiLSTM (Skip-gram init),0.99352,0.99202,0.9948,5012
+all essays,paired generators,BiLSTM (random init),0.99555,0.99426,0.99668,5012
+all essays,paired generators,GPT-2 perplexity (zero-shot),0.70508,0.6901,0.71856,5012
+on-topic only,test,DistilRoBERTa (fine-tuned),0.99979,0.99949,0.99998,2745
+on-topic only,test,TF-IDF + LinearSVM,0.9996,0.99884,0.99999,2745
+on-topic only,test,BiGRU (Skip-gram init),0.99966,0.99921,0.99993,2745
+on-topic only,test,BiLSTM (Skip-gram init),0.99868,0.99707,0.99976,2745
+on-topic only,test,BiLSTM (random init),0.99761,0.99444,0.99951,2745
+on-topic only,test,GPT-2 perplexity (zero-shot),0.97785,0.97085,0.98467,2745
+on-topic only,held-out prompts,DistilRoBERTa (fine-tuned),0.99979,0.99962,0.9999,6401
+on-topic only,held-out prompts,TF-IDF + LinearSVM,0.99717,0.99641,0.99784,6401
+on-topic only,held-out prompts,BiGRU (Skip-gram init),0.93352,0.92764,0.93949,6401
+on-topic only,held-out prompts,BiLSTM (Skip-gram init),0.95304,0.94821,0.95802,6401
+on-topic only,held-out prompts,BiLSTM (random init),0.9568,0.95196,0.96142,6401
+on-topic only,held-out prompts,GPT-2 perplexity (zero-shot),0.93934,0.9318,0.94665,6401
+on-topic only,paired generators,DistilRoBERTa (fine-tuned),0.99961,0.99922,0.99988,4320
+on-topic only,paired generators,TF-IDF + LinearSVM,0.99964,0.99945,0.99981,4320
+on-topic only,paired generators,BiGRU (Skip-gram init),0.99793,0.99715,0.99868,4320
+on-topic only,paired generators,BiLSTM (Skip-gram init),0.99197,0.99024,0.9936,4320
+on-topic only,paired generators,BiLSTM (random init),0.99441,0.99285,0.99588,4320
+on-topic only,paired generators,GPT-2 perplexity (zero-shot),0.64852,0.63329,0.66363,4320

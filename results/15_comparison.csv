@@ -1,0 +1,85 @@
+subset,metric,model,k,n,detail,point,wilson_lo,wilson_hi,boot_lo,boot_hi
+all essays,humans flagged: test,DistilRoBERTa (fine-tuned),21,2291,,0.917,0.6,1.397,0.307,1.359
+all essays,humans flagged: test,TF-IDF + LinearSVM,30,2291,,1.309,0.919,1.863,0.692,2.15
+all essays,humans flagged: test,BiGRU (Skip-gram init),25,2291,,1.091,0.74,1.606,0.348,1.664
+all essays,humans flagged: test,BiLSTM (Skip-gram init),30,2291,,1.309,0.919,1.863,0.566,2.133
+all essays,humans flagged: test,BiLSTM (random init),20,2291,,0.873,0.566,1.345,0.439,1.548
+all essays,humans flagged: test,GPT-2 perplexity (zero-shot),26,2291,,1.135,0.776,1.658,0.616,2.106
+all essays,humans flagged: held-out prompts,DistilRoBERTa (fine-tuned),170,4464,,3.808,3.285,4.411,2.315,4.94
+all essays,humans flagged: held-out prompts,TF-IDF + LinearSVM,1500,4464,,33.602,32.231,35.001,24.73,39.006
+all essays,humans flagged: held-out prompts,BiGRU (Skip-gram init),563,4464,,12.612,11.67,13.618,8.082,15.339
+all essays,humans flagged: held-out prompts,BiLSTM (Skip-gram init),366,4464,,8.199,7.43,9.04,5.627,10.309
+all essays,humans flagged: held-out prompts,BiLSTM (random init),527,4464,,11.806,10.892,12.785,8.576,17.472
+all essays,humans flagged: held-out prompts,GPT-2 perplexity (zero-shot),25,4464,,0.56,0.38,0.825,0.313,1.073
+all essays,humans flagged: worst held-out prompt,DistilRoBERTa (fine-tuned),135,1750,Summer projects,7.714,6.555,9.059,5.086,9.771
+all essays,humans flagged: worst held-out prompt,TF-IDF + LinearSVM,638,1750,Summer projects,36.457,34.234,38.74,28.34,41.257
+all essays,humans flagged: worst held-out prompt,BiGRU (Skip-gram init),530,1750,Summer projects,30.286,28.178,32.48,19.371,36.114
+all essays,humans flagged: worst held-out prompt,BiLSTM (Skip-gram init),317,1750,Summer projects,18.114,16.38,19.988,12.8,22.229
+all essays,humans flagged: worst held-out prompt,BiLSTM (random init),379,1750,Summer projects,21.657,19.79,23.648,16.227,31.944
+all essays,humans flagged: worst held-out prompt,GPT-2 perplexity (zero-shot),21,1750,Summer projects,1.2,0.786,1.828,0.629,2.286
+all essays,humans flagged: worst test prompt,DistilRoBERTa (fine-tuned),3,169,Mandatory extracurricular activities,1.775,0.606,5.088,1.227,4.734
+all essays,humans flagged: worst test prompt,TF-IDF + LinearSVM,7,202,Distance learning,3.465,1.689,6.979,2.367,7.426
+all essays,humans flagged: worst test prompt,BiGRU (Skip-gram init),8,202,Distance learning,3.96,2.02,7.619,1.839,7.563
+all essays,humans flagged: worst test prompt,BiLSTM (Skip-gram init),8,192,Seeking multiple opinions,4.167,2.126,8.005,2.475,7.292
+all essays,humans flagged: worst test prompt,BiLSTM (random init),5,202,Distance learning,2.475,1.062,5.663,1.646,6.25
+all essays,humans flagged: worst test prompt,GPT-2 perplexity (zero-shot),11,192,Seeking multiple opinions,5.729,3.229,9.966,3.125,10.417
+all essays,AI caught: test,DistilRoBERTa (fine-tuned),1204,1210,,99.504,98.922,99.773,99.091,99.835
+all essays,AI caught: test,TF-IDF + LinearSVM,1207,1210,,99.752,99.274,99.916,99.421,100.0
+all essays,AI caught: test,BiGRU (Skip-gram init),1206,1210,,99.669,99.153,99.871,99.174,99.917
+all essays,AI caught: test,BiLSTM (Skip-gram init),1195,1210,,98.76,97.965,99.247,97.851,99.421
+all essays,AI caught: test,BiLSTM (random init),1200,1210,,99.174,98.485,99.55,98.595,99.752
+all essays,AI caught: test,GPT-2 perplexity (zero-shot),881,1210,,72.81,70.234,75.242,69.339,78.184
+all essays,AI caught: held-out prompts,DistilRoBERTa (fine-tuned),2669,2671,,99.925,99.727,99.979,99.813,100.0
+all essays,AI caught: held-out prompts,TF-IDF + LinearSVM,2668,2671,,99.888,99.67,99.962,99.738,100.0
+all essays,AI caught: held-out prompts,BiGRU (Skip-gram init),2286,2671,,85.586,84.203,86.867,80.494,87.87
+all essays,AI caught: held-out prompts,BiLSTM (Skip-gram init),2362,2671,,88.431,87.163,89.589,82.548,91.839
+all essays,AI caught: held-out prompts,BiLSTM (random init),2484,2671,,92.999,91.968,93.906,89.143,96.668
+all essays,AI caught: held-out prompts,GPT-2 perplexity (zero-shot),1816,2671,,67.99,66.196,69.732,64.806,74.692
+all essays,AI caught: held-out generators,DistilRoBERTa (fine-tuned),2714,2721,,99.743,99.47,99.875,99.155,99.926
+all essays,AI caught: held-out generators,TF-IDF + LinearSVM,2708,2721,,99.522,99.184,99.721,99.118,99.816
+all essays,AI caught: held-out generators,BiGRU (Skip-gram init),2646,2721,,97.244,96.559,97.795,95.405,97.905
+all essays,AI caught: held-out generators,BiLSTM (Skip-gram init),2548,2721,,93.642,92.662,94.499,91.583,94.856
+all essays,AI caught: held-out generators,BiLSTM (random init),2510,2721,,92.245,91.18,93.192,90.298,95.076
+all essays,AI caught: held-out generators,GPT-2 perplexity (zero-shot),854,2721,,31.386,29.669,33.154,29.621,33.849
+on-topic only,humans flagged: test,DistilRoBERTa (fine-tuned),21,2272,,0.924,0.605,1.409,0.353,1.368
+on-topic only,humans flagged: test,TF-IDF + LinearSVM,28,2272,,1.232,0.854,1.775,0.573,2.151
+on-topic only,humans flagged: test,BiGRU (Skip-gram init),25,2272,,1.1,0.746,1.619,0.352,1.642
+on-topic only,humans flagged: test,BiLSTM (Skip-gram init),30,2272,,1.32,0.926,1.879,0.657,2.118
+on-topic only,humans flagged: test,BiLSTM (random init),20,2272,,0.88,0.571,1.356,0.484,1.541
+on-topic only,humans flagged: test,GPT-2 perplexity (zero-shot),26,2272,,1.144,0.782,1.672,0.697,2.154
+on-topic only,humans flagged: held-out prompts,DistilRoBERTa (fine-tuned),170,4420,,3.846,3.318,4.454,2.466,4.858
+on-topic only,humans flagged: held-out prompts,TF-IDF + LinearSVM,1494,4420,,33.801,32.421,35.209,24.775,40.051
+on-topic only,humans flagged: held-out prompts,BiGRU (Skip-gram init),562,4420,,12.715,11.765,13.73,8.145,15.492
+on-topic only,humans flagged: held-out prompts,BiLSTM (Skip-gram init),364,4420,,8.235,7.461,9.082,5.603,10.496
+on-topic only,humans flagged: held-out prompts,BiLSTM (random init),527,4420,,11.923,11.001,12.912,8.452,17.75
+on-topic only,humans flagged: held-out prompts,GPT-2 perplexity (zero-shot),25,4420,,0.566,0.383,0.834,0.294,1.076
+on-topic only,humans flagged: worst held-out prompt,DistilRoBERTa (fine-tuned),135,1746,Summer projects,7.732,6.57,9.08,5.21,9.623
+on-topic only,humans flagged: worst held-out prompt,TF-IDF + LinearSVM,636,1746,Summer projects,36.426,34.201,38.711,28.12,41.584
+on-topic only,humans flagged: worst held-out prompt,BiGRU (Skip-gram init),529,1746,Summer projects,30.298,28.187,32.495,19.873,35.911
+on-topic only,humans flagged: worst held-out prompt,BiLSTM (Skip-gram init),316,1746,Summer projects,18.099,16.363,19.974,12.887,21.996
+on-topic only,humans flagged: worst held-out prompt,BiLSTM (random init),379,1746,Summer projects,21.707,19.836,23.701,16.208,31.674
+on-topic only,humans flagged: worst held-out prompt,GPT-2 perplexity (zero-shot),21,1746,Summer projects,1.203,0.788,1.832,0.687,2.234
+on-topic only,humans flagged: worst test prompt,DistilRoBERTa (fine-tuned),3,168,Mandatory extracurricular activities,1.786,0.609,5.118,1.19,4.762
+on-topic only,humans flagged: worst test prompt,TF-IDF + LinearSVM,7,201,Distance learning,3.483,1.697,7.013,2.362,6.965
+on-topic only,humans flagged: worst test prompt,BiGRU (Skip-gram init),8,201,Distance learning,3.98,2.03,7.656,1.99,7.475
+on-topic only,humans flagged: worst test prompt,BiLSTM (Skip-gram init),8,191,Seeking multiple opinions,4.188,2.137,8.046,2.488,7.33
+on-topic only,humans flagged: worst test prompt,BiLSTM (random init),5,201,Distance learning,2.488,1.067,5.69,1.974,5.932
+on-topic only,humans flagged: worst test prompt,GPT-2 perplexity (zero-shot),11,191,Seeking multiple opinions,5.759,3.246,10.017,3.141,9.948
+on-topic only,AI caught: test,DistilRoBERTa (fine-tuned),471,473,,99.577,98.472,99.884,98.732,100.0
+on-topic only,AI caught: test,TF-IDF + LinearSVM,471,473,,99.577,98.472,99.884,98.943,100.0
+on-topic only,AI caught: test,BiGRU (Skip-gram init),470,473,,99.366,98.152,99.784,98.309,100.0
+on-topic only,AI caught: test,BiLSTM (Skip-gram init),468,473,,98.943,97.55,99.548,97.886,99.789
+on-topic only,AI caught: test,BiLSTM (random init),465,473,,98.309,96.698,99.141,97.252,99.582
+on-topic only,AI caught: test,GPT-2 perplexity (zero-shot),363,473,,76.744,72.731,80.327,72.939,83.087
+on-topic only,AI caught: held-out prompts,DistilRoBERTa (fine-tuned),1981,1981,,100.0,99.806,100.0,100.0,100.0
+on-topic only,AI caught: held-out prompts,TF-IDF + LinearSVM,1981,1981,,100.0,99.806,100.0,100.0,100.0
+on-topic only,AI caught: held-out prompts,BiGRU (Skip-gram init),1600,1981,,80.767,78.973,82.443,74.609,83.797
+on-topic only,AI caught: held-out prompts,BiLSTM (Skip-gram init),1678,1981,,84.705,83.053,86.222,77.432,89.098
+on-topic only,AI caught: held-out prompts,BiLSTM (random init),1798,1981,,90.762,89.407,91.96,85.562,95.608
+on-topic only,AI caught: held-out prompts,GPT-2 perplexity (zero-shot),1343,1981,,67.794,65.704,69.816,64.311,74.966
+on-topic only,AI caught: held-out generators,DistilRoBERTa (fine-tuned),2043,2048,,99.756,99.43,99.896,99.268,99.951
+on-topic only,AI caught: held-out generators,TF-IDF + LinearSVM,2035,2048,,99.365,98.917,99.629,98.877,99.756
+on-topic only,AI caught: held-out generators,BiGRU (Skip-gram init),1977,2048,,96.533,95.65,97.242,94.481,97.461
+on-topic only,AI caught: held-out generators,BiLSTM (Skip-gram init),1884,2048,,91.992,90.737,93.091,89.844,93.409
+on-topic only,AI caught: held-out generators,BiLSTM (random init),1840,2048,,89.844,88.46,91.078,87.549,93.8
+on-topic only,AI caught: held-out generators,GPT-2 perplexity (zero-shot),365,2048,,17.822,16.225,19.54,16.309,20.02

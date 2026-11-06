@@ -33,6 +33,9 @@ The rebuild keeps the same repo and topic, replaces the data with DAIGT-V2, and 
    - a live "try to fool it" button that paraphrases the text and re-scores it.
 7. Paragraph-level mixed-authorship detection is **out of scope**.
 8. The BiLSTM-NER (CoNLL) practical from the syllabus was left out on purpose. Still to confirm with the professor whether every listed practical must appear in the project.
+9. Final recipe is the ORIGINAL (variant A rejected on 13-fold evidence).
+10. Thresholds live on the val-human tail-probability (p) scale; the pre-declared Phase 4 rule picked (d). The middle zone is called "above usual" (not "cannot tell"); wording: "Higher than most student essays, but most essays that score here are written by students (about 7 in 10 at a one-third AI share, about 9 in 10 at 10%)."
+11. The held-out prompts and generators were checked once, after the definition and run code were committed.
 
 ## Folder layout
 
@@ -53,7 +56,14 @@ Ghost_Writer/
 │   ├── 11_attribution.ipynb    which model family wrote it: random split vs leave-one-source-out
 │   ├── 12_paraphraser.ipynb    seq2seq + Bahdanau attention paraphraser trained from scratch (Quora + Simple-Wiki)
 │   ├── 13_attack.ipynb         typo and paraphrase attacks (our seq2seq + pretrained T5) on the detector
-│   └── 14_explain.ipynb        occlusion + integrated gradients, faithfulness tests, error analysis, ethics
+│   ├── 14_explain.ipynb        occlusion + integrated gradients, faithfulness tests, error analysis, ethics
+│   ├── 15_uncertainty.ipynb    intervals on every number + claims audit (results/15_claims_audit.csv)
+│   ├── 16_long_essays / 16b_topic_lopo   windowed scoring (negative); leave-one-prompt-out over 13 prompts
+│   ├── 17_augment / 17b / 17c  spelling-repair + typo-injection training variants: rejected on 13 folds; Cowboy diagnosis
+│   ├── 18_robust_threshold / 18b_threshold_original_recipe   p-scale thresholds, rules (a)-(d), leave-one-topic-out
+│   ├── 19_ensemble_stability   three-seed ensemble, seed and typo stability
+│   ├── 20_final_heldout_check  held-out prompts and generators, scored once
+│   └── 21_fairness_persuade / 21b_fairness_adjusted   false flags by student group (PERSUADE 2.0), raw and prompt-adjusted
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -68,15 +78,16 @@ Ghost_Writer/
 ├── src/paraphraser.py        Seq2SeqParaphraser (from 12), T5Paraphraser, inject_typos, sentence split/join
 ├── src/explain.py            sentence occlusion + integrated gradients (128 steps) for highlights
 ├── src/attribution.py        demo's 'most similar training sources' model (TF-IDF + LogReg)
+├── src/{compare,conformal,ensemble,spelling,augment}.py   pass 15-21: paired variant comparison, p-scale thresholds, ensemble, corrector, augmentation
 ├── models/                   trained vectors/weights — git-ignored
 ├── images/                   plots saved by the notebooks
 ├── README.md                 public overview, results, demo, limitations (rewritten 2026-10-18, updated 2026-10-25)
 ├── MODEL_CARD.md             what the detector is, how it was evaluated, failure modes, intended use (2026-10-25)
-├── api/                      FastAPI over src/ (score, explain, attribution, rewrite, batch, demo classes); `frontend` branch
+├── api/                      FastAPI over src/ (score, explain, attribution, rewrite, batch, demo classes)
 ├── frontend/                 Vite + React web app, plain JS + JSDoc types; `npm run check`
 ├── design/                   the design spec and artboards the web app was built to
-├── tests/                    46 API tests incl. privacy tests (`pytest`; needs requirements-dev.txt)
-├── scripts/                  demo.sh (one-command start), warm_up.py, motion_audit.py
+├── tests/                    49 tests (46 API incl. privacy, 3 browser) (`pytest`; needs requirements-dev.txt)
+├── scripts/                  demo.sh (one-command start), warm_up.py, motion_audit.py; lopo_*.py/sh, train_variant.py, phase3_run.sh, phase5_run.sh (resumable, `HOURS=` time box), build_persuade_demographics.py
 ├── docs/                     api.md, viva-demo.md (5-minute demo path), frontend plan, rejected redesigns
 ├── deploy/                   Hugging Face Spaces files; never built, hosting parked
 ├── demo/                     app.py (older Streamlit demo), samples.json, class_sample/ (two demo classes, 30 essays each)
@@ -103,7 +114,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics, demo, model card). The web front end (branch `frontend`, phases 1–8) is finished and waiting for the owner's review before it is merged into `main`. Week 9 (report + slides) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics, demo, model card). The web front end is merged into `main` (62a15df). The model-improvement pass (notebooks 15–21, branch `model-improvements`) is done: final system = three-seed ensemble of the original recipe on the p scale with rule (d) thresholds (18b); the held-out check (20) was run once; fairness by group (21, 21b). The demo still runs the single seed-42 model. Week 9 (report + slides) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -215,7 +226,7 @@ Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
 - 2026-10-25 — `frontend` branch: `api/main.py` (FastAPI over the detector, explainer, attribution, paraphraser) and `frontend/` (Vite + React, one page with every demo panel). Node comes from nvm. See `docs/frontend-plan.md` for run steps and what is left (done: design pass). Do not run the API and Streamlit together (4 GB GPU).
 - 2026-10-25 — hosting prep for Hugging Face Spaces (academic, free CPU): CPU support in `src/`, rate limit + serialised model calls in the API, API serves `frontend/dist`, `deploy/` (Dockerfile, requirements, upload and push scripts). Docker image untested; not pushed. Details and the steps that need the owner's account: `docs/frontend-plan.md`.
 
-- 2026-11-02 — front end finished on branch `frontend` (not merged into `main`; owner reviews the diff first):
+- 2026-11-02 — front end finished on branch `frontend` (merged into `main` 2026-11-05, 62a15df):
   - Built to `design/` ("paper and margin"): Check an essay (`/`), Try to fool it (`/fool`), Check a class (`/class`), `/components`. API in `api/` (api_version 3), `bash scripts/demo.sh` starts page and API on :8000. Details and decisions: `docs/plan-paper-and-margin.md`, `docs/api.md`.
   - Honesty rules kept: every figure comes from `results/` via `/api/meta`; false-flag rates (strict 2.3%, standard 3.9% on unseen topics; worst topic Summer projects 5.2% / 7.7%); class estimate is an exact Poisson range; uploads are read in memory only and tested.
   - Two demo classes (held-out topics, 30 essays each, seed 42, selected before scores were seen): electoral college 0/19 student and 11/11 AI flagged; Summer projects 2/19 and 11/11.
@@ -223,15 +234,28 @@ Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
   - Hosting on Hugging Face Spaces is parked (free-tier quota refused); nothing is deployed.
   - Tooling: `frontend/dist` is git-ignored and built by `demo.sh`; restart the API after Python edits (no `--reload`); snap Chromium cannot read `/tmp`.
 
+- 2026-11-05 — model-improvement pass, notebooks 15–21 (branch `model-improvements`; per-notebook detail in each notebook's Key takeaways and `results/15_claims_audit.csv`, 90 rows):
+  - `15`–`16b`: intervals on every number (Wilson, cluster bootstrap); logit thresholds do not transfer between seeds (+4.67/+5.28/+7.82 at the same AUC); the false-flag rate varies 0.4%–5.8% over 13 unseen topics with the old threshold; false flags fall on more predictable, better-spelled essays within a topic (not longer ones: long essays are flagged less).
+  - `17`–`17c`: variant A (spelling repair + typo injection) won on a 7-prompt subset (-0.86) but lost on all 13 (+0.57 [+0.19, +1.16]; Cowboy 4.30% → 17.42%). Lesson: a subset evaluation can miss a topic-specific failure. Likely mechanism: typos in AI training essays taught A that typos signal AI (Cowboy essays >2% misspellings: 32/409 flagged vs 3). Kept as a documented negative result.
+  - `18`–`18b`: thresholds on the val-human tail-probability (p) scale; rule (d) (20th percentile of per-topic thresholds) picked by the pre-declared rule; leave-one-topic-out 0.58% [0.44, 0.88] mean false flags vs 2.71% for the old way; final tau 0.00093 / 0.00235 / 0.01032 (0.5% / 1% / 5%).
+  - `19`: three-seed ensemble (mean of p-values). Only 14–40% of humans flagged by any seed are flagged by all three; typos flip 26–40% of verdicts near the line. Same-seed fp16 reruns differ by ~0.7 points on a fold.
+  - `20` (run once, definition `d1dd1eb`, run code `7670717`, results `bc04b57`): human false flags on held-out prompts 0.70% [0.48, 0.95] (Electoral 0.11%, Summer projects 1.60%) vs 3.85% before; unseen-generator AI caught 94.92% [93.95, 95.80] vs 99.76%. "Above usual" zone: 2.62% of humans, 2.21% of AI; P(AI | zone) 30.8% / 8.6% / 4.2% at 34.6% / 10% / 5% AI share.
+  - `21`, `21b`: English learners 0 of 340 flagged (upper bound 1.12%); other attributes raw and prompt-adjusted in `results/21_fairness_by_group.csv` and `results/21b_fairness_adjusted.csv` and the model card. Grade-11 gap cannot be separated from prompt. About 14 comparisons; wide intervals. The PERSUADE raw files and per-essay mapping are git-ignored (`data/external/`); only aggregates are committed.
+  - Housekeeping: training on battery is ~40% slower; `requirements-lock.txt` holds exact versions (`requirements.txt` stays loose); new model folders `distilroberta_aug_s42/43/44`, `distilroberta_orig_s43/s44` are git-ignored.
+
 **Not done**
 
-- Merge `frontend` into `main` (after the owner's review), then Weeks 9–10: written report, slides, polish, viva rehearsal (use `docs/viva-demo.md` for the live demo).
+- Weeks 9–10: written report, slides, polish, viva rehearsal (use `docs/viva-demo.md` for the live demo).
 
 ## Next up
 
 ### Week 9 — short report and slides
 
-First review and merge the `frontend` branch. Then report and slides for the course, built from the README, `MODEL_CARD.md` and the Key takeaways of each notebook. Suggested storyline for the viva: the fake 100% → leakage-safe split → each model's honest score → what looked good but wasn't (topic shortcut, attribution, threshold shift) → the demo. Nothing further is needed from the modelling side. Possible extras if time allows: confirm that `radek_500` is GPT-3.5 (not verified), and the professor's answer on the BiLSTM-NER practical (decision 8).
+Report and slides for the course, built from the README, `MODEL_CARD.md` and the Key takeaways of each notebook. Suggested storyline for the viva: the fake 100% → leakage-safe split → each model's honest score → what looked good but wasn't (topic shortcut, attribution, threshold shift) → the demo. Nothing further is needed from the modelling side. Storyline addition: fake 100% → leakage-safe split → honest scores → what looked good but was not (topic shortcut, attribution, threshold shift, augmentation) → error bars and the p scale → the held-out check → fairness by group → the demo. Possible extras if time allows: confirm that `radek_500` is GPT-3.5 (not verified), and the professor's answer on the BiLSTM-NER practical (decision 8).
+
+### Switch the demo to the final system (with the front-end work; approved in principle)
+
+Move the verdict to the three-seed ensemble on the p scale with the three zones (flagged / above usual / not flagged). Conditions: (1) show the zone, not a yes/no; (2) use the "above usual" wording above, and for flagged essays the numbers about 1 in 16 flagged essays being a student's at 10% AI share; (3) keep explanations from the seed-42 model and say so; (4) show per-seed agreement on borderline essays; (5) state the 94.9% unseen-generator figure beside the headline. **The Class page's expected-false-flag estimate must use the new rates** (0.70% pooled on unseen prompts at the 1% point, 1.60% on the hardest prompt; today it uses the single-model 2.3%/3.9%), and `/api/meta` must read them from the new results files. Three models per request cost about 3x the scoring time and three copies in 4 GB; if too heavy to host, keep the single model with a p-scale threshold calibrated on its own val humans and say the ensemble was not used.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
