@@ -114,8 +114,19 @@ def test_lazy_mode_gives_the_same_logits_and_keeps_nothing_in_memory():
 
 
 @pytest.mark.skipif(not torch.cuda.is_available() or not (core.FP16_DIR / "s61").exists(), reason="needs the GPU and models/jury_fp16")
-def test_a_whole_trial_in_lazy_mode_matches_the_eager_one(cal):
+def test_a_whole_trial_in_lazy_mode_reproduces_the_saved_marks(cal):
+    """All twenty jurors, read from disk one at a time (lazy mode keeps nothing, so this test needs no extra memory), must give the marks
+    that the saved Phase 1 logits give."""
+    import gc
     from src.data import load_splits
-    text = load_splits("test").text.iloc[0]
-    strip = lambda ev: [{k: v for k, v in e.items()} for e in ev]
-    assert strip(core.trial(core.Jury(lazy=False), cal, text)) == strip(core.trial(core.Jury(lazy=True), cal, text))
+    d = load_splits("test")
+    row = d.index[0]
+    saved = pd.read_csv(core.SCORES_CSV).set_index("row_id").loc[row]
+    events = list(core.trial(core.Jury(lazy=True), cal, d.loc[row, "text"]))
+    marks = [e for e in events if e["type"] == "juror"]
+    assert [m["seed"] for m in marks] == core.SEEDS
+    for m in marks:
+        want = cal.mark(m["seed"], saved[f"s{m['seed']}"])
+        assert m["zone"] == want["zone"] and abs(m["position"] - want["position"]) < 0.05
+    gc.collect()
+    torch.cuda.empty_cache()

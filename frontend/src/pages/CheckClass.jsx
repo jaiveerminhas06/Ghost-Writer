@@ -34,7 +34,7 @@ function Loaded({ meta }) {
   const sum = summarize(cls.items)
   const sorted = useMemo(() => sortItems(cls.items, sort), [cls.items, sort])
   const view = paginate(sorted, page)
-  const entries = cls.items.filter((i) => i.status === 'done' && i.verdict).map((i) => ({ pos: position(/** @type {{ p: number }} */ (i.verdict).p, scale.cap), zone: /** @type {'flagged'} */ (/** @type {{ zone: string }} */ (i.verdict).zone) }))
+  const entries = cls.items.filter((i) => i.status === 'done' && i.verdict).map((i) => ({ id: i.id, name: i.name, p: /** @type {{ p: number }} */ (i.verdict).p, pos: position(/** @type {{ p: number }} */ (i.verdict).p, scale.cap), zone: /** @type {'flagged'} */ (/** @type {{ zone: string }} */ (i.verdict).zone) }))
   const only = sum.scored === 1 ? cls.items.find((i) => i.status === 'done') : undefined
 
   // the toast's "Show" button: go to the last page (failed files sort to the end) and bring the first one into view
@@ -101,7 +101,7 @@ function Loaded({ meta }) {
             <p>{sum.scored > 0 ? 'Open an essay to see which sentences drove its score.' : caption}</p>
             <Button variant="quiet" onClick={cls.clear}>Clear this class</Button>
           </div>
-          <ClassTable rows={view.rows} sort={sort} onSort={() => setSort((s) => (s === 'desc' ? 'asc' : 'desc'))}
+          <ClassTable rows={view.rows} valHumans={scale.val_humans} sort={sort} onSort={() => setSort((s) => (s === 'desc' ? 'asc' : 'desc'))}
                       onOpen={open} minWords={minWords} paging={view} onPage={setPage} />
         </section>
       )}

@@ -25,8 +25,8 @@ function useWidth(ref) {
  *  "Re-run the trial" it travels to its new place), drops in with opacity and a 12 px translateY, and the official marker lands last with
  *  the spring. The twenty marks are one tab stop: arrow keys move between them, and the active one is described in the line below.
  *  @param {{ scale: import('../types').Scale, marks: import('../types').JurorMark[], official: { p: number } | null, activeSeed: number | null,
- *    onActive: (seed: number | null) => void, label: string }} props */
-export default function JuryScale({ scale, marks, official, activeSeed, onActive, label }) {
+ *    onActive: (seed: number | null) => void, label: string, noun?: string, names?: Record<number, string> }} props   noun/names: the same scale draws the essays of a class (one mark per essay, named by file) */
+export default function JuryScale({ scale, marks, official, activeSeed, onActive, label, noun = 'detector', names }) {
   const box = useRef(/** @type {HTMLDivElement | null} */ (null))
   const width = useWidth(box)
   const id = useId()
@@ -52,7 +52,7 @@ export default function JuryScale({ scale, marks, official, activeSeed, onActive
     const m = d.mark
     const active = m.seed === activeSeed
     return (
-      <g key={m.seed} className={styles.mark} style={place(d.cx, d.cy)} role="listitem" aria-label={markText(m, scale.val_humans)}
+      <g key={m.seed} className={styles.mark} style={place(d.cx, d.cy)} role="listitem" aria-label={markText(m, scale.val_humans, names?.[m.seed])}
          tabIndex={m.seed === stop ? 0 : -1} data-zone={m.zone} data-seed={m.seed} ref={(el) => { if (el) refs.current.set(m.seed, el); else refs.current.delete(m.seed) }}
          onFocus={() => onActive(m.seed)} onBlur={() => onActive(null)} onPointerEnter={() => onActive(m.seed)} onPointerLeave={() => { if (document.activeElement?.getAttribute('data-seed') !== String(m.seed)) onActive(null) }}>
         <circle r={L.r + 6} className={styles.hit} />
@@ -71,8 +71,9 @@ export default function JuryScale({ scale, marks, official, activeSeed, onActive
       <svg className={styles.svg} width={L.W} height={L.H} viewBox={`0 0 ${L.W} ${L.H}`} role="group" aria-labelledby={`${id}-t`}>
         <title id={`${id}-t`}>{label}</title>
         <g aria-hidden="true">
-          <text x={(L.xa + L.xf) / 2} y={L.zoneY} textAnchor="middle" className={cls('zone')}>Above usual</text>
-          <text x={(L.xf + L.AX) / 2} y={L.zoneY} textAnchor="middle" className={cls('zone')}>Flagged</text>
+          {/* on a phone the bands are too narrow to centre both names: "Above usual" ends at the flag line and "Flagged" starts just after it */}
+          <text x={phone ? L.xf - 3 : (L.xa + L.xf) / 2} y={L.zoneY} textAnchor={phone ? 'end' : 'middle'} className={cls('zone')}>Above usual</text>
+          <text x={phone ? L.xf + 5 : (L.xf + L.AX) / 2} y={L.zoneY} textAnchor={phone ? 'start' : 'middle'} className={cls('zone')}>Flagged</text>
           <rect x={L.xa} y={L.axY - L.band} width={L.xf - L.xa} height={2 * L.band} className={styles.bandAbove} />
           <rect x={L.xf} y={L.axY - L.band} width={L.AX - L.xf} height={2 * L.band} className={styles.bandFlag} />
           <line x1={L.x0} x2={L.AX} y1={L.axY} y2={L.axY} className={styles.axis} />
@@ -86,7 +87,7 @@ export default function JuryScale({ scale, marks, official, activeSeed, onActive
           <line x1={L.AX} x2={L.AX} y1={L.axY - L.band - 4} y2={L.axY + L.band + 4} className={styles.ceiling} />
           <line x1={L.xa} x2={L.xa} y1={L.axY - L.band - 3} y2={L.axY + L.band + 3} className={styles.edge} />
           <line x1={L.xf} x2={L.xf} y1={L.axY - L.band - 6} y2={L.bottom} className={styles.flagLine} />
-          <text x={L.xf - 8} y={L.flagLabelY} textAnchor="end" className={cls('flagLabel')}>Flag line{phone ? '' : ` · ${oneIn(scale.tau_flag)}`}</text>
+          <text x={L.xf - 8} y={L.flagLabelY} textAnchor="end" className={cls('flagLabel')}>Flag line{phone ? '' : ` · ${oneIn(scale.tau_flag, scale.val_humans)}`}</text>
           {pile && (
             <>
               <rect x={pile.x} y={pile.y} width={pile.w} height={pile.h} rx="12" className={styles.pile} />
@@ -94,8 +95,8 @@ export default function JuryScale({ scale, marks, official, activeSeed, onActive
               <text x={phone ? L.W : pile.x} y={pile.y + pile.h + 20} textAnchor={phone ? 'end' : 'start'} className={cls('pileText')}>
                 <tspan className={styles.pileHead}>Off the scale</tspan>
                 {(phone
-                  ? [`${L.pileDots.length} of 20 are off the scale: higher than every`, 'student essay we checked. Order here means nothing.']
-                  : [`${L.pileDots.length} of 20 score higher than`, 'every student essay we checked', `(all ${scale.val_humans.toLocaleString('en-US')}). Stacked: the`, 'order here means nothing.']
+                  ? [`${L.pileDots.length} of ${marks.length} are off the scale: higher than every`, 'student essay we checked. Order here means nothing.']
+                  : [`${L.pileDots.length} of ${marks.length} score higher than`, 'every student essay we checked', `(all ${scale.val_humans.toLocaleString('en-US')}). Stacked: the`, 'order here means nothing.']
                 ).map((t) => <tspan key={t} x={phone ? L.W : pile.x} dy={phone ? 16 : 17}>{t}</tspan>)}
               </text>
             </>
@@ -112,7 +113,7 @@ export default function JuryScale({ scale, marks, official, activeSeed, onActive
             <text x={o.label.x} y={L.axY - L.band - (phone ? 27 : 31)} textAnchor={o.label.anchor} className={cls('official')} aria-hidden="true">{o.text}</text>
           </>
         )}
-        <g role="list" aria-label="The 20 detectors" onKeyDown={onKey}>
+        <g role="list" aria-label={`The ${marks.length} ${noun}s`} onKeyDown={onKey}>
           {L.dots.map((d, i) => dot(d, i))}
           {L.pileDots.map((d, i) => dot(d, L.dots.length + i))}
         </g>

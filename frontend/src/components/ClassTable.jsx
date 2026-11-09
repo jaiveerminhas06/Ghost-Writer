@@ -9,10 +9,10 @@ import { resultOf } from '../lib/classStats'
 
 /** The essays in the class: name (ends in an ellipsis if long), words, score (click the heading to sort), and the result. A scored
  *  row is a link that opens that essay on the Check an essay page; a waiting or failed one is not. With more than 50 essays the
- *  rows come in pages. @param {{ rows: import('../lib/classStats').ClassItem[],
+ *  rows come in pages. @param {{ rows: import('../lib/classStats').ClassItem[], valHumans: number,
  *  sort: 'desc' | 'asc', onSort: () => void, onOpen: (item: import('../lib/classStats').ClassItem) => void, minWords: number,
  *  paging: { page: number, pages: number, from: number, to: number, total: number }, onPage: (page: number) => void }} props */
-export default function ClassTable({ rows, sort, onSort, onOpen, minWords, paging, onPage }) {
+export default function ClassTable({ rows, valHumans, sort, onSort, onOpen, minWords, paging, onPage }) {
   const body = useRef(/** @type {HTMLDivElement | null} */ (null))
   useFlip(body, { duration: 220, enter: false, fadeAbove: PAGE_SIZE - 1 })   // sorting glides; a page of 50 only cross-fades
   const firstErrorId = rows.find((r) => r.status === 'error')?.id         // the "Show" button of the toast scrolls to this row
@@ -39,7 +39,7 @@ export default function ClassTable({ rows, sort, onSort, onOpen, minWords, pagin
                 <>
                   <p role="cell" className={styles.name} title={item.name}>{item.name}</p>
                   <p role="cell" className={`${styles.right} ${styles.muted} num`}>{item.words ?? '–'}</p>
-                  <p role="cell" className={`${styles.right} ${styles.score} num`}>{item.verdict == null ? (item.status === 'queued' ? '…' : '–') : oneIn(item.verdict.p)}</p>
+                  <p role="cell" className={`${styles.right} ${styles.score} num`}>{item.verdict == null ? (item.status === 'queued' ? '…' : '–') : oneIn(item.verdict.p, valHumans)}</p>
                   <p role="cell" className={`${styles.right} ${styles.muted} num`}>{item.jurors == null ? '–' : `${item.jurors} of 20`}</p>
                   <p role="cell" className={styles.result} title={item.error?.message}>{err}</p>
                   <p role="cell" className={styles.open} aria-hidden="true">{item.status === 'done' && <ChevronRight />}</p>

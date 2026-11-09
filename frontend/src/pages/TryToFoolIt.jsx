@@ -12,7 +12,7 @@ import { REPO } from '../components/Header'
 import { useEssay } from '../state/contexts'
 import { disagreement, FIRST_SEED, methodOf, METHODS, nextSeed, resultCopy, sidesOfTheLine } from '../lib/fool'
 import { words } from '../lib/format'
-import { oneIn, ZONE_WORD } from '../lib/scale'
+import { oneIn, scoreWords, ZONE_WORD } from '../lib/scale'
 import { attackFacts, testedBullets } from '../lib/figures'
 
 const COST = { typos: 'Instant', t5: 'Slower: runs the T5 model' }
@@ -113,11 +113,11 @@ function Loaded({ meta }) {
           <div className={styles.resultText}>
             {busy ? <h2 id="result" className="t-verdict">Rewriting and scoring…</h2>
               : copy ? <><h2 id="result" className="t-verdict">{copy.headline}</h2><p>{copy.body}</p></>
-                : <><h2 id="result" className="t-section">Pick a rewrite, then press Rewrite and re-score.</h2><p>The official verdict is {zoneWord(before.zone)}: {oneIn(before.p)} student essays score this high or higher. It is marked here, and each new verdict beside it.</p></>}
+                : <><h2 id="result" className="t-section">Pick a rewrite, then press Rewrite and re-score.</h2><p>The official verdict is {zoneWord(before.zone)}: {scoreWords(before.p, meta.jury.scale.val_humans)}. It is marked here, and each new verdict beside it.</p></>}
           </div>
           {shown && !busy && (
             <dl className={styles.facts}>
-              <dt>Verdict</dt><dd>{ZONE_WORD[before.zone]} to {ZONE_WORD[shown.zone]} <span>({oneIn(before.p)} to {oneIn(shown.p)})</span></dd>
+              <dt>Verdict</dt><dd>{ZONE_WORD[before.zone]} to {ZONE_WORD[shown.zone]} <span>({oneIn(before.p, meta.jury.scale.val_humans)} to {oneIn(shown.p, meta.jury.scale.val_humans)})</span></dd>
               <dt>Words changed</dt><dd>{shown.wordsChanged} of {score.words} <span>({Math.round(shown.share * 100)}%)</span></dd>
               <dt>Meaning</dt><dd>{methodOf(shown.method).kind === 'typos' ? 'Unchanged, spelling worse' : 'Not checked: read it'}</dd>
             </dl>
@@ -142,7 +142,7 @@ function Loaded({ meta }) {
         <section aria-labelledby="attempts" className={styles.attempts}>
           <h2 id="attempts" className="t-section">Attempts on this essay</h2>
           {sides && <p className={styles.sides}>{disagreement(sides, method)}</p>}
-          <AttemptsTable attempts={attempts} original={before} selected={state.selected} words={score.words} onSelect={essay.selectAttempt} />
+          <AttemptsTable attempts={attempts} original={before} selected={state.selected} words={score.words} valHumans={meta.jury.scale.val_humans} onSelect={essay.selectAttempt} />
         </section>
         <aside aria-labelledby="tested" className={styles.tested}>
           <h2 id="tested" className="t-heading">{before.zone === 'above_usual' ? 'This essay was between the lines' : 'What the tests found'}</h2>

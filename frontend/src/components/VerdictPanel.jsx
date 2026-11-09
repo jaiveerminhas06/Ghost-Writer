@@ -4,7 +4,7 @@ import Button from './Button'
 import JuryScale from './JuryScale'
 import { Spinner } from './Icons'
 import { authorSentence, disagree, DISAGREE_SENTENCE, headline, jurySummary, markText, rerunFigures, rerunLead, SAME_SENTENCE, whyText } from '../lib/jury'
-import { oneIn, ZONE_WORD } from '../lib/scale'
+import { oneIn, scoreWords, ZONE_WORD } from '../lib/scale'
 
 const DOT = { flagged: 'flag', above_usual: 'above', not_flagged: 'not' }
 
@@ -41,7 +41,7 @@ export default function VerdictPanel({ stage, words, score, jury, meta, example,
   const wrote = example?.note ?? (example ? (example.label === 'human' ? 'This example was written by a student.' : 'This example was written by an AI model.') : null)
   const typos = trial.start?.typos ?? null
   const label = verdict
-    ? `The official verdict is ${ZONE_WORD[verdict.zone].toLowerCase()}: ${oneIn(verdict.p)} student essays score this high or higher. ${summary ? jurySummary(summary) : ''}`
+    ? `The official verdict is ${ZONE_WORD[verdict.zone].toLowerCase()}: ${scoreWords(verdict.p, scale.val_humans)}. ${summary ? jurySummary(summary) : ''}`
     : 'Scale of how many student essays score this high or higher, with the marks of the twenty detectors.'
   const rows = useMemo(() => [...marks].sort((a, b) => a.seed - b.seed), [marks])
 
@@ -106,7 +106,7 @@ export default function VerdictPanel({ stage, words, score, jury, meta, example,
           <table className={styles.table} id={listId}>
             <thead><tr><th scope="col">Detector</th><th scope="col">Verdict</th><th scope="col">Student essays that score this high or higher</th></tr></thead>
             <tbody>{rows.map((m) => (
-              <tr key={m.seed}><th scope="row">{m.seed}{m.ensemble_member ? ' (in the official verdict)' : ''}</th><td>{ZONE_WORD[m.zone]}</td><td className="num">{m.at_cap ? `Higher than all ${scale.val_humans.toLocaleString('en-US')}` : oneIn(m.p)}</td></tr>
+              <tr key={m.seed}><th scope="row">{m.seed}{m.ensemble_member ? ' (in the official verdict)' : ''}</th><td>{ZONE_WORD[m.zone]}</td><td className="num">{oneIn(m.p, scale.val_humans)}</td></tr>
             ))}</tbody>
           </table>
         </details>
