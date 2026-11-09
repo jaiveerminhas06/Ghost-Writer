@@ -24,3 +24,10 @@ Jurors have different logit cutoffs (+4.67 to +7.82 for seeds 42-44), so one fla
 ## Time estimates
 
 Phase 1 training: 17 x 16.4 min on mains (about 4 h 45 min); on battery about 40% slower, so the run script waits for the charger before each seed. Export and re-scoring: about 30 min. Rules: never train while the demo server runs; `HF_HUB_OFFLINE=1`; nothing existing in `results/` or `models/` is overwritten.
+
+## Decisions recorded 2026-11-09 (after Phase 2 and 22b)
+- A split jury means "less sure", never "probably a student". The 10-of-11 observation stays out of the page.
+- "Above usual" copy: wherever the page says edited AI essays tend to land in "above usual" it must also say that student essays land there too, with the shares read from results (students in "above usual" unedited, and after light T5). It means "look closer", never "AI".
+- Draft for the "Re-run the trial" result panel (numbers read from results): "Light typos removed the flag from X% of flagged AI essays in our tests, and from Y% of essays from AI models the detectors had not seen. Most of those moved to 'above usual'. That zone also holds Z% of student essays, and rewording tools push some students there too, so 'above usual' means 'look closer', not 'AI'."
+- Phase 5 README/MODEL_CARD edit to add: the strict line cuts student false flags about 5x on new topics, but on unseen AI models 5% typos remove the flag from about 29% of flagged essays (most go to "above usual"; flagged-or-above-usual 92.7%). Notebook 13's figures are labelled as belonging to the old single-model threshold.
+- Abstention stays exploratory and off the page (k rests on 4 validation students; confirmation needs a new set of essays).
