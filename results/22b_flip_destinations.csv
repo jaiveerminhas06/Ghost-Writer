@@ -1,0 +1,106 @@
+group,attack,zone_before,zone_after,essays,group_size
+"AI, test",typos 2%,flagged,flagged,463,473
+"AI, test",typos 2%,flagged,above_usual,6,473
+"AI, test",typos 2%,not_flagged,not_flagged,2,473
+"AI, test",typos 2%,above_usual,above_usual,1,473
+"AI, test",typos 2%,above_usual,not_flagged,1,473
+"AI, held-out generators",typos 2%,flagged,flagged,251,300
+"AI, held-out generators",typos 2%,flagged,above_usual,31,300
+"AI, held-out generators",typos 2%,above_usual,above_usual,7,300
+"AI, held-out generators",typos 2%,above_usual,not_flagged,6,300
+"AI, held-out generators",typos 2%,not_flagged,not_flagged,3,300
+"AI, held-out generators",typos 2%,flagged,not_flagged,2,300
+"Students, test",typos 2%,not_flagged,not_flagged,300,300
+"Students, held-out prompts",typos 2%,not_flagged,not_flagged,286,300
+"Students, held-out prompts",typos 2%,above_usual,not_flagged,9,300
+"Students, held-out prompts",typos 2%,above_usual,above_usual,4,300
+"Students, held-out prompts",typos 2%,flagged,above_usual,1,300
+"AI, test",typos 5%,flagged,flagged,457,473
+"AI, test",typos 5%,flagged,above_usual,12,473
+"AI, test",typos 5%,not_flagged,not_flagged,2,473
+"AI, test",typos 5%,above_usual,above_usual,1,473
+"AI, test",typos 5%,above_usual,not_flagged,1,473
+"AI, held-out generators",typos 5%,flagged,flagged,202,300
+"AI, held-out generators",typos 5%,flagged,above_usual,73,300
+"AI, held-out generators",typos 5%,above_usual,not_flagged,10,300
+"AI, held-out generators",typos 5%,flagged,not_flagged,9,300
+"AI, held-out generators",typos 5%,above_usual,above_usual,3,300
+"AI, held-out generators",typos 5%,not_flagged,not_flagged,3,300
+"Students, test",typos 5%,not_flagged,not_flagged,300,300
+"Students, held-out prompts",typos 5%,not_flagged,not_flagged,286,300
+"Students, held-out prompts",typos 5%,above_usual,not_flagged,12,300
+"Students, held-out prompts",typos 5%,above_usual,above_usual,1,300
+"Students, held-out prompts",typos 5%,flagged,above_usual,1,300
+"AI, test",typos 10%,flagged,flagged,426,473
+"AI, test",typos 10%,flagged,above_usual,41,473
+"AI, test",typos 10%,above_usual,not_flagged,2,473
+"AI, test",typos 10%,flagged,not_flagged,2,473
+"AI, test",typos 10%,not_flagged,not_flagged,2,473
+"AI, held-out generators",typos 10%,flagged,flagged,131,300
+"AI, held-out generators",typos 10%,flagged,above_usual,127,300
+"AI, held-out generators",typos 10%,flagged,not_flagged,26,300
+"AI, held-out generators",typos 10%,above_usual,not_flagged,13,300
+"AI, held-out generators",typos 10%,not_flagged,not_flagged,3,300
+"Students, test",typos 10%,not_flagged,not_flagged,300,300
+"Students, held-out prompts",typos 10%,not_flagged,not_flagged,286,300
+"Students, held-out prompts",typos 10%,above_usual,not_flagged,13,300
+"Students, held-out prompts",typos 10%,flagged,not_flagged,1,300
+"AI, test",T5 paraphrase (T=1.0),flagged,flagged,468,473
+"AI, test",T5 paraphrase (T=1.0),above_usual,above_usual,1,473
+"AI, test",T5 paraphrase (T=1.0),above_usual,not_flagged,1,473
+"AI, test",T5 paraphrase (T=1.0),flagged,above_usual,1,473
+"AI, test",T5 paraphrase (T=1.0),not_flagged,above_usual,1,473
+"AI, test",T5 paraphrase (T=1.0),not_flagged,not_flagged,1,473
+"AI, held-out generators",T5 paraphrase (T=1.0),flagged,flagged,275,300
+"AI, held-out generators",T5 paraphrase (T=1.0),flagged,above_usual,8,300
+"AI, held-out generators",T5 paraphrase (T=1.0),above_usual,flagged,5,300
+"AI, held-out generators",T5 paraphrase (T=1.0),above_usual,above_usual,4,300
+"AI, held-out generators",T5 paraphrase (T=1.0),above_usual,not_flagged,4,300
+"AI, held-out generators",T5 paraphrase (T=1.0),not_flagged,not_flagged,2,300
+"AI, held-out generators",T5 paraphrase (T=1.0),flagged,not_flagged,1,300
+"AI, held-out generators",T5 paraphrase (T=1.0),not_flagged,above_usual,1,300
+"Students, test",T5 paraphrase (T=1.0),not_flagged,not_flagged,291,300
+"Students, test",T5 paraphrase (T=1.0),not_flagged,above_usual,9,300
+"Students, held-out prompts",T5 paraphrase (T=1.0),not_flagged,not_flagged,275,300
+"Students, held-out prompts",T5 paraphrase (T=1.0),not_flagged,above_usual,10,300
+"Students, held-out prompts",T5 paraphrase (T=1.0),above_usual,above_usual,9,300
+"Students, held-out prompts",T5 paraphrase (T=1.0),above_usual,not_flagged,2,300
+"Students, held-out prompts",T5 paraphrase (T=1.0),above_usual,flagged,2,300
+"Students, held-out prompts",T5 paraphrase (T=1.0),flagged,above_usual,1,300
+"Students, held-out prompts",T5 paraphrase (T=1.0),not_flagged,flagged,1,300
+"AI, test",T5 paraphrase (T=1.5),flagged,flagged,385,473
+"AI, test",T5 paraphrase (T=1.5),flagged,above_usual,69,473
+"AI, test",T5 paraphrase (T=1.5),flagged,not_flagged,15,473
+"AI, test",T5 paraphrase (T=1.5),above_usual,not_flagged,2,473
+"AI, test",T5 paraphrase (T=1.5),not_flagged,not_flagged,2,473
+"AI, held-out generators",T5 paraphrase (T=1.5),flagged,flagged,158,300
+"AI, held-out generators",T5 paraphrase (T=1.5),flagged,above_usual,91,300
+"AI, held-out generators",T5 paraphrase (T=1.5),flagged,not_flagged,35,300
+"AI, held-out generators",T5 paraphrase (T=1.5),above_usual,not_flagged,8,300
+"AI, held-out generators",T5 paraphrase (T=1.5),above_usual,above_usual,5,300
+"AI, held-out generators",T5 paraphrase (T=1.5),not_flagged,not_flagged,3,300
+"Students, test",T5 paraphrase (T=1.5),not_flagged,not_flagged,299,300
+"Students, test",T5 paraphrase (T=1.5),not_flagged,above_usual,1,300
+"Students, held-out prompts",T5 paraphrase (T=1.5),not_flagged,not_flagged,285,300
+"Students, held-out prompts",T5 paraphrase (T=1.5),above_usual,not_flagged,12,300
+"Students, held-out prompts",T5 paraphrase (T=1.5),above_usual,above_usual,1,300
+"Students, held-out prompts",T5 paraphrase (T=1.5),flagged,not_flagged,1,300
+"Students, held-out prompts",T5 paraphrase (T=1.5),not_flagged,above_usual,1,300
+"AI, test",T5 (T=1.0) + typos 5%,flagged,flagged,415,473
+"AI, test",T5 (T=1.0) + typos 5%,flagged,above_usual,51,473
+"AI, test",T5 (T=1.0) + typos 5%,flagged,not_flagged,3,473
+"AI, test",T5 (T=1.0) + typos 5%,above_usual,not_flagged,2,473
+"AI, test",T5 (T=1.0) + typos 5%,not_flagged,not_flagged,2,473
+"AI, held-out generators",T5 (T=1.0) + typos 5%,flagged,flagged,185,300
+"AI, held-out generators",T5 (T=1.0) + typos 5%,flagged,above_usual,85,300
+"AI, held-out generators",T5 (T=1.0) + typos 5%,flagged,not_flagged,14,300
+"AI, held-out generators",T5 (T=1.0) + typos 5%,above_usual,not_flagged,10,300
+"AI, held-out generators",T5 (T=1.0) + typos 5%,above_usual,above_usual,3,300
+"AI, held-out generators",T5 (T=1.0) + typos 5%,not_flagged,not_flagged,3,300
+"Students, test",T5 (T=1.0) + typos 5%,not_flagged,not_flagged,299,300
+"Students, test",T5 (T=1.0) + typos 5%,not_flagged,above_usual,1,300
+"Students, held-out prompts",T5 (T=1.0) + typos 5%,not_flagged,not_flagged,285,300
+"Students, held-out prompts",T5 (T=1.0) + typos 5%,above_usual,not_flagged,11,300
+"Students, held-out prompts",T5 (T=1.0) + typos 5%,above_usual,above_usual,2,300
+"Students, held-out prompts",T5 (T=1.0) + typos 5%,flagged,not_flagged,1,300
+"Students, held-out prompts",T5 (T=1.0) + typos 5%,not_flagged,above_usual,1,300
