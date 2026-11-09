@@ -48,6 +48,7 @@ CLEAR_ENGLISH_SHARE = 0.20     # at or above this the essay is accepted even if 
 # --- results files the page quotes (every number shown comes from one of these) ---------------------
 RESULTS = ROOT / "results"
 SAMPLES_JSON = ROOT / "demo" / "samples.json"
+JURY_SAMPLES_JSON = ROOT / "demo" / "jury_samples.json"      # two more examples chosen by stated rules in notebook 22 (section 10d)
 SPLITS_CSV = ROOT / "data" / "processed" / "splits.csv"
 DEMO_CLASS = ROOT / "demo" / "class_sample"      # the demo class: essays, labels.json and how they were picked
 

@@ -91,3 +91,31 @@ def test_serving_copies_reproduce_the_saved_phase_1_logits_and_zones(cal):
     assert np.abs(served - ref).max() < 0.05
     for c, seed in enumerate([42, 50, 61]):
         assert (core.zone_of(cal.p(seed, served[:, c])) == core.zone_of(cal.p(seed, ref[:, c]))).all()
+
+
+def test_lazy_mode_is_off_by_default_and_switched_on_by_the_environment(monkeypatch):
+    monkeypatch.delenv("GW_JURY_LAZY", raising=False)
+    assert core.Jury(device="cpu").lazy is False
+    monkeypatch.setenv("GW_JURY_LAZY", "1")
+    assert core.Jury(device="cpu").lazy is True
+    assert core.Jury(device="cpu", lazy=False).lazy is False          # an explicit argument wins over the environment
+    monkeypatch.setenv("GW_JURY_LAZY", "0")
+    assert core.Jury(device="cpu").lazy is False
+
+
+@pytest.mark.skipif(not torch.cuda.is_available() or not (core.FP16_DIR / "s61").exists(), reason="needs the GPU and models/jury_fp16")
+def test_lazy_mode_gives_the_same_logits_and_keeps_nothing_in_memory():
+    from src.data import load_splits
+    texts = load_splits("val").text.iloc[:4].tolist()
+    eager, lazy = core.Jury(lazy=False), core.Jury(lazy=True)
+    a, b = eager.score_many(texts, [42, 57]), lazy.score_many(texts, [42, 57])
+    assert np.array_equal(a, b)
+    assert sorted(eager.models) == [42, 57] and lazy.models == {}
+
+
+@pytest.mark.skipif(not torch.cuda.is_available() or not (core.FP16_DIR / "s61").exists(), reason="needs the GPU and models/jury_fp16")
+def test_a_whole_trial_in_lazy_mode_matches_the_eager_one(cal):
+    from src.data import load_splits
+    text = load_splits("test").text.iloc[0]
+    strip = lambda ev: [{k: v for k, v in e.items()} for e in ev]
+    assert strip(core.trial(core.Jury(lazy=False), cal, text)) == strip(core.trial(core.Jury(lazy=True), cal, text))

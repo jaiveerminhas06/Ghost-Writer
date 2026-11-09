@@ -192,10 +192,10 @@ def test_batch_reports_each_essays_zone_and_jurors_flagging(client, monkeypatch)
 def test_meta_exposes_the_official_figures_from_the_results_files(client):
     m = client.get("/api/meta").json()
     o = m["official"]
-    assert o["students_unseen_topics"]["flagged"] == {"value": 0.70, "lo": 0.48, "hi": 0.95}
-    assert o["students_unseen_topics"]["by_topic"]["Summer projects"]["flagged"]["value"] == 1.60
-    assert o["ai_unseen_generators"]["flagged"] == {"value": 94.92, "lo": 93.95, "hi": 95.80}
-    assert o["p_ai_given_zone"]["34.6% (the dataset)"]["above_usual"]["value"] == 30.8 and o["p_ai_given_zone"]["10%"]["above_usual"]["value"] == 8.6
+    assert o["students_unseen_topics"]["flagged"] == {"value": 0.0070, "lo": 0.0048, "hi": 0.0095}          # fractions, not percentages
+    assert o["students_unseen_topics"]["by_topic"]["Summer projects"]["flagged"]["value"] == 0.0160
+    assert o["ai_unseen_generators"]["flagged"] == {"value": 0.9492, "lo": 0.9395, "hi": 0.9580}
+    assert o["p_ai_given_zone"]["34.6% (the dataset)"]["above_usual"]["value"] == 0.308 and o["p_ai_given_zone"]["10%"]["above_usual"]["value"] == 0.086
     assert m["api_version"] == 3 and m["thresholds"]["standard"] == pytest.approx(4.666, abs=1e-3)       # the existing page keeps working
 
 
@@ -217,8 +217,32 @@ def test_meta_attacks_final_gives_students_above_usual_next_to_the_ai_numbers(cl
     r = pd.read_csv(ROOT / "results" / "22b_attack_final.csv")
     def row(group, attack):
         return r[(r.group == group) & (r.attack == attack)].iloc[0]
-    assert a["ai_test"]["attacks"]["typos5"]["flip_pct"] == pytest.approx(row("AI, test", "typos 5%").flip_pct)
+    assert a["ai_test"]["attacks"]["typos5"]["flip"] == pytest.approx(row("AI, test", "typos 5%").flip_pct / 100, abs=1e-6)
     assert a["ai_unseen_generators"]["descriptive"] is True and a["ai_test"]["descriptive"] is False
     st = a["students_test"]["attacks"]
-    assert st["original"]["above_usual_pct"] == 0.0 and st["t5"]["above_usual_pct"] == 3.0       # students land in "above usual" too
-    assert a["students_unseen_prompts"]["attacks"]["original"]["above_usual_pct"] == pytest.approx(4.33, abs=0.01)
+    assert st["original"]["above_usual"] == 0.0 and st["t5"]["above_usual"] == 0.03       # students land in "above usual" too
+    assert a["students_unseen_prompts"]["attacks"]["original"]["above_usual"] == pytest.approx(0.0433, abs=1e-4)
+
+
+def test_every_share_in_the_new_meta_blocks_is_a_fraction(client):
+    """One unit for the new blocks: fractions between 0 and 1 (counts, logits and correlations are named as such)."""
+    m = client.get("/api/meta").json()
+    def walk(x, path=""):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                yield from walk(v, f"{path}/{k}")
+        elif isinstance(x, list):
+            for i, v in enumerate(x):
+                yield from walk(v, f"{path}[{i}]")
+        elif isinstance(x, (int, float)) and not isinstance(x, bool):
+            yield path, x
+    for path, v in walk(m["official"]):
+        if "/n" not in path.split("/")[-1:] and not path.endswith("/n"):
+            assert 0 <= v <= 1 or "tau" in path, path
+    for group in m["jury"]["attacks_final"].values():
+        for attack in group["attacks"].values():
+            for k in ("flagged", "flagged_lo", "flagged_hi", "flagged_or_above", "above_usual", "flip", "flip_lo", "flip_hi", "words_changed"):
+                assert 0 <= attack[k] <= 1, k
+    assert "pct" not in str(list(m["jury"]["attacks_final"]["ai_test"]["attacks"]["typos5"]))
+    assert all(0 <= j["detect_test_ai"] <= 1 and 0 <= j["flag_test_students"] <= 1 for j in m["jury"]["per_juror"])
+    assert all(0 <= v["value"] <= 1 for pop in m["jury"]["statistics"]["S3"].values() for g in pop.values() for v in g.values())

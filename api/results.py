@@ -12,7 +12,8 @@ from . import demo, settings
 
 # Built-in examples: display names (the artboard's wording) in the order of demo/samples.json. Labels come from each
 # essay's title in that file, which starts "AI essay" or "Human essay".
-EXAMPLE_NAMES = ["AI essay by Claude", "Student essay", "Student essay it wrongly flags"]
+EXAMPLE_NAMES = ["AI essay by Claude", "Student essay", "Student essay the earlier detector flagged"]
+EXAMPLE_NOTES = [None, None, "A student essay the earlier single-model detector flagged."]
 
 
 @lru_cache(maxsize=1)
@@ -76,23 +77,32 @@ def trained_on():
 
 @lru_cache(maxsize=1)
 def examples():
+    """The built-in essays. The first three come from demo/samples.json; two more (a real student essay the final system still flags, and
+    an AI essay that splits the jury) from demo/jury_samples.json, chosen by rules recorded in notebook 22. `note` says what is special."""
     raw = json.loads(settings.SAMPLES_JSON.read_text())
     out = []
     for i, (title, text) in enumerate(raw.items()):
         label = "ai" if title.lower().startswith("ai") else "human"
-        out.append({"id": i, "name": EXAMPLE_NAMES[i] if i < len(EXAMPLE_NAMES) else title, "label": label,
-                    "words": len(text.split()), "text": text})
+        out.append({"id": i, "name": EXAMPLE_NAMES[i] if i < len(EXAMPLE_NAMES) else title, "label": label, "kind": "example",
+                    "note": EXAMPLE_NOTES[i] if i < len(EXAMPLE_NOTES) else None, "words": len(text.split()), "text": text})
+    for e in json.loads(settings.JURY_SAMPLES_JSON.read_text()):
+        out.append({"id": len(out), "name": e["name"], "label": e["label"], "kind": e["kind"], "note": e["note"], "words": len(e["text"].split()), "text": e["text"]})
     return out
 
 
 # ---------- the jury and the final system (notebooks 20, 22, 22b) ----------
+def _frac(percent):
+    """A percentage as a fraction, rounded to 6 places so 0.70 is 0.007 and not 0.006999999999999999."""
+    return round(float(percent) / 100, 6)
+
+
 def _cell(text):
-    """'0.70 [0.48, 0.95]' (the way notebook 20 saved it) -> {'value': 0.70, 'lo': 0.48, 'hi': 0.95}."""
+    """'0.70 [0.48, 0.95]' (a percentage, the way notebook 20 saved it) -> {'value': 0.0070, 'lo': 0.0048, 'hi': 0.0095}, fractions."""
     import re
     m = re.fullmatch(r"\s*([\d.]+) \[([\d.]+), ([\d.]+)\]\s*", str(text))
     if not m:
         raise ValueError(f"unexpected cell in results/20_heldout_tables.csv: {text!r}")
-    return {"value": float(m[1]), "lo": float(m[2]), "hi": float(m[3])}
+    return {"value": _frac(m[1]), "lo": _frac(m[2]), "hi": _frac(m[3])}       # saved as percentages; the API speaks fractions
 
 
 @lru_cache(maxsize=1)
@@ -131,20 +141,21 @@ GROUP_IDS = {"AI, test": "ai_test", "AI, held-out generators": "ai_unseen_genera
 
 @lru_cache(maxsize=1)
 def attacks_final():
-    """Notebook 22b: the official verdict under attack, per group and attack. Held-out groups are descriptive. For students, 'above_usual_pct'
-    is the share who land in 'above usual' (flagged-or-above minus flagged): the page must quote it wherever it says edited AI essays land there."""
+    """Notebook 22b: the official verdict under attack, per group and attack, as fractions (0-1). Held-out groups are descriptive. 'above_usual'
+    is the share who land in 'above usual' (flagged-or-above minus flagged); for students the page must quote it wherever it says edited AI
+    essays land there."""
     r = pd.read_csv(settings.RESULTS / "22b_attack_final.csv")
     out = {}
     for _, x in r.iterrows():
         g = out.setdefault(GROUP_IDS[x["group"]], {"n": int(x["n"]), "descriptive": "held-out" in x["group"], "attacks": {}})
         g["attacks"][ATTACK_IDS[x["attack"]]] = {
-            "flagged_pct": float(x["flagged_pct"]), "flagged_lo": float(x["flagged_lo"]), "flagged_hi": float(x["flagged_hi"]),
-            "flagged_or_above_pct": float(x["flag_or_above_pct"]), "flagged_or_above_lo": float(x["flag_or_above_lo"]), "flagged_or_above_hi": float(x["flag_or_above_hi"]),
-            "above_usual_pct": round(100 * (int(x["flag_or_above_k"]) - int(x["flagged_k"])) / int(x["n"]), 2),
-            "flip_pct": float(x["flip_pct"]), "flip_lo": float(x["flip_lo"]), "flip_hi": float(x["flip_hi"]),
+            "flagged": _frac(x["flagged_pct"]), "flagged_lo": _frac(x["flagged_lo"]), "flagged_hi": _frac(x["flagged_hi"]),
+            "flagged_or_above": _frac(x["flag_or_above_pct"]), "flagged_or_above_lo": _frac(x["flag_or_above_lo"]), "flagged_or_above_hi": _frac(x["flag_or_above_hi"]),
+            "above_usual": round((int(x["flag_or_above_k"]) - int(x["flagged_k"])) / int(x["n"]), 6),
+            "flip": _frac(x["flip_pct"]), "flip_lo": _frac(x["flip_lo"]), "flip_hi": _frac(x["flip_hi"]),
             "flip_k": int(x["flip_k"]), "flip_of": int(x["flip_denominator"]),
             "jurors_flagging_before": float(x["mean_jurors_flagging_before"]), "jurors_flagging_after": float(x["mean_jurors_flagging_after"]),
-            "words_changed_pct": float(x["words_changed_pct"])}
+            "words_changed": _frac(x["words_changed_pct"])}
     return out
 
 
@@ -183,7 +194,7 @@ def jury_meta(live):
     return {"api": settings.JURY_API, "live": bool(live), "jurors": len(core.SEEDS), "ensemble_seeds": list(core.ENSEMBLE_SEEDS),
             "typo_rate": settings.JURY_TYPO_RATE, "scale": core.Calibration().scale(), "statistics": jury_statistics(), "per_juror": jurors(),
             "attacks_final": attacks_final(), "source": "results/22_*.csv, results/22b_*.csv",
-            "units": "statistics: shares and n_flag=k metrics are fractions (0-1), gaps and ceilings are logits, *_count are counts; attacks_final: percentages"}
+            "units": "every share and rate in this block and in `official` is a fraction between 0 and 1; gaps and ceilings are logits; *_k, *_of, *_count and jurors_flagging_* are counts"}
 
 
 def t5_available():

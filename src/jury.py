@@ -12,6 +12,7 @@ The official verdict is the three-seed ensemble (seeds 42-44, mean of p-values, 
 three zones. The thresholds are the pre-declared ones from notebook 18b; nothing is retuned here.
 """
 import math
+import os
 from pathlib import Path
 
 import numpy as np
@@ -83,9 +84,12 @@ class Jury:
     """The serving copies. fp16 on the GPU (one resident model, weights swapped in); on a machine without one they are upcast to fp32 on the CPU (slow: about 1.3 s per juror per
     essay, so the live jury is meant for a GPU and the API refuses it elsewhere; the official verdict still works)."""
 
-    def __init__(self, device=None, directory=FP16_DIR, max_len=512):
+    def __init__(self, device=None, directory=FP16_DIR, max_len=512, lazy=None):
+        """lazy=True (or the environment variable GW_JURY_LAZY=1) reads a juror from disk each time it is needed and keeps nothing: about
+        3 GB less memory, slower per trial. The default keeps all twenty in memory."""
         import torch
         self.torch = torch
+        self.lazy = bool(int(os.environ.get("GW_JURY_LAZY", "0"))) if lazy is None else lazy
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.dir, self.max_len = Path(directory), max_len
         self.models = {}
@@ -104,21 +108,26 @@ class Jury:
             self._tok = AutoTokenizer.from_pretrained(self.dir / "s42")
         return self._tok
 
+    def _read(self, seed):
+        """Juror `seed` from disk. GPU: its fp16 weights as a dict of CPU tensors; CPU: an fp32 model."""
+        if self.device == "cuda":
+            from safetensors.torch import load_file
+            return load_file(str(self.dir / f"s{seed}" / "model.safetensors"))
+        from transformers import AutoModelForSequenceClassification
+        return AutoModelForSequenceClassification.from_pretrained(self.dir / f"s{seed}", dtype=self.torch.float32).eval()
+
     def _load(self, seed):
-        """GPU: the juror's weights (fp16) are read once into pinned CPU memory. One model stays resident on the GPU and the weights
-        of whichever juror is scoring are copied into it (about 40 ms), which is faster than moving 20 models back and forth.
-        CPU: each juror is its own fp32 model."""
-        if seed not in self.models:
+        """GPU: the juror's weights (fp16) are kept in pinned CPU memory. One model stays resident on the GPU and the weights of whichever
+        juror is scoring are copied into it (about 40 ms), which is faster than moving 20 models back and forth.
+        CPU: each juror is its own fp32 model. In lazy mode nothing is kept: the juror is read again every time."""
+        if self.device == "cuda" and self._gpu is None:
             from transformers import AutoModelForSequenceClassification
-            on_gpu = self.device == "cuda"
-            m = AutoModelForSequenceClassification.from_pretrained(self.dir / f"s{seed}", dtype=self.torch.float16 if on_gpu else self.torch.float32).eval()
-            if on_gpu:
-                if self._gpu is None:
-                    self._gpu = AutoModelForSequenceClassification.from_pretrained(self.dir / f"s{seed}", dtype=self.torch.float16).cuda().eval()
-                self.models[seed] = {k: v.pin_memory() for k, v in m.state_dict().items()}
-                del m
-            else:
-                self.models[seed] = m
+            self._gpu = AutoModelForSequenceClassification.from_pretrained(self.dir / "s42", dtype=self.torch.float16).cuda().eval()
+        if self.lazy:
+            return self._read(seed)
+        if seed not in self.models:
+            state = self._read(seed)
+            self.models[seed] = {k: v.pin_memory() for k, v in state.items()} if self.device == "cuda" else state
         return self.models[seed]
 
     def _ready(self, seed):

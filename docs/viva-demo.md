@@ -11,6 +11,7 @@ bash scripts/demo.sh
 That one command builds the page if it is missing or out of date, starts one server that serves page and API together, loads every model once (about 30 seconds the first time, then the first click is as fast as the tenth), and opens http://localhost:8000. It prints `Ready: http://localhost:8000` when it is done. Ctrl+C stops it.
 
 - Close other GPU programs first (4 GB card). Do not start the Streamlit demo at the same time.
+- **Check free RAM with the slides and the browser open** (`free -h`, the "available" column). The jury keeps all 20 detectors in memory, about 6.7 GB for the whole server. If less than about 2 GB is free after the server has started, or the machine starts swapping, restart with `GW_JURY_LAZY=1 bash scripts/demo.sh`: the detectors are then read from disk when needed and nothing is kept, which saves about 3 GB and makes one trial take about 4 seconds instead of 0.8 (the first one after a restart is slow either way).
 - Switch the browser to a light theme and zoom to 100%. Open the page once and check it shows the headline "Did a student or an AI write this essay?".
 - Have a second tab on `docs/api.md` ready for the "why an API" question.
 
