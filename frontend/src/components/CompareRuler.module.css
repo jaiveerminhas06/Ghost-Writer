@@ -2,11 +2,13 @@
 .fit { container-type: inline-size; }
 .ruler { position: relative; height: 110px; margin: 0 4px; }
 .ruler > * { position: absolute; }
-.zone { top: 48px; left: 0; right: 0; height: 18px; background: var(--hl-2); transform-origin: right; transform: scaleX(calc((100 - var(--t)) / 100)); transition: transform var(--t-move) var(--ease-out); }
+.zone, .zoneFlag { top: 48px; left: 0; right: 0; height: 18px; transform-origin: right; transition: transform var(--t-move) var(--ease-out); }
+.zone { background: var(--hl-2); transform: scaleX(calc((100 - var(--u)) / 100)); }
+.zoneFlag { background: var(--hl-3); transform: scaleX(calc((100 - var(--t)) / 100)); }
 .axis { top: 56px; left: 0; right: 0; height: 2px; background: var(--ink); }
 .tickWrap { top: 50px; width: 0; }
 .tick { position: absolute; top: 0; left: -1px; width: 2px; height: 14px; background: var(--ink); }
-.tickLabel { position: absolute; top: 22px; left: 0; transform: translateX(-50%); font-size: var(--fs-caption); color: var(--ink-3); }
+.tickLabel { white-space: nowrap; position: absolute; top: 22px; left: 0; transform: translateX(-50%); font-size: var(--fs-caption); color: var(--ink-3); }
 .flagLine { top: 18px; left: 0; width: 3px; height: 56px; margin-left: -1.5px; background: var(--pen); transform: translateX(calc(var(--t) * 1cqw)); transition: transform var(--t-move) var(--ease-out); }
 .flagLabel { top: 0; left: 0; white-space: nowrap; color: var(--pen); font-weight: 600; font-size: var(--fs-small); transform: translateX(calc(var(--t) * 1cqw - 100% - 10px)); transition: transform var(--t-move) var(--ease-out); }
 
@@ -21,8 +23,11 @@
 .afterLabel { top: 18px; left: 0; white-space: nowrap; font-weight: 700; font-size: var(--fs-small); transform: translateX(calc(var(--a) * 1cqw - 50%)); transition: transform var(--t-spring) var(--spring); }
 .beforeLabel { top: 90px; left: 0; white-space: nowrap; color: var(--ink-2); font-size: var(--fs-caption); transform: translateX(calc(var(--b) * 1cqw - 70%)); }
 
-@container (max-width: 520px) { .mid { display: none; } .flagLabel { font-size: var(--fs-tiny); } }
+@container (max-width: 520px) { .flagLabel, .tickLabel { font-size: var(--fs-tiny); } }
 @media (prefers-reduced-motion: reduce) {
-  .link, .after, .afterLabel, .flagLine, .flagLabel, .zone { transition: none; }
+  .link, .after, .afterLabel, .flagLine, .flagLabel, .zone, .zoneFlag { transition: none; }
   .waiting { animation: none; opacity: 0.7; }
 }
+
+/* the label of the first tick (1 in 1) starts at the axis instead of being centred on it, so it is not cut off */
+.first .tickLabel { transform: none; }

@@ -2,9 +2,11 @@ import { createContext, useContext } from 'react'
 
 /** @typedef {{ status: 'loading' } | { status: 'ready', meta: import('../types').Meta } | { status: 'error', problem: import('../api').ApiProblem } | { status: 'mismatch', kind: 'outdated' | 'newer' }} MetaState */
 /** @typedef {{ status: 'idle' | 'loading' | 'done' | 'error', data: any, problem: import('../api').ApiProblem | null }} Async */
+/** @typedef {{ start: import('../types').JuryStart | null, marks: import('../types').JurorMark[], summary: import('../types').JurySummary | null }} Trial */
+/** @typedef {{ status: 'idle' | 'running' | 'done' | 'error' | 'unavailable', running: 'original' | 'rerun' | null, original: Trial, rerun: Trial | null, view: 'original' | 'rerun', runs: number, problem: import('../api').ApiProblem | null }} JuryState   unavailable = a server without a GPU and an essay that is not a built-in example */
 /** @typedef {object} EssayState
  *  @property {string} text  @property {number | null} exampleId  @property {string | null} title   a file name, when the essay was opened from the class page
- *  @property {'strict' | 'standard'} strictness
+ *  @property {JuryState} jury
  *  @property {'idle' | 'scoring' | 'scored' | 'error'} status
  *  @property {import('../types').ScoreResult | null} score  @property {string} scoredText
  *  @property {import('../api').ApiProblem | null} problem
@@ -19,7 +21,8 @@ import { createContext, useContext } from 'react'
  *  @property {(example: { id: number, text: string }) => void} loadExample   loads the example and scores it at once
  *  @property {() => void} submit  @property {() => void} edit
  *  @property {(file: { name: string, text: string }) => void} openEssay   loads an essay from a class file and scores it
- *  @property {(value: 'strict' | 'standard') => void} setStrictness
+ *  @property {() => void} rerunJury   a second trial on a typo version of the essay (new typos each time)
+ *  @property {() => void} showOriginal   back to the trial on the essay as it was
  *  @property {() => void} retryExplain
  *  @property {(method: 'typos5' | 'typos10' | 't5' | 't5_heavy', seed: number) => void} rewrite   rewrites the scored essay and scores the result; the seed is kept with the attempt
  *  @property {(id: number | null) => void} selectAttempt

@@ -6,7 +6,7 @@
     CHROMIUM=/path/to/chromium python scripts/motion_audit.py       (otherwise it tries /snap/bin/chromium, then Playwright's own)
 
 Needs `pip install playwright` (a development tool; it is not in requirements.txt). It runs the same walk-through twice, once normally and
-once with `prefers-reduced-motion: reduce` emulated: score an essay, flip Strict/Standard, open the popover and the "Which AI" drawer,
+once with `prefers-reduced-motion: reduce` emulated: score an essay (the twenty marks drop in), re-run the trial and show the original, open the "Which AI" drawer,
 try to fool the detector twice, load both demo classes (60 essays, so the table passes 50 rows), sort and page, and hover controls.
 
 It fails (exit code 1) if it records nothing, or does not see the animations that must exist (the marker's spring and the highlight fade),
@@ -55,16 +55,18 @@ def walk(page, url, essays):
     """The walk-through. Every step waits for what it triggers, so each animation has time to run."""
     held = []
     page.route("**/api/score", lambda r: held.append(r))                                  # hold the first answer: shows the 300 ms window and the skeleton
-    page.goto(url + "/?example=2")
+    page.goto(url + "/?example=3")
     page.wait_for_timeout(700)
     if held:
         held[0].continue_()
     page.unroute("**/api/score")
     page.wait_for_selector("[class*=paint] mark", timeout=60000)
     page.wait_for_timeout(2200)
-    page.get_by_role("button", name="Standard").first.click(); page.wait_for_timeout(500)
-    page.get_by_role("button", name="Strict").first.click(); page.wait_for_timeout(500)
-    page.get_by_role("button", name="What is the flag line?").click(); page.wait_for_timeout(400); page.keyboard.press("Escape"); page.wait_for_timeout(400)
+    ready = "section[aria-labelledby=verdict][aria-busy=false]"                           # the twenty marks have all dropped in
+    page.wait_for_selector(ready, timeout=90000); page.wait_for_timeout(600)
+    page.get_by_role("button", name="Re-run the trial").click(); page.wait_for_selector("text=Show original", timeout=60000)      # the marks travel to their new places
+    page.wait_for_selector(ready, timeout=60000); page.wait_for_timeout(900)
+    page.get_by_role("button", name="Show original").click(); page.wait_for_timeout(900)
     page.get_by_role("button", name="Show the guess anyway").click(); page.wait_for_selector("text=-based sources"); page.wait_for_timeout(500)
     page.get_by_role("button", name="Hide the guess").click(); page.wait_for_timeout(500)
     page.get_by_role("radio").nth(1).click(); page.wait_for_selector("h2#verdict:has-text('Not flagged')", timeout=60000); page.wait_for_timeout(1500)
@@ -73,12 +75,11 @@ def walk(page, url, essays):
     page.get_by_role("button", name="Rewrite and re-score").click(); page.wait_for_selector("[role=table] button[role=row]", timeout=60000); page.wait_for_timeout(800)
     page.get_by_role("button", name="Try different typos").click()
     page.wait_for_function("document.querySelectorAll('[role=table] button[role=row]').length >= 3", timeout=60000); page.wait_for_timeout(800)
-    page.get_by_role("button", name="Standard").first.click(); page.wait_for_timeout(600)
     page.get_by_role("link", name="Check a class").first.click(); page.wait_for_selector("text=Load the demo class")
     page.locator("input[type=file]").set_input_files(essays)                              # both demo classes: 60 essays, so the table passes 50 rows
     page.wait_for_selector("#summary", timeout=120000)
     page.wait_for_function("!document.body.innerText.includes('Waiting to score')", timeout=120000); page.wait_for_timeout(900)
-    page.get_by_role("button", name="Score").click(); page.wait_for_timeout(600)
+    page.get_by_role("button", name="Students this high").click(); page.wait_for_timeout(600)
     page.get_by_role("button", name="Next 50").click(); page.wait_for_timeout(500)
     page.get_by_role("button", name="Choose files").hover(); page.wait_for_timeout(300)
     page.locator("a[role=row]").first.hover(); page.wait_for_timeout(300)

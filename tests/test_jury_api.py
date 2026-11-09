@@ -246,3 +246,50 @@ def test_every_share_in_the_new_meta_blocks_is_a_fraction(client):
     assert "pct" not in str(list(m["jury"]["attacks_final"]["ai_test"]["attacks"]["typos5"]))
     assert all(0 <= j["detect_test_ai"] <= 1 and 0 <= j["flag_test_students"] <= 1 for j in m["jury"]["per_juror"])
     assert all(0 <= v["value"] <= 1 for pop in m["jury"]["statistics"]["S3"].values() for g in pop.values() for v in g.values())
+
+
+def test_meta_attacks_final_says_where_lost_flags_went(client):
+    a = client.get("/api/meta").json()["jury"]["attacks_final"]
+    t5 = a["ai_test"]["attacks"]["typos5"]
+    assert (t5["flip_k"], t5["flip_to_above_usual"], t5["flip_to_not_flagged"]) == (12, 12, 0)
+    g5 = a["ai_unseen_generators"]["attacks"]["typos5"]
+    assert (g5["flip_k"], g5["flip_to_above_usual"], g5["flip_to_not_flagged"]) == (82, 73, 9)
+
+
+def test_the_front_end_test_fixture_still_matches_the_api():
+    """frontend/src/lib/meta.fixture.json is what npm test reads; regenerate it with scripts/export_meta_fixture.py when results change."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("export_meta_fixture", ROOT / "scripts" / "export_meta_fixture.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert json.loads(json.dumps(mod.trimmed(), sort_keys=True)) == json.loads(mod.OUT.read_text())
+
+
+def test_a_visitor_who_leaves_mid_trial_cannot_leave_the_model_locked(client, jury):
+    """The trial runs in its own thread that holds the lock while it computes and always lets it go, so a closed tab frees the server."""
+    import time
+    with client.stream("POST", "/api/jury", json={"text": AI_ESSAY}) as r:
+        next(r.iter_lines())                        # read one line, then walk away without reading the rest
+    for _ in range(100):
+        if main._model_lock.acquire(blocking=False):
+            main._model_lock.release()
+            break
+        time.sleep(0.05)
+    else:
+        raise AssertionError("the model lock is still held after the client left")
+    assert len(trial(client, AI_ESSAY)) == 22
+
+
+def test_a_visitor_who_leaves_mid_trial_cannot_leave_the_model_locked(client, jury):
+    """The trial runs in its own thread that holds the lock while it computes and always lets it go, so a closed tab frees the server."""
+    import time
+    with client.stream("POST", "/api/jury", json={"text": AI_ESSAY}) as r:
+        next(r.iter_lines())                        # read one line, then walk away without reading the rest
+    for _ in range(100):
+        if main._model_lock.acquire(blocking=False):
+            main._model_lock.release()
+            break
+        time.sleep(0.05)
+    else:
+        raise AssertionError("the model lock is still held after the client left")
+    assert len(trial(client, AI_ESSAY)) == 22

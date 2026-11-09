@@ -11,6 +11,7 @@ Essay text is never logged or stored.
 import logging
 import math
 import os
+import queue
 import sys
 import threading
 from contextlib import contextmanager
@@ -234,18 +235,30 @@ def jury_trial(req: JuryRequest, request: Request):
     start = jury_api.start_event(n, jury_api.reading(req.text, j.tokenizer), typos, cal.scale())
 
     def stream():
-        if not _model_lock.acquire(timeout=settings.LOCK_WAIT_SECONDS):
-            yield jury_api.line({"type": "error", "code": "busy", "detail": "The detector is busy with another request. Please try again in a moment."})
-            return
-        try:
-            yield jury_api.line(start)
-            for event in core.trial(j, cal, req.text, edited):
-                yield jury_api.line(event)
-        except Exception as e:                      # the stream has begun, so the error travels inside it; never with the essay in it
-            logging.getLogger(__name__).warning("jury trial failed: %s", type(e).__name__)
-            yield jury_api.line({"type": "error", "code": "failed", "detail": "The jury could not finish. Please try again."})
-        finally:
-            _model_lock.release()
+        """The trial runs in its own thread, which holds the model lock only while it computes and always lets it go; this generator just
+        hands over what the thread produces. So a visitor who closes the tab mid-trial cannot leave the lock held: nothing here is
+        suspended while holding it (a suspended generator whose client has gone is never closed, and would keep the lock for ever)."""
+        events = queue.Queue()
+
+        def produce():
+            if not _model_lock.acquire(timeout=settings.LOCK_WAIT_SECONDS):
+                events.put({"type": "error", "code": "busy", "detail": "The detector is busy with another request. Please try again in a moment."})
+                events.put(None)
+                return
+            try:
+                events.put(start)
+                for event in core.trial(j, cal, req.text, edited):
+                    events.put(event)
+            except Exception as e:                  # the stream has begun, so the error travels inside it; never with the essay in it
+                logging.getLogger(__name__).warning("jury trial failed: %s", type(e).__name__)
+                events.put({"type": "error", "code": "failed", "detail": "The jury could not finish. Please try again."})
+            finally:
+                _model_lock.release()
+                events.put(None)
+
+        threading.Thread(target=produce, daemon=True).start()
+        while (event := events.get()) is not None:
+            yield jury_api.line(event)
     return StreamingResponse(stream(), media_type="application/x-ndjson", headers=headers)
 
 

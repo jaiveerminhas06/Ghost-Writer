@@ -7,10 +7,10 @@ import ClassTable from '../components/ClassTable'
 import DemoClassOption from '../components/DemoClassOption'
 import DropZone from '../components/DropZone'
 import MetaGate from '../components/MetaGate'
-import StrictnessSwitch from '../components/StrictnessSwitch'
 import { useClass, useEssay } from '../state/contexts'
 import { MIN_CLASS, paginate, sortItems, summarize } from '../lib/classStats'
 import { crossing, expectedFlags, knownAuthors } from '../lib/figures'
+import { position } from '../lib/scale'
 
 const DEFAULT_TYPES = ['.docx', '.pdf', '.txt']
 
@@ -29,13 +29,12 @@ function Loaded({ meta }) {
   const [page, setPage] = useState(0)
   const [seenReveal, setSeenReveal] = useState(cls.reveal)
 
-  const setting = essay.state.strictness
-  const threshold = meta.thresholds[setting]
+  const scale = meta.jury.scale
   const minWords = meta.limits?.min_words ?? 40
-  const sum = summarize(cls.items, threshold)
+  const sum = summarize(cls.items)
   const sorted = useMemo(() => sortItems(cls.items, sort), [cls.items, sort])
   const view = paginate(sorted, page)
-  const scores = cls.items.filter((i) => i.status === 'done' && i.logit != null).map((i) => /** @type {number} */ (i.logit))
+  const entries = cls.items.filter((i) => i.status === 'done' && i.verdict).map((i) => ({ pos: position(/** @type {{ p: number }} */ (i.verdict).p, scale.cap), zone: /** @type {'flagged'} */ (/** @type {{ zone: string }} */ (i.verdict).zone) }))
   const only = sum.scored === 1 ? cls.items.find((i) => i.status === 'done') : undefined
 
   // the toast's "Show" button: go to the last page (failed files sort to the end) and bring the first one into view
@@ -45,8 +44,8 @@ function Loaded({ meta }) {
   }, [cls.reveal, view.page])
 
   const open = (/** @type {{ name: string, text: string | null }} */ item) => { essay.openEssay({ name: item.name, text: item.text ?? '' }); navigate('/') }
-  const headline = crossing(sum.flagged, sum.scored)
-  const known = knownAuthors(cls.items, cls.labels, meta, setting, threshold)
+  const headline = crossing(sum.flagged, sum.above, sum.scored)
+  const known = knownAuthors(cls.items, cls.labels, meta)
   const demoOn = cls.items.length > 0 && cls.items.every((i) => cls.labels[i.name]) ? cls.demoTopic : null   // a demo class, and only that, is on the page
   const caption = sum.pending > 0 ? `Scoring ${sum.scored + sum.errors} of ${sum.files} files…` : `${sum.files} ${sum.files === 1 ? 'file' : 'files'}, ${sum.scored} scored.`
 
@@ -68,12 +67,11 @@ function Loaded({ meta }) {
             <div className={styles.summaryText}>
               <p className={styles.caption} aria-live="polite">{caption}</p>
               <h2 id="summary" className="t-verdict num">{headline}</h2>
-              <p>{expectedFlags(meta, setting, sum.scored)}</p>
+              <p>{expectedFlags(meta, sum.scored)}</p>
               {known && <p className={styles.known}>{known}</p>}
             </div>
-            <StrictnessSwitch />
           </div>
-          <ClassStrip scores={scores} threshold={threshold} summary={headline} />
+          <ClassStrip entries={entries} scale={scale} summary={headline} />
         </section>
       )}
 
@@ -103,7 +101,7 @@ function Loaded({ meta }) {
             <p>{sum.scored > 0 ? 'Open an essay to see which sentences drove its score.' : caption}</p>
             <Button variant="quiet" onClick={cls.clear}>Clear this class</Button>
           </div>
-          <ClassTable rows={view.rows} thresholds={meta.thresholds} setting={setting} sort={sort} onSort={() => setSort((s) => (s === 'desc' ? 'asc' : 'desc'))}
+          <ClassTable rows={view.rows} sort={sort} onSort={() => setSort((s) => (s === 'desc' ? 'asc' : 'desc'))}
                       onOpen={open} minWords={minWords} paging={view} onPage={setPage} />
         </section>
       )}

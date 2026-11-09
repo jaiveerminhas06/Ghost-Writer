@@ -1,0 +1,46 @@
+/* The one scale. Colours are the page's own tokens; marks differ by fill (solid, amber with a ring, hollow), never by colour alone.
+   Only transform and opacity animate. Positions are set inline with translate(), so a mark that changes place travels there. */
+.box { width: 100%; min-height: 160px; }
+.svg { display: block; max-width: 100%; overflow: visible; font-variant-numeric: tabular-nums; }
+.axis, .tick { stroke: var(--ink); stroke-width: 2; }
+.grid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; }
+.ceiling { stroke: var(--ink-3); stroke-width: 2; stroke-dasharray: 2 3; }
+.edge { stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.bandAbove { fill: var(--hl-2); }
+.bandFlag { fill: var(--hl-3); }
+.flagLine { stroke: var(--pen); stroke-width: 3; }
+.flagLabel { fill: var(--pen); font-weight: 600; font-size: 15px; }
+.zone { fill: var(--ink-2); font-size: 14.5px; font-weight: 550; }
+.tl { fill: var(--ink-3); font-size: 14px; }
+.pile { fill: var(--desk-2); stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.bracket { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 2 3; }
+.pileText { fill: var(--ink-2); font-size: 14px; }
+.pileHead { font-weight: 650; fill: var(--ink); }
+.tri { fill: var(--ink); }
+.stem { stroke: var(--ink); stroke-width: 3; }
+.official { fill: var(--ink); font-weight: 700; font-size: 15.5px; }
+text.official { animation: fade var(--t-base) var(--ease-out) var(--t-spring) both; }
+g.official { transition: transform var(--t-spring) var(--spring); }
+
+/* phone sizes (Jury.html boards 4 to 6) */
+.phone.tl { font-size: 12px; } .phone.zone { font-size: 13px; } .phone.flagLabel { font-size: 13px; } .phone.official { font-size: 13.5px; } .phone.pileText { font-size: 12.5px; }
+
+/* marks: .mark holds the position (translate, with a transition), .drop holds the entrance */
+.mark { transition: transform var(--t-move) var(--ease-out); outline: none; cursor: default; }
+.hit { fill: transparent; }
+.flag { fill: var(--ink); stroke: var(--ink); stroke-width: 2; }
+.above { fill: var(--hl-3); stroke: var(--ink); stroke-width: 2; }
+.not { fill: var(--paper); stroke: var(--ink-2); stroke-width: 2; }
+.ens { fill: none; stroke: var(--pen); stroke-width: 2.5; }
+.ring { fill: none; stroke: var(--pen); stroke-width: 2; }
+.drop { animation: drop var(--t-base) var(--ease-out) calc(var(--i, 0) * 40ms) both; }
+.land { animation: land var(--t-spring) var(--spring) both; }
+@keyframes drop { from { opacity: 0; transform: translateY(12px); } }
+@keyframes land { from { transform: translateX(var(--from)); } }
+@keyframes fade { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mark, g.official { transition: none; }
+  .drop, .land, text.official { animation: fade 120ms linear both; }
+  .drop { animation-delay: 0ms; }
+}

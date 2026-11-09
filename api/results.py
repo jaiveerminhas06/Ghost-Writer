@@ -145,6 +145,10 @@ def attacks_final():
     is the share who land in 'above usual' (flagged-or-above minus flagged); for students the page must quote it wherever it says edited AI
     essays land there."""
     r = pd.read_csv(settings.RESULTS / "22b_attack_final.csv")
+    dest = pd.read_csv(settings.RESULTS / "22b_flip_destinations.csv")          # where the essays whose official zone changed went
+    def lost(group, attack, after):
+        d = dest[(dest["group"] == group) & (dest["attack"] == attack) & (dest["zone_before"] == "flagged") & (dest["zone_after"] == after)]
+        return int(d["essays"].sum())
     out = {}
     for _, x in r.iterrows():
         g = out.setdefault(GROUP_IDS[x["group"]], {"n": int(x["n"]), "descriptive": "held-out" in x["group"], "attacks": {}})
@@ -154,6 +158,7 @@ def attacks_final():
             "above_usual": round((int(x["flag_or_above_k"]) - int(x["flagged_k"])) / int(x["n"]), 6),
             "flip": _frac(x["flip_pct"]), "flip_lo": _frac(x["flip_lo"]), "flip_hi": _frac(x["flip_hi"]),
             "flip_k": int(x["flip_k"]), "flip_of": int(x["flip_denominator"]),
+            "flip_to_above_usual": lost(x["group"], x["attack"], "above_usual"), "flip_to_not_flagged": lost(x["group"], x["attack"], "not_flagged"),
             "jurors_flagging_before": float(x["mean_jurors_flagging_before"]), "jurors_flagging_after": float(x["mean_jurors_flagging_after"]),
             "words_changed": _frac(x["words_changed_pct"])}
     return out
