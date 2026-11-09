@@ -39,8 +39,40 @@ class FakeT5:
         return [t.replace("benefits", "advantages") for t in texts]
 
 
+class FakeJury:
+    """Stands in for src/jury.Jury: no models. A text that uses the Claude example's favourite words is 'AI' (a logit above every
+    juror's flag line); anything else is student-like. `degrade_unless` makes every other AI-like text score low, as heavy typos can."""
+    tokenizer = FakeTokenizer()
+
+    def __init__(self, live=True):
+        self.live, self.degrade_unless, self.calls = live, None, 0
+
+    def logit(self, seed, text):
+        if "advantages" in text.lower():
+            return 0.0 if (self.degrade_unless is not None and text != self.degrade_unless) else 9.8
+        return -6.0 + 0.01 * (seed - 42)
+
+    def tokenise(self, texts):
+        return list(texts)                      # the 'ids' are the texts themselves, opaque to src/jury.trial
+
+    def logits_of(self, seed, ids):
+        self.calls += 1
+        return np.array([self.logit(seed, t) for t in ids], dtype=np.float32)
+
+    def score_many(self, texts, seeds=None):
+        from src.jury import SEEDS
+        return np.column_stack([self.logits_of(s, list(texts)) for s in (SEEDS if seeds is None else seeds)])
+
+
 @pytest.fixture
-def client(monkeypatch):
+def jury(monkeypatch):
+    fake = FakeJury()
+    monkeypatch.setattr(main, "jury", lambda: fake)
+    return fake
+
+
+@pytest.fixture
+def client(monkeypatch, jury):
     monkeypatch.setattr(main, "detector", lambda: FakeDetector())
     monkeypatch.setattr(main, "attribution_model", lambda: object())
     monkeypatch.setattr(main, "t5", lambda: FakeT5())

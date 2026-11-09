@@ -24,6 +24,13 @@ ATTACKS = {                    # method -> (kind, setting)
     "t5_heavy": ("t5", 1.5),   # notebook 13: "T5 paraphrase (T=1.5)"
 }
 
+# --- the jury (POST /api/jury) -----------------------------------------------------------------------
+JURY_API = 1                   # version of the jury endpoint and of the 'jury' block of /api/meta (API_VERSION above is unchanged: the additions are additive)
+JURY_COST = 3.0                # rate-limit units for one trial (a score costs 1): a trial moves twenty models through the GPU
+JURY_TYPO_RATE = 0.05          # "Re-run the trial": 5% of words get a typo (src/jury.TYPO_RATE; notebook 22 measured 5%)
+JURY_PRECOMPUTED = ROOT / "results" / "22_jury_examples.json"    # what a machine without a GPU serves, for the built-in examples only
+JURY_PRECOMPUTED_SEEDS = list(range(42, 47))                      # typo seeds stored for those examples
+
 # --- limits against overload (a public demo needs them; the owner's laptop never notices) -------------
 RATE_LIMIT_PER_MIN = float(os.environ.get("GW_RATE_LIMIT", "60"))   # cost units per visitor per minute
 BATCH_FILES_PER_UNIT = 10      # a batch of files costs one unit per ten files (at least one)
