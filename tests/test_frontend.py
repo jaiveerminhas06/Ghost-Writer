@@ -26,7 +26,7 @@ uvicorn = pytest.importorskip("uvicorn")
 from PIL import Image  # noqa: E402
 
 from api import limiter, main, results  # noqa: E402
-from tests.conftest import FakeDetector, FakeT5  # noqa: E402
+from tests.conftest import FakeDetector, FakeJury, FakeT5  # noqa: E402
 
 DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist" / "index.html"
 CHROMIUM = shutil.which("chromium") or shutil.which("chromium-browser") or "/snap/bin/chromium"
@@ -44,6 +44,7 @@ def live_server():
 
     mp = pytest.MonkeyPatch()
     mp.setattr(main, "detector", lambda: FakeDetector())
+    mp.setattr(main, "jury", lambda: FakeJury())          # without this the real twenty detectors (several GB) would be loaded by a test
     mp.setattr(main, "attribution_model", lambda: object())
     mp.setattr(main, "t5", lambda: FakeT5())
     mp.setattr("src.explain.occlusion", occlusion)

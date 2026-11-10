@@ -1,0 +1,35 @@
+theme,kind,pair,ratio,needs,passes
+light,text,headline and body: ink on paper,16.66,4.5,True
+light,text,summary text: ink-2 on paper,9.87,4.5,True
+light,text,"captions, tick labels: ink-3 on paper",5.92,4.5,True
+light,text,captions on the desk: ink-3 on desk,5.26,4.5,True
+light,text,"margin note, flag-line label: pen on paper",7.43,4.5,True
+light,text,chip text: ink on selected chip (pen-tint),14.16,4.5,True
+light,text,'detectors disagree' note: ink on hl-1,15.36,4.5,True
+light,text,pile caption: ink-2 on desk-2,8.03,4.5,True
+light,text,tooltip: paper on ink,16.66,4.5,True
+light,text,zone names: ink-2 on paper,9.87,4.5,True
+light,mark,flagged dot and stem: ink on paper,16.66,3.0,True
+light,mark,not-flagged ring: ink-2 on paper,9.87,3.0,True
+light,mark,above-usual ring: ink on amber fill (hl-3),11.11,3.0,True
+light,mark,official ring and flag line: pen on paper,7.43,3.0,True
+light,mark,flag line over the flagged band: pen on hl-3,4.96,3.0,True
+light,mark,flag line over the above-usual band: pen on hl-2,6.06,3.0,True
+light,mark,axis and ticks over the bands: ink on hl-2,13.59,3.0,True
+dark,text,headline and body: ink on paper,13.43,4.5,True
+dark,text,summary text: ink-2 on paper,9.34,4.5,True
+dark,text,"captions, tick labels: ink-3 on paper",6.6,4.5,True
+dark,text,captions on the desk: ink-3 on desk,7.49,4.5,True
+dark,text,"margin note, flag-line label: pen on paper",8.41,4.5,True
+dark,text,chip text: ink on selected chip (pen-tint),11.2,4.5,True
+dark,text,'detectors disagree' note: ink on hl-1,10.39,4.5,True
+dark,text,pile caption: ink-2 on desk-2,9.15,4.5,True
+dark,text,tooltip: paper on ink,13.43,4.5,True
+dark,text,zone names: ink-2 on paper,9.34,4.5,True
+dark,mark,flagged dot and stem: ink on paper,13.43,3.0,True
+dark,mark,not-flagged ring: ink-2 on paper,9.34,3.0,True
+dark,mark,above-usual ring: ink on amber fill (hl-3),5.37,3.0,True
+dark,mark,official ring and flag line: pen on paper,8.41,3.0,True
+dark,mark,flag line over the flagged band: pen on hl-3,3.36,3.0,True
+dark,mark,flag line over the above-usual band: pen on hl-2,4.92,3.0,True
+dark,mark,axis and ticks over the bands: ink on hl-2,7.85,3.0,True

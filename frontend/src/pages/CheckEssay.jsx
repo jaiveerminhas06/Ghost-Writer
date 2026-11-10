@@ -5,7 +5,6 @@ import Button from '../components/Button'
 import { EssayEditor, EssayReader } from '../components/EssayPaper'
 import ExampleList from '../components/ExampleList'
 import MetaGate from '../components/MetaGate'
-import StrictnessSwitch from '../components/StrictnessSwitch'
 import VerdictPanel, { ErrorPanel } from '../components/VerdictPanel'
 import WhichAi from '../components/WhichAi'
 import { useEssay } from '../state/contexts'
@@ -43,10 +42,11 @@ function Loaded({ meta }) {
   const skeleton = useDelayed(scoring, 300)
   const score = state.status === 'scored' ? state.score : null
   const scored = score !== null
-  const threshold = meta.thresholds[state.strictness]
-  const flagged = score !== null && score.logit >= threshold
+  const zone = score ? score.verdict.zone : null
+  const flagged = zone === 'flagged'
+  const explainable = zone !== null && zone !== 'not_flagged'          // highlights are fetched for flagged and above-usual essays; they come from seed 42 alone
   const example = (meta.examples ?? []).find((x) => x.id === state.exampleId) ?? null
-  const explain = flagged && state.explain.status === 'done' ? state.explain.data : null
+  const explain = explainable && state.explain.status === 'done' ? state.explain.data : null
   const reading = scoring || scored
   const wordsNow = state.scoredText.trim().split(/\s+/).filter(Boolean).length
   const problem = state.status === 'error' ? state.problem : null
@@ -63,21 +63,17 @@ function Loaded({ meta }) {
       <section className={styles.intro} aria-label="Introduction">
         <div className={styles.lede}>
           <h1 className="t-display">Did a student or an AI write this essay?</h1>
-          <p className={styles.long}>Paste an essay or load an example. The detector compares it with the {typeof meta.trained_on === 'number' ? `${meta.trained_on.toLocaleString('en-US')} ` : ''}essays it was trained on and says which side of its flag line it falls.</p>
+          <p className={styles.long}>Paste an essay or load an example. Twenty equally good detectors, trained on {typeof meta.trained_on === 'number' ? `${meta.trained_on.toLocaleString('en-US')} ` : ''}essays, each place it on one scale: how many student essays score this high or higher. Their vote is the jury; three of them make the official verdict.</p>
           <p className={styles.course}>A course project for CSE472. Don’t use it to judge real students.</p>
         </div>
         <div className={styles.controls}>
           <ExampleList examples={meta.examples ?? []} value={state.exampleId} onChange={essay.loadExample} />
-          <div className={styles.strictRow}>
-            <p id="strictness" className={styles.strictLabel}>How strict</p>
-            <StrictnessSwitch />
-          </div>
         </div>
       </section>
 
       {reading && (
-        <VerdictPanel stage={scoring ? (skeleton ? 'loading' : 'reading') : 'done'} words={wordsNow} logit={score ? score.logit : null}
-                      strictness={state.strictness} meta={meta} exampleLabel={example ? example.label : null} />
+        <VerdictPanel stage={scoring ? (skeleton ? 'loading' : 'reading') : 'done'} words={wordsNow} score={score} jury={state.jury} meta={meta} example={example}
+                      onRerun={essay.rerunJury} onShowOriginal={essay.showOriginal} />
       )}
       {problem && (
         <ErrorPanel problem={problem} onCopy={blocked ? undefined : copyText} onRetry={essay.submit} canRetry={!blocked} retryLabel={blocked ? 'Score essay' : 'Score again'} />
@@ -91,8 +87,8 @@ function Loaded({ meta }) {
                 <>
                   <EssayReader key={state.scoredText} text={state.scoredText} title={example ? example.name : state.title ?? 'Your essay'}
                                scoreInfo={score} explain={explain} onEdit={essay.edit} />
-                  {flagged && state.explain.status === 'loading' && <p className={styles.status} role="status">Finding the sentences I reacted to…</p>}
-                  {flagged && state.explain.status === 'error' && (
+                  {explainable && state.explain.status === 'loading' && <p className={styles.status} role="status">Finding the sentences I reacted to…</p>}
+                  {explainable && state.explain.status === 'error' && (
                     <div className={styles.status} role="alert">
                       <span>{state.explain.problem instanceof ApiProblem ? state.explain.problem.title : 'I couldn’t work out which sentences moved the score.'}</span>
                       <Button onClick={essay.retryExplain}>Try again</Button>
@@ -104,7 +100,7 @@ function Loaded({ meta }) {
           ) : (
             <>
               <EssayEditor text={state.text} onChange={essay.setText} onSubmit={essay.submit} minWords={meta.limits?.min_words ?? 40} disabledReason={blocked} />
-              {!state.text && !problem && <p className={styles.invite}>No essay yet. Your score will land on a ruler from −10 to +10, next to the line where essays get flagged.</p>}
+              {!state.text && !problem && <p className={styles.invite}>No essay yet. Your essay will land on a scale of how many student essays score as high, next to the line where essays get flagged.</p>}
             </>
           )}
         </div>
@@ -123,6 +119,7 @@ function Loaded({ meta }) {
                   ))}
                 </ul>
                 <p className={styles.range}>Under 10% of the largest: no mark.</p>
+                <p className={styles.range}>The highlights come from one detector (seed 42), not from the whole jury.</p>
               </div>
             )}
             <div className={styles.card}>

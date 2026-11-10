@@ -8,8 +8,10 @@ Do not run it at the same time as the Streamlit demo: both load the models onto 
 If frontend/dist exists (npm run build) this server also serves the web page, so one process and one URL is enough.
 Essay text is never logged or stored.
 """
+import logging
 import math
 import os
+import queue
 import sys
 import threading
 from contextlib import contextmanager
@@ -25,10 +27,10 @@ import numpy as np
 from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
-from . import demo, limiter, results, settings, uploads
+from . import demo, jury_api, limiter, results, settings, uploads
 from .errors import ApiError, api_error_handler, validation_handler
 from .language import english_check
 from .textfiles import extract_text
@@ -49,6 +51,19 @@ def detector():
     transformers.logging.set_verbosity_error()
     from src.detector import Detector
     return Detector()
+
+
+@lru_cache(maxsize=1)
+def jury():
+    """The twenty serving copies (src/jury.py). Cheap to create: a juror is read from disk the first time it is needed."""
+    from src.jury import Jury
+    return Jury()
+
+
+@lru_cache(maxsize=1)
+def calibration():
+    from src.jury import Calibration
+    return Calibration()
 
 
 @lru_cache(maxsize=1)
@@ -104,8 +119,12 @@ def reading_info(text, det):
 
 
 def scored(text):
+    """The seed-42 detector's logit (it also explains: highlights come from seed 42) plus the official verdict, the three-seed ensemble
+    with three zones. `logit` is kept for the existing page; `verdict` is the official answer."""
+    from src.jury import ENSEMBLE_SEEDS
     det = detector()
-    return {"logit": float(det.score([text])[0]), "words": len(text.split()), **reading_info(text, det)}
+    verdict = calibration().verdict(jury().score_many([text], ENSEMBLE_SEEDS)[0])
+    return {"logit": float(det.score([text])[0]), "verdict": {**verdict, "explained_by": "seed 42"}, "words": len(text.split()), **reading_info(text, det)}
 
 
 # ---------- endpoints ----------
@@ -115,7 +134,7 @@ class Essay(BaseModel):
 
 @app.get("/api/meta")
 def meta():
-    return results.meta()
+    return results.meta(jury_live=jury().live)
 
 
 @app.get("/api/demo-class/{topic}")
@@ -186,6 +205,63 @@ def rewrite(req: Rewrite, request: Request):
                 "words_changed_share": share, **scored(edited)}
 
 
+class JuryRequest(Essay):
+    typos: bool = False                  # "Re-run the trial": give the essay typos in 5% of words first
+    seed: int = settings.ATTACK_SEED     # which typos; a new seed gives different typos
+
+
+@app.post("/api/jury")
+def jury_trial(req: JuryRequest, request: Request):
+    """Twenty detectors judge the essay one by one; the answer is a stream of one JSON object per line (see api/jury_api.py).
+    Refusals (rate limit, too short, not English, too long) come before the stream as ordinary errors. Without a GPU only the built-in
+    example essays are served, from precomputed results."""
+    limiter.charge(request, settings.JURY_COST)
+    n = checked(req.text)
+    j, cal = jury(), calibration()
+    headers = {"Cache-Control": "no-store", "X-Accel-Buffering": "no"}
+    if not j.live:
+        run = jury_api.precomputed_run(req.text, req.typos, req.seed)
+        if run is None:
+            raise ApiError(503, "needs_gpu", "The live jury needs a GPU, and this server doesn't have one. The built-in example essays still work.")
+        start, events = run
+        return StreamingResponse((jury_api.line(e) for e in [start, *events]), media_type="application/x-ndjson", headers=headers)
+    from src import jury as core
+    from src.paraphraser import inject_typos, words_changed
+    edited, typos = None, None
+    if req.typos:
+        edited = inject_typos(req.text, settings.JURY_TYPO_RATE, seed=req.seed)
+        share = words_changed(req.text, edited)
+        typos = {"rate": settings.JURY_TYPO_RATE, "seed": req.seed, "words_changed": round(share * n), "words_changed_share": share}
+    start = jury_api.start_event(n, jury_api.reading(req.text, j.tokenizer), typos, cal.scale())
+
+    def stream():
+        """The trial runs in its own thread, which holds the model lock only while it computes and always lets it go; this generator just
+        hands over what the thread produces. So a visitor who closes the tab mid-trial cannot leave the lock held: nothing here is
+        suspended while holding it (a suspended generator whose client has gone is never closed, and would keep the lock for ever)."""
+        events = queue.Queue()
+
+        def produce():
+            if not _model_lock.acquire(timeout=settings.LOCK_WAIT_SECONDS):
+                events.put({"type": "error", "code": "busy", "detail": "The detector is busy with another request. Please try again in a moment."})
+                events.put(None)
+                return
+            try:
+                events.put(start)
+                for event in core.trial(j, cal, req.text, edited):
+                    events.put(event)
+            except Exception as e:                  # the stream has begun, so the error travels inside it; never with the essay in it
+                logging.getLogger(__name__).warning("jury trial failed: %s", type(e).__name__)
+                events.put({"type": "error", "code": "failed", "detail": "The jury could not finish. Please try again."})
+            finally:
+                _model_lock.release()
+                events.put(None)
+
+        threading.Thread(target=produce, daemon=True).start()
+        while (event := events.get()) is not None:
+            yield jury_api.line(event)
+    return StreamingResponse(stream(), media_type="application/x-ndjson", headers=headers)
+
+
 @app.post("/api/batch")
 def batch(request: Request, files: list[UploadFile] = File(...)):
     """Score a set of files (a class). One result per file, in the order sent; a bad file never fails the others."""
@@ -205,9 +281,18 @@ def batch(request: Request, files: list[UploadFile] = File(...)):
         items.append(item)
     ready = [i for i in items if i["text"] is not None]
     if ready:
+        from src.jury import ENSEMBLE_SEEDS, SEEDS, TAU_FLAG, zone_of
         with model_turn():
-            for i, logit in zip(ready, detector().score([i["text"] for i in ready])):
+            texts = [i["text"] for i in ready]
+            for i, logit in zip(ready, detector().score(texts)):
                 i["logit"] = float(logit)
+            j, cal = jury(), calibration()
+            seeds = SEEDS if j.live else ENSEMBLE_SEEDS          # without a GPU only the official verdict is computed
+            L = j.score_many(texts, seeds)
+            p_ens, _ = cal.official(L[:, :3])
+            for k, i in enumerate(ready):
+                i["verdict"] = {"zone": str(zone_of(p_ens[k])), "p": float(p_ens[k])}
+                i["jurors_flagging"] = int(sum(cal.p(s, [L[k, c]])[0] <= TAU_FLAG for c, s in enumerate(seeds))) if j.live else None
     return {"results": items}
 
 

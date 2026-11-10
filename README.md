@@ -85,9 +85,25 @@ The "above usual" zone sits between flagged and not flagged. Wording: *higher th
 
 ### Attacking the detector
 
-Typo injection and two paraphrasers (our seq2seq model trained from scratch, and a pretrained T5) were applied to AI essays ([13](Notebooks/13_attack.ipynb)):
+Typo injection and two paraphrasers (our seq2seq model trained from scratch, and a pretrained T5) were applied to AI essays. They were measured twice, on two different systems, and the numbers must not be mixed up.
 
-| Attack | Words changed | AI essays still caught |
+**The final system** (three-seed ensemble, three zones), on random on-topic samples ([22b](Notebooks/22b_attack_final.ipynb)). "Flagged" and "flagged or above usual" are shares of AI essays:
+
+| Attack | Words changed | Test AI essays flagged | ... flagged or above usual | AI models never seen (descriptive): flagged |
+|---|---|---|---|---|
+| None | 0% | 99.2% | 99.6% | 94.7% |
+| Typos in 5% of words | 4% | 96.6% | 99.4% | 67.3% |
+| Typos in 10% of words | 8% | 90.1% | 98.7% | 43.7% |
+| T5 paraphrase (light) | 15% | 98.9% | 99.6% | 93.3% |
+| T5 paraphrase (heavy) | 41% | 81.4% | 96.0% | 52.7% |
+
+Typos in 5% of words removed the flag from **2.6%** of flagged test AI essays and from **28.9%** of flagged essays from AI models the detectors had never seen. Most of those moved to "above usual" (12 of 12, and 73 of 82), not to "not flagged". Student essays land in "above usual" too (2.6% of student essays on new topics; 0% to 3.0% of test students after a light T5 paraphrase), so that zone means "look closer", never "AI". No test student (0 of 300) was flagged under any attack.
+
+**The trade-off:** the strict line cuts student false flags about fivefold on new topics, but on AI models it has never seen, 5% typos remove the flag from about 29% of flagged essays (most go to "above usual"; flagged or above usual stays at 92.7%).
+
+**The earlier single-model detector at its old 1% logit threshold** ([13](Notebooks/13_attack.ipynb)). These figures belong to that model and threshold only; they are **not** statements about the final system:
+
+| Attack | Words changed | AI essays still caught (old single model) |
 |---|---|---|
 | None | 0% | 99.6% |
 | Typos in 10% of words | 8% | 98.9% |
@@ -95,9 +111,17 @@ Typo injection and two paraphrasers (our seq2seq model trained from scratch, and
 | T5 paraphrase (heavy) | 43% | 96.4% |
 | Our seq2seq paraphraser | 61% | 67.9%, but the essay's meaning is destroyed |
 
-![How much editing it takes to fool each detector](images/13_attack.png)
+![How much editing it takes to fool the earlier single-model detector](images/13_attack.png)
 
-Paraphrasing *human* essays with T5 raised their false-positive rate from 0.7% to 2.7%: running honest work through a paraphrasing tool can make it look machine-written. LLM-based "humanisers" were not tested (too large for the 4 GB GPU used here).
+Paraphrasing *human* essays with T5 raised the earlier model's false-positive rate from 0.7% to 2.7%: running honest work through a paraphrasing tool can make it look machine-written. LLM-based "humanisers" were not tested (too large for the 4 GB GPU used here).
+
+### The jury
+
+Twenty equally good detectors (the same data and recipe, only the random seed differs; validation AUC 0.9997 to 0.9999) judge each essay, and the page shows where each one puts it ([22](Notebooks/22_jury.ipynb)). The official verdict is still the pre-declared three-seed ensemble; the jury shows how far to trust it.
+- On student essays about unseen topics, 2.0% get a flag from at least one of the 20 but only 0.1% from all 20 (the official verdict: 0.7%). "At least one of 20" is never quoted alone.
+- On AI essays, 98.3% (test) and 98.1% (unseen prompts) are flagged by all 20. For AI models never seen, 77.4% by all 20 and 96.3% by a majority (descriptive).
+- The detectors agree on who is a student (rank correlation 0.89 among students) but not on how AI-like an AI essay is (0.58). A split jury means "less sure", never "probably a student".
+- Flag lines rest on a handful of validation essays: resampling them moves one detector's line by 1.4 to 2.3 logits, and 5% typos change 14 to 16 of 20 detectors' zones on essays that already split the jury.
 
 ### Which model wrote it?
 
@@ -109,17 +133,17 @@ Generator attribution ([11](Notebooks/11_attribution.ipynb)) looks excellent on 
 bash scripts/demo.sh
 ```
 
-One command: it builds the page if needed, starts one server that serves the page and the API together, loads every model once and opens http://localhost:8000. A five-minute click-by-click path for presenting it is in [docs/viva-demo.md](docs/viva-demo.md).
+One command: it builds the page if needed, starts one server that serves the page and the API together, loads every model once (including the twenty jury detectors, about 6.7 GB of memory; `GW_JURY_LAZY=1 bash scripts/demo.sh` reads them from disk instead, about 3 GB less and a few seconds slower per trial) and opens http://localhost:8000. A five-minute click-by-click path for presenting it, with a 60-second jury moment, is in [docs/viva-demo.md](docs/viva-demo.md).
 
 The web app has three pages:
 
-- **Check an essay:** paste an essay (or a .docx, .pdf or .txt file) or load an example. The score is shown on a ruler against the flag line chosen on validation data (strict or standard), with the false-flag rates measured on student essays, sentence highlights, and a collapsed, clearly-warned "which AI is it most like?" panel.
-- **Try to fool it:** rewrite the essay with typos (5% or 10% of words) or a pretrained T5 paraphraser (light or heavy) and score it again. Every attempt, with its seed and words changed, is kept in a list. On a human essay the detector wrongly flags, it shows the other side of the problem: edits that add nothing can flip the answer.
-- **Check a class:** score a set of essays at once and see how many cross the flag line, against how many flags you would expect even if every essay were written by a student (a range, not one number). The two built-in demo classes (30 held-out essays each, real authors known) show the result against the true labels.
+- **Check an essay:** paste an essay (or a .docx, .pdf or .txt file) or load one of five examples. The official verdict (three zones: flagged, above usual, not flagged) and the twenty detectors share **one scale**: how many of the 2,291 student essays we checked score this high or higher (1 in 1, 1 in 10, 1 in 100 ...). The detectors' marks drop in one by one; marks at the very end of the scale ("higher than all 2,291") sit in an "Off the scale" box. "Re-run the trial" asks the same twenty again after typos in 5% of the words and shows which marks moved. Below it: sentence highlights (from one detector, seed 42) and a collapsed, clearly-warned "which AI is it most like?" panel. The old Strict/Standard switch is gone: the strict point is documented in the [model card](MODEL_CARD.md), and the zones carry what the switch carried.
+- **Try to fool it:** rewrite the essay with typos (5% or 10% of words) or a pretrained T5 paraphraser (light or heavy) and score it again. Every attempt, with its seed and words changed, is kept in a list, with the verdict before and after.
+- **Check a class:** score a set of essays at once and see how many are flagged or above usual, against how many flags you would expect even if every essay were written by a student (a range, not one number), with how many of the 20 detectors flag each essay. The two built-in demo classes (30 held-out essays each, real authors known): on "Does the electoral college work?" 11 of 11 AI essays flagged and none of the 19 student essays; on "Summer projects" 11 of 11 AI essays flagged, no student flagged, and 2 of 19 students in "above usual".
 
 Every figure on the pages is read from the results files in `results/`; none is typed into the page. Uploaded files are read in memory and never saved; scores stay in the browser tab and are cleared when it closes (checked by tests). The API is explained in [docs/api.md](docs/api.md). The earlier Streamlit demo still works (`streamlit run demo/app.py`) but do not run it at the same time as the web app: the GPU has 4 GB.
 
-![The demo on a human essay the detector wrongly flags](images/demo_screenshot.png)
+![The jury on a real student essay the final system still flags (the limit, shown honestly)](images/jury.png)
 
 - **This is a course project.** It must not be used to make decisions about real students. More in the [model card](MODEL_CARD.md).
 
@@ -159,7 +183,7 @@ Archive/     the original, flawed 100%-accuracy version
 | 10 | `10_zero_shot` | GPT-2 perplexity, burstiness, log-rank, DetectGPT-lite |
 | 11 | `11_attribution` | Which model family wrote it |
 | 12 | `12_paraphraser` | Seq2seq + Bahdanau attention paraphraser, from scratch |
-| 13 | `13_attack` | Typo and paraphrase attacks on the detector |
+| 13 | `13_attack` | Typo and paraphrase attacks on the earlier single-model detector (old threshold) |
 | 14 | `14_explain` | Sentence-level explanations, error analysis, ethics and limitations |
 | 15 | `15_uncertainty` | Intervals on every number; claims audit |
 | 16 / 16b | `16_long_essays`, `16b_topic_lopo` | Windowed scoring (negative result); leave-one-prompt-out over 13 prompts |
@@ -168,6 +192,8 @@ Archive/     the original, flawed 100%-accuracy version
 | 19 | `19_ensemble_stability` | Three-seed ensemble; verdict stability across seeds and typos |
 | 20 | `20_final_heldout_check` | Held-out prompts and generators, scored once |
 | 21 / 21b | `21_fairness_persuade`, `21b_fairness_adjusted` | False-flag rates by student group, raw and adjusted for prompt |
+| 22 | `22_jury` | Twenty detectors: agreement, split juries, calibration noise, typo jitter |
+| 22b | `22b_attack_final` | Typo and paraphrase attacks on the final system; an exploratory abstention rule |
 
 ## Reproducing
 
@@ -179,13 +205,14 @@ Archive/     the original, flawed 100%-accuracy version
 
 ## Status
 
-Weeks 1–8 of the plan and the model-improvement pass (notebooks 15–21) are done: all the modelling, the explanations, the demo (a web app, merged into `main`) and the model card. The web demo still runs the single seed-42 model; switching it to the final system is planned with the front-end work. Still to come: the written report and slides, then final polish.
+Weeks 1–8 of the plan, the model-improvement pass (notebooks 15–21) and the jury (notebooks 22 and 22b, the API and the web app on the branch `jury`) are done. The web app now runs the final system: the three-seed ensemble with three zones, and the twenty-detector jury. Weeks 9 and 10 remain: the written report, slides and viva rehearsal.
 
 ## Limitations
 
 - **False-flag rate varies by topic:** 0.4% to 5.8% across 13 unseen topics with the old threshold; one of two held-out prompts is still above 1% (1.60%) with the new one.
 - **A flag is not a stable fact about an essay:** only 14-40% of humans flagged by any one seed are flagged by all three (small samples), and essays near the line flip under 5% typos 26-40% of the time.
-- **The strict threshold loses detection on unseen AI generators** (94.9%, against 99.8% before).
+- **The strict threshold loses detection on unseen AI generators** (94.9%, against 99.8% before), and it is fragile under editing there: 5% typos remove the flag from about 29% of flagged essays (most land in "above usual"; flagged or above usual stays at 92.7%).
+- **A split jury is "less sure", not an answer:** even clear AI essays occasionally split the twenty detectors (1.7% on familiar topics, about a quarter for unseen AI models), and a unanimous flag was still wrong for a few student essays.
 - **Only two held-out topics, and not pristine.**
 - **Groups of students (not a fairness guarantee):** every attribute tested is in the [model card](MODEL_CARD.md#fairness-across-groups-of-students), raw and adjusted for prompt. English learners: 0 of 340 flagged (upper bound 1.12%, about twice the other students' 0.54%; not a test of TOEFL-style writers). Students who are not economically disadvantaged (adjusted -0.53 [-1.01, -0.03] points for disadvantaged students) and girls (boys -0.34 [-0.68, -0.01]) are flagged somewhat more within a topic; Asian/Pacific Islander students have the highest rate (1.91%, 9 flagged essays; adjusted +1.16 [-0.30, +2.99]); the grade-11 gap is prompt mix. About 14 comparisons were made, so some intervals will exclude zero by chance, and no group's estimate rests on more than 23 flagged essays.
 - **A training change that looked good was rejected:** spelling repair plus injected typos lowered false flags on 7 prompts but raised them on all 13 (+0.57 points; Cowboy 4.30% to 17.42%). Likely mechanism: injecting typos into AI training essays taught the model that typos signal AI (Cowboy essays with over 2% misspellings: 32 of 409 flagged, 7.8%, against 3 for the original); it would have flagged weak spellers more.

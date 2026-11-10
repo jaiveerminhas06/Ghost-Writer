@@ -24,6 +24,13 @@ ATTACKS = {                    # method -> (kind, setting)
     "t5_heavy": ("t5", 1.5),   # notebook 13: "T5 paraphrase (T=1.5)"
 }
 
+# --- the jury (POST /api/jury) -----------------------------------------------------------------------
+JURY_API = 1                   # version of the jury endpoint and of the 'jury' block of /api/meta (API_VERSION above is unchanged: the additions are additive)
+JURY_COST = 3.0                # rate-limit units for one trial (a score costs 1): a trial moves twenty models through the GPU
+JURY_TYPO_RATE = 0.05          # "Re-run the trial": 5% of words get a typo (src/jury.TYPO_RATE; notebook 22 measured 5%)
+JURY_PRECOMPUTED = ROOT / "results" / "22_jury_examples.json"    # what a machine without a GPU serves, for the built-in examples only
+JURY_PRECOMPUTED_SEEDS = list(range(42, 47))                      # typo seeds stored for those examples
+
 # --- limits against overload (a public demo needs them; the owner's laptop never notices) -------------
 RATE_LIMIT_PER_MIN = float(os.environ.get("GW_RATE_LIMIT", "60"))   # cost units per visitor per minute
 BATCH_FILES_PER_UNIT = 10      # a batch of files costs one unit per ten files (at least one)
@@ -41,6 +48,7 @@ CLEAR_ENGLISH_SHARE = 0.20     # at or above this the essay is accepted even if 
 # --- results files the page quotes (every number shown comes from one of these) ---------------------
 RESULTS = ROOT / "results"
 SAMPLES_JSON = ROOT / "demo" / "samples.json"
+JURY_SAMPLES_JSON = ROOT / "demo" / "jury_samples.json"      # two more examples chosen by stated rules in notebook 22 (section 10d)
 SPLITS_CSV = ROOT / "data" / "processed" / "splits.csv"
 DEMO_CLASS = ROOT / "demo" / "class_sample"      # the demo class: essays, labels.json and how they were picked
 

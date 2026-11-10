@@ -1,0 +1,37 @@
+# The Jury: plan (written 2026-11-08, before any juror was trained)
+
+Idea: judge every essay with 20 equally good detectors that differ only in the random seed, show their marks on one scale, and say how many say "student" and how many say "AI". The official verdict stays the pre-registered 3-seed ensemble (seeds 42/43/44, mean of val-human tail probabilities, tau(0.5%)=0.00093, tau(1%)=0.00235, tau(5%)=0.01032; not retuned). The jury shows how far that verdict should be trusted.
+
+## Phase 1: the jurors
+
+- **Jurors:** the 3 existing original-recipe models (seed 42 = `models/distilroberta_finetuned`, 43 = `models/distilroberta_orig_s43`, 44 = `models/distilroberta_orig_s44`) and 17 new ones, seeds 45-61, trained with `scripts/train_variant.py --variant baseline --full --seed N`, the notebook 08 recipe on the full training set (2 epochs, lr 2e-5, 512 tokens, fp16 autocast, batch 16). New models are saved in fp32 to `models/distilroberta_orig_s<seed>/` by that script, which is not changed.
+- **Quality rule (fixed now, before training): a juror is excluded only if its validation AUC is below 0.999.** The AUC is the one `train_variant.py` logs for the best epoch over all 3,501 validation essays (`results/17_final/log.csv`); for seed 42, which has no such log line, the AUC of its re-scored validation essays. The AUC from the fp16 re-scoring below is reported next to it; a disagreement of more than 0.0005 is reported. No juror is dropped for any other reason (not for a high or low false-flag rate, not for disagreeing with the others). Every juror's val AUC and val-1% logit cutoff is reported.
+- **Serving copies:** `scripts/jury_export.py` writes an fp16 copy of each juror to `models/jury_fp16/s<seed>/` (never overwrites). Check: on 200 fixed validation essays the fp16-weights logits must agree with the training-path logits (fp32 weights, fp16 autocast) to within 0.05; the largest difference per juror is reported.
+- **Calibration on the serving weights:** each juror's validation and test essays are re-scored with its fp16 copy, so its tail probability p(x) = (1 + #{val humans scoring >= x}) / (1 + n) uses exactly what the API will compute. n = 2,291 validation humans, so p ranges from 1/2292 = 0.00044 up. Saved in `results/22_juror_scores.csv` (row_id, split, label, one logit column per seed; no text) and `results/22_jurors.csv` (per juror: val AUC, cutoffs, timing).
+- **Zones per juror** (tau from the single-seed leave-one-topic-out folds of 18b, so it applies to a single model directly): flagged if p <= 0.00235 (a juror flags an essay only if at most 4 validation humans score at least as high); above usual if 0.00235 < p <= 0.01032; not flagged otherwise. This is far stricter than the old single-model "1%" logit cutoff (about 0.17% of validation humans instead of 1%); that is by design of rule (d).
+- **The official verdict does not change.** The 3-seed ensemble keeps its existing scoring path; a juror mark for seed 42/43/44 may differ from its ensemble contribution by the fp16 difference (checked, <= 0.05 logits).
+- **Seeds 42-44 are both jurors and the ensemble.** Phase 2 reports the 17 other seeds (45-61) separately so the findings do not depend on that overlap.
+
+## Common scale (decision of 2026-11-08, replaces the logit ruler for jurors)
+
+Jurors have different logit cutoffs (+4.67 to +7.82 for seeds 42-44), so one flag line on a logit ruler would show unflagged marks past the line. Every juror is placed by its own p-value: **position = -log10 p**, from 0 (p = 1, scores like the lowest student) to 3.36 (p = 1/2292, "scores higher than every student essay in validation"; p cannot go lower, so the end of the scale is a cap, not a measurement). The flag line is at -log10(0.00235) = 2.63 and the above-usual edge at -log10(0.01032) = 1.99 for all 20 jurors. `/api/jury` returns p and this position (no logit-ruler position). The mockup (Phase 4) proposes whether the page's official verdict ruler moves to the same scale or the jury is drawn as a visibly separate scale, and a beeswarm for the pile-up at the cap.
+
+## Later phases: things to add (from the owner, 2026-11-08)
+
+- Phase 2 also reports (a) Spearman rank agreement between jurors on val and test; (b) the noise in one juror's own flag line: bootstrap the validation humans for 2-3 jurors, report the range of their tau(1%) cutoffs and how many test essays change zone from that alone. Page and docs then say that disagreement comes from both the trained weights and each juror's calibration on about 4 validation essays near the line, which any deployed detector has. Held-out generators are included in Phase 2, labelled descriptive.
+- Phase 3: if the API starts without CUDA, `/api/jury` serves only the built-in sample essays from precomputed results and says plainly that the live jury needs the GPU (about 0.9 s per essay on the GPU, about 26 s on CPU). Tested. NDJSON over POST, because the browser's EventSource cannot send a request body.
+
+## Time estimates
+
+Phase 1 training: 17 x 16.4 min on mains (about 4 h 45 min); on battery about 40% slower, so the run script waits for the charger before each seed. Export and re-scoring: about 30 min. Rules: never train while the demo server runs; `HF_HUB_OFFLINE=1`; nothing existing in `results/` or `models/` is overwritten.
+
+## Decisions recorded 2026-11-09 (after Phase 2 and 22b)
+- A split jury means "less sure", never "probably a student". The 10-of-11 observation stays out of the page.
+- "Above usual" copy: wherever the page says edited AI essays tend to land in "above usual" it must also say that student essays land there too, with the shares read from results (students in "above usual" unedited, and after light T5). It means "look closer", never "AI".
+- Draft for the "Re-run the trial" result panel (numbers read from results): "Light typos removed the flag from X% of flagged AI essays in our tests, and from Y% of essays from AI models the detectors had not seen. Most of those moved to 'above usual'. That zone also holds Z% of student essays, and rewording tools push some students there too, so 'above usual' means 'look closer', not 'AI'."
+- Phase 5 README/MODEL_CARD edit to add: the strict line cuts student false flags about 5x on new topics, but on unseen AI models 5% typos remove the flag from about 29% of flagged essays (most go to "above usual"; flagged-or-above-usual 92.7%). Notebook 13's figures are labelled as belonging to the old single-model threshold.
+- Abstention stays exploratory and off the page (k rests on 4 validation students; confirmation needs a new set of essays).
+
+## Phase 4 mockup (2026-11-09), awaiting approval before any building
+Boards: `design/artboards/Jury.html` (static, generated by `design/artboards/jury/build_mockup.py` from the results files and `results/22_jury_examples.json`), screenshots in `design/artboards/jury/*.png`, contrast table in `design/artboards/jury/contrast.csv`.
+Proposals to approve: (1) one scale for the official verdict and the jury, in "how many of the 2,291 student essays score this high or higher" (1 in 10, 1 in 100, ...), so the logit ruler and the Strict/Standard switch are dropped; (2) the end of the scale (all 20 on a clear AI essay) is a labelled "Off the scale" box, not a beeswarm column; (3) marks told apart by fill, never by colour alone; (4) a dark theme (the app has none today) with proposed tokens; (5) the "Re-run the trial" panel with the both-directions "above usual" wording.

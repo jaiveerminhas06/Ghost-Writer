@@ -1,0 +1,8 @@
+attack,"AI, test: old single model (13)","AI, test: final ensemble","AI, held-out generators: old single model (13)","AI, held-out generators: final ensemble","Students, test: old single model (13)","Students, test: final ensemble"
+original,99.6,99.2,100.0,94.7,0.7,0.0
+typos 2%,99.4,97.9,100.0,83.7,0.3,0.0
+typos 5%,99.4,96.6,99.3,67.3,0.0,0.0
+typos 10%,98.9,90.1,98.3,43.7,0.0,0.0
+T5 paraphrase (T=1.0),99.6,98.9,99.7,93.3,2.7,0.0
+T5 paraphrase (T=1.5),96.4,81.4,96.0,52.7,0.3,0.0
+T5 (T=1.0) + typos 5%,98.9,87.7,98.7,61.7,0.3,0.0

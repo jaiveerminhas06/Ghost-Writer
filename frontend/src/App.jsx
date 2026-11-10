@@ -24,13 +24,12 @@ export default function App() {
   )
 }
 
-/** The essay's state needs the flag lines from /api/meta (highlights are fetched for any essay flagged in at least one setting). */
+/** The essay's state and the class's state; the class needs the file-size limit from /api/meta. */
 function EssayState({ children }) {
   const { state } = useMetaState()
-  const lowest = state.status === 'ready' ? Math.min(...Object.values(state.meta.thresholds)) : null
   const maxFileBytes = state.status === 'ready' ? state.meta.limits?.max_file_bytes : undefined
   return (
-    <EssayProvider lowestFlagLine={lowest}>
+    <EssayProvider>
       <ClassProvider maxFileBytes={maxFileBytes}>{children}</ClassProvider>
     </EssayProvider>
   )

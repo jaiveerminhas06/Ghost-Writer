@@ -67,7 +67,7 @@ export function ClassProvider({ children, maxFileBytes = 5 * 1024 * 1024 }) {
           failedNow.current += results.filter((r) => r.error).length
           patch(ids, (i, k) => {
             const r = results[k]
-            return r.error ? { ...i, status: 'error', words: r.words, error: r.error } : { ...i, status: 'done', words: r.words, logit: r.logit, text: r.text, error: null }
+            return r.error ? { ...i, status: 'error', words: r.words, error: r.error } : { ...i, status: 'done', words: r.words, verdict: r.verdict ?? null, jurors: r.jurors_flagging ?? null, text: r.text, error: null }
           })
         } catch (e) {
           const problem = /** @type {api.ApiProblem} */ (e)
@@ -100,7 +100,7 @@ export function ClassProvider({ children, maxFileBytes = 5 * 1024 * 1024 }) {
       const id = nextId.current++
       const ext = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')).toLowerCase() : ''
       /** @type {ClassItem} */
-      const base = { id, name: file.name, status: 'queued', words: null, logit: null, text: null, error: null }
+      const base = { id, name: file.name, status: 'queued', words: null, verdict: null, jurors: null, text: null, error: null }
       if (!TYPES.includes(ext)) failedNow.current++
       else if (file.size > maxFileBytes) failedNow.current++
       if (!TYPES.includes(ext)) added.push({ ...base, status: /** @type {const} */ ('error'), error: failed('unsupported_file', `${ext || 'This kind of'} files can't be read. Use .docx, .pdf or .txt.`) })

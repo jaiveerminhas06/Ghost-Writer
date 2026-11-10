@@ -1,0 +1,52 @@
+claim,where,k,n,value_pct,lo,hi,status,note
+"AI caught, typos 10% (test)",13 / README / MODEL_CARD,468,473,98.94291754756871,97.54957056134512,99.5476625659659,scope-limited: old system,old single model at the 1% logit threshold (logit 4.67) only; NOT a statement about the final system
+"AI caught, T5 heavy paraphrase (test)",13 / README / MODEL_CARD,456,473,96.40591966173362,94.31997685585243,97.74413835557208,scope-limited: old system,old single model at the 1% logit threshold only; NOT a statement about the final system
+"humans flagged, after T5 light paraphrase",13 / README / MODEL_CARD,8,300,2.6666666666666665,1.3572906766976816,5.172954029754628,scope-limited: old system,old single model at the 1% logit threshold only
+"AI flagged by the official ensemble, typos 2% (AI, test)",22b,463,473,97.88583509513742,96.15243596186335,98.84766470049496,final system,random sample; on-topic essays
+"verdict flip, typos 2% (AI, test)",22b,6,469,1.279317697228145,0.5875980548463604,2.7626993809122533,final system,"AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, typos 5% (AI, test)",22b,457,473,96.61733615221988,94.57622119813101,97.90732050628404,final system,random sample; on-topic essays
+"verdict flip, typos 5% (AI, test)",22b,12,469,2.55863539445629,1.4695773125360652,4.418567892961929,final system,"AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, typos 10% (AI, test)",22b,426,473,90.06342494714588,87.03622376671494,92.44509665499324,final system,random sample; on-topic essays
+"verdict flip, typos 10% (AI, test)",22b,43,469,9.168443496801705,6.877966641145125,12.122392041339666,final system,"AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, T5 paraphrase (T=1.0) (AI, test)",22b,468,473,98.94291754756871,97.54957056134512,99.5476625659659,final system,random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.0) (AI, test)",22b,1,469,0.21321961620469082,0.0376474500834916,1.1977768442256387,final system,"AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, T5 paraphrase (T=1.5) (AI, test)",22b,385,473,81.3953488372093,77.64042414683237,84.64441006226347,final system,random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.5) (AI, test)",22b,84,469,17.91044776119403,14.705167573589007,21.637150868781553,final system,"AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, T5 (T=1.0) + typos 5% (AI, test)",22b,415,473,87.73784355179704,84.4741028506516,90.39352614816057,final system,random sample; on-topic essays
+"verdict flip, T5 (T=1.0) + typos 5% (AI, test)",22b,54,469,11.513859275053305,8.932555657994099,14.720523935679552,final system,"AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, typos 2% (AI, held-out generators)",22b,251,300,83.66666666666667,79.06259121631732,87.41941783050183,"final system, descriptive",random sample; on-topic essays
+"verdict flip, typos 2% (AI, held-out generators)",22b,33,284,11.619718309859154,8.394525442652483,15.86937525828859,"final system, descriptive","AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, typos 5% (AI, held-out generators)",22b,202,300,67.33333333333333,61.83611701576165,72.39224407765018,"final system, descriptive",random sample; on-topic essays
+"verdict flip, typos 5% (AI, held-out generators)",22b,82,284,28.87323943661972,23.912290619124487,34.39811343643942,"final system, descriptive","AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, typos 10% (AI, held-out generators)",22b,131,300,43.666666666666664,38.16930100345721,49.32418244318077,"final system, descriptive",random sample; on-topic essays
+"verdict flip, typos 10% (AI, held-out generators)",22b,153,284,53.87323943661972,48.06237747003749,59.58071511977578,"final system, descriptive","AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, T5 paraphrase (T=1.0) (AI, held-out generators)",22b,280,300,93.33333333333333,89.92762041322797,95.64328232030161,"final system, descriptive",random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.0) (AI, held-out generators)",22b,9,284,3.1690140845070425,1.676000543139424,5.912061780027208,"final system, descriptive","AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, T5 paraphrase (T=1.5) (AI, held-out generators)",22b,158,300,52.666666666666664,47.018700866487336,58.2472008401914,"final system, descriptive",random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.5) (AI, held-out generators)",22b,126,284,44.36619718309859,38.70138537321667,50.18138904160039,"final system, descriptive","AI: flagged before, not flagged after"
+"AI flagged by the official ensemble, T5 (T=1.0) + typos 5% (AI, held-out generators)",22b,185,300,61.666666666666664,56.050209269492235,66.98811069722727,"final system, descriptive",random sample; on-topic essays
+"verdict flip, T5 (T=1.0) + typos 5% (AI, held-out generators)",22b,99,284,34.859154929577464,29.552430792538043,40.57002544728275,"final system, descriptive","AI: flagged before, not flagged after"
+"students flagged by the official ensemble, typos 2% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,random sample; on-topic essays
+"verdict flip, typos 2% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,"students: not flagged before, flagged after"
+"students flagged by the official ensemble, typos 5% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,random sample; on-topic essays
+"verdict flip, typos 5% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,"students: not flagged before, flagged after"
+"students flagged by the official ensemble, typos 10% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,random sample; on-topic essays
+"verdict flip, typos 10% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,"students: not flagged before, flagged after"
+"students flagged by the official ensemble, T5 paraphrase (T=1.0) (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.0) (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,"students: not flagged before, flagged after"
+"students flagged by the official ensemble, T5 paraphrase (T=1.5) (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.5) (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,"students: not flagged before, flagged after"
+"students flagged by the official ensemble, T5 (T=1.0) + typos 5% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,random sample; on-topic essays
+"verdict flip, T5 (T=1.0) + typos 5% (Students, test)",22b,0,300,0.0,0.0,1.264342999773566,final system,"students: not flagged before, flagged after"
+"students flagged by the official ensemble, typos 2% (Students, held-out prompts)",22b,0,300,0.0,0.0,1.264342999773566,"final system, descriptive",random sample; on-topic essays
+"verdict flip, typos 2% (Students, held-out prompts)",22b,0,299,0.0,0.0,1.268517931486295,"final system, descriptive","students: not flagged before, flagged after"
+"students flagged by the official ensemble, typos 5% (Students, held-out prompts)",22b,0,300,0.0,0.0,1.264342999773566,"final system, descriptive",random sample; on-topic essays
+"verdict flip, typos 5% (Students, held-out prompts)",22b,0,299,0.0,0.0,1.268517931486295,"final system, descriptive","students: not flagged before, flagged after"
+"students flagged by the official ensemble, typos 10% (Students, held-out prompts)",22b,0,300,0.0,0.0,1.264342999773566,"final system, descriptive",random sample; on-topic essays
+"verdict flip, typos 10% (Students, held-out prompts)",22b,0,299,0.0,0.0,1.268517931486295,"final system, descriptive","students: not flagged before, flagged after"
+"students flagged by the official ensemble, T5 paraphrase (T=1.0) (Students, held-out prompts)",22b,3,300,1.0,0.34065567627181126,2.898400463506283,"final system, descriptive",random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.0) (Students, held-out prompts)",22b,3,299,1.0033444816053512,0.34179691788082756,2.9079547674886865,"final system, descriptive","students: not flagged before, flagged after"
+"students flagged by the official ensemble, T5 paraphrase (T=1.5) (Students, held-out prompts)",22b,0,300,0.0,0.0,1.264342999773566,"final system, descriptive",random sample; on-topic essays
+"verdict flip, T5 paraphrase (T=1.5) (Students, held-out prompts)",22b,0,299,0.0,0.0,1.268517931486295,"final system, descriptive","students: not flagged before, flagged after"
+"students flagged by the official ensemble, T5 (T=1.0) + typos 5% (Students, held-out prompts)",22b,0,300,0.0,0.0,1.264342999773566,"final system, descriptive",random sample; on-topic essays
+"verdict flip, T5 (T=1.0) + typos 5% (Students, held-out prompts)",22b,0,299,0.0,0.0,1.268517931486295,"final system, descriptive","students: not flagged before, flagged after"

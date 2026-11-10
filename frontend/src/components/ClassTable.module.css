@@ -1,7 +1,7 @@
 .card { border-radius: var(--r-list); background: var(--paper); box-shadow: var(--sh-2); overflow: hidden; }
 .scroll { overflow-x: auto; position: relative; }   /* relative: so the absolutely positioned screen-reader-only heading is contained and clipped with the table */
 .table { min-width: 680px; }
-.row { display: grid; grid-template-columns: minmax(0, 1fr) 90px 100px 210px 44px; gap: 16px; align-items: center; min-height: 52px; padding: 0 12px 0 20px; border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; transition: background-color var(--t-fast) var(--ease-out); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 80px 150px 110px 170px 44px; gap: 16px; align-items: center; min-height: 52px; padding: 0 12px 0 20px; border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; transition: background-color var(--t-fast) var(--ease-out); }
 .header { min-height: 0; border-top: 0; border-bottom: 1px solid var(--line-2); font-size: var(--fs-tiny); color: var(--ink-3); }
 .pad { padding: 12px 0; }
 .right { text-align: right; }
@@ -20,6 +20,7 @@ a.row:focus-visible { outline-offset: -2px; }
 
 .row[data-tone="flagged"] { background: var(--pen-tint); }
 .row[data-tone="flagged"] .score, .row[data-tone="flagged"] .result { color: var(--pen); }
+.row[data-tone="between"] .result { font-weight: 600; }
 .row[data-tone="between"] .result { color: var(--ink); }
 .row[data-tone="queued"] .name, .row[data-tone="queued"] .score, .row[data-tone="queued"] .result { color: var(--ink-3); }
 .row[data-tone="error"] { background: var(--brick-tint); }

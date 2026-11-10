@@ -97,3 +97,25 @@ def test_essay_text_never_reaches_the_logs(client, caplog, capsys):
     out = capsys.readouterr()
     assert MARKER not in caplog.text and MARKER not in out.out and MARKER not in out.err
     assert not any(MARKER in str(a) for rec in caplog.records for a in (rec.args if isinstance(rec.args, tuple) else (rec.args,)))
+
+
+def test_the_jury_never_writes_or_logs_the_essay(client, jury, no_disk, caplog, capsys, monkeypatch):
+    """POST /api/jury, in every path: a normal trial, a trial with typos, a refusal, a failure inside the stream (whose exception text
+    contains the essay) and the no-GPU path. Nothing may reach a log, a file or the temp folder."""
+    caplog.set_level(logging.DEBUG)
+    before = tree(ROOT)
+    client.post("/api/jury", json={"text": ESSAY})
+    client.post("/api/jury", json={"text": ESSAY, "typos": True, "seed": 3})
+    client.post("/api/jury", json={"text": MARKER})                                             # refusal: too short
+    original = jury.logits_of
+    monkeypatch.setattr(jury, "logits_of", lambda seed, ids: (_ for _ in ()).throw(RuntimeError("failed on " + ESSAY[:200])))
+    r = client.post("/api/jury", json={"text": ESSAY})
+    assert MARKER not in r.text
+    monkeypatch.setattr(jury, "logits_of", original)
+    jury.live = False
+    client.post("/api/jury", json={"text": ESSAY})                                              # no GPU, not a built-in example: refused
+    out = capsys.readouterr()
+    assert MARKER not in caplog.text and MARKER not in out.out and MARKER not in out.err
+    assert ESSAY[:100] not in caplog.text and ESSAY[:100] not in out.out and ESSAY[:100] not in out.err
+    assert tree(ROOT) == before
+    assert list(no_disk.path.iterdir()) == [] and no_disk.rollovers == []

@@ -14,7 +14,7 @@ def test_worst_topic_is_derived_not_typed_in():
 
 
 def test_example_labels_follow_the_titles():
-    assert [e["label"] for e in results.examples()] == ["ai", "human", "human"]
+    assert [e["label"] for e in results.examples()] == ["ai", "human", "human", "human", "ai"]
 
 
 def test_every_file_the_page_quotes_exists():

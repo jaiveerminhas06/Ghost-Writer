@@ -1,0 +1,4 @@
+seed,flag_line,cutoff_p2_5,cutoff_median,cutoff_p97_5,essays_changing_mean,essays_changing_p95,humans_changing_mean,AI_changing_mean,newly_flagged_mean,newly_unflagged_mean,pool_size
+42,9.0859375,7.9492188,9.0859375,9.328125,11.756,53.0,9.064,2.692,8.391,3.365,10636
+50,9.234375,8.0234375,9.234375,9.4375,16.979,70.0,14.582,2.397,14.501,2.478,10636
+56,8.3125,6.3554688,8.3125,8.640625,17.315,61.0,13.994,3.321,15.171,2.144,10636

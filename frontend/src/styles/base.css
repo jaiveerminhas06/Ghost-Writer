@@ -47,3 +47,6 @@ button { -webkit-tap-highlight-color: transparent; }
 @keyframes gw-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 .skel { background: var(--desk-2); border-radius: 6px; animation: gw-pulse 1.4s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .skel { animation: none; opacity: 0.7; } }
+
+/* a control focused with the keyboard must not end up behind the fixed action bar on a phone */
+@media (max-width: 639px) { html { scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); } }

@@ -31,8 +31,10 @@ def test_meta_reads_thresholds_and_rates_from_the_results_files(client):
 
 def test_meta_examples_carry_their_known_labels(client):
     ex = client.get("/api/meta").json()["examples"]
-    assert [e["label"] for e in ex] == ["ai", "human", "human"]
-    assert [e["name"] for e in ex][2] == "Student essay it wrongly flags"
+    assert [e["label"] for e in ex] == ["ai", "human", "human", "human", "ai"]
+    assert [e["name"] for e in ex][2] == "Student essay the earlier detector flagged"
+    assert [e["name"] for e in ex][3:] == ["Student essay the final system still flags", "AI essay that splits the jury"]
+    assert [e["kind"] for e in ex][3:] == ["final_system_wrong", "split_jury"] and all(e["note"] for e in ex[2:])
     assert all(e["words"] >= 40 and e["text"] for e in ex)
 
 

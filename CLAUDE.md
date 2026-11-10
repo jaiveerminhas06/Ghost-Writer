@@ -63,7 +63,9 @@ Ghost_Writer/
 │   ├── 18_robust_threshold / 18b_threshold_original_recipe   p-scale thresholds, rules (a)-(d), leave-one-topic-out
 │   ├── 19_ensemble_stability   three-seed ensemble, seed and typo stability
 │   ├── 20_final_heldout_check  held-out prompts and generators, scored once
-│   └── 21_fairness_persuade / 21b_fairness_adjusted   false flags by student group (PERSUADE 2.0), raw and prompt-adjusted
+│   ├── 21_fairness_persuade / 21b_fairness_adjusted   false flags by student group (PERSUADE 2.0), raw and prompt-adjusted
+│   ├── 22_jury                 twenty detectors: agreement, split juries, calibration noise, typo jitter, demo examples chosen by rule
+│   └── 22b_attack_final        typo and paraphrase attacks on the FINAL system (random samples); exploratory abstention rule
 ├── data/
 │   ├── raw/train.csv           DAIGT-V2, 44,868 rows — git-ignored
 │   └── processed/
@@ -78,6 +80,7 @@ Ghost_Writer/
 ├── src/paraphraser.py        Seq2SeqParaphraser (from 12), T5Paraphraser, inject_typos, sentence split/join
 ├── src/explain.py            sentence occlusion + integrated gradients (128 steps) for highlights
 ├── src/attribution.py        demo's 'most similar training sources' model (TF-IDF + LogReg)
+├── src/jury.py               the jury: calibration (p, zone, position = -log10 p), 20 fp16 serving copies swapped through one GPU model, trial generator
 ├── src/{compare,conformal,ensemble,spelling,augment}.py   pass 15-21: paired variant comparison, p-scale thresholds, ensemble, corrector, augmentation
 ├── models/                   trained vectors/weights — git-ignored
 ├── images/                   plots saved by the notebooks
@@ -86,7 +89,7 @@ Ghost_Writer/
 ├── api/                      FastAPI over src/ (score, explain, attribution, rewrite, batch, demo classes)
 ├── frontend/                 Vite + React web app, plain JS + JSDoc types; `npm run check`
 ├── design/                   the design spec and artboards the web app was built to
-├── tests/                    49 tests (46 API incl. privacy, 3 browser) (`pytest`; needs requirements-dev.txt)
+├── tests/                    95 tests (API, jury, privacy, 9 browser) (`pytest`; needs requirements-dev.txt)
 ├── scripts/                  demo.sh (one-command start), warm_up.py, motion_audit.py; lopo_*.py/sh, train_variant.py, phase3_run.sh, phase5_run.sh (resumable, `HOURS=` time box), build_persuade_demographics.py
 ├── docs/                     api.md, viva-demo.md (5-minute demo path), frontend plan, rejected redesigns
 ├── deploy/                   Hugging Face Spaces files; never built, hosting parked
@@ -114,7 +117,7 @@ Notebooks are run from inside `Notebooks/`, so they use paths like `../data/raw/
 
 ## Status
 
-Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics, demo, model card). The web front end is merged into `main` (62a15df). The model-improvement pass (notebooks 15–21, branch `model-improvements`) is done: final system = three-seed ensemble of the original recipe on the p scale with rule (d) thresholds (18b); the held-out check (20) was run once; fairness by group (21, 21b). The demo still runs the single seed-42 model. Week 9 (report + slides) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
+Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU, DistilRoBERTa, thresholds, zero-shot GPT-2, attribution, paraphraser, attacks, explanations/error analysis/ethics, demo, model card). The web front end is merged into `main` (62a15df). The model-improvement pass (notebooks 15–21, branch `model-improvements`) is done: final system = three-seed ensemble of the original recipe on the p scale with rule (d) thresholds (18b); the held-out check (20) was run once; fairness by group (21, 21b). The web app now runs the final system (three-seed ensemble, three zones) and the twenty-detector jury (branch `jury`, notebooks 22 and 22b, 2026-11-08 to 2026-11-10). Week 9 (report + slides) is next. The plan started on 2026-08-21, so the work is about five weeks behind it.
 
 **Done**
 
@@ -243,6 +246,15 @@ Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
   - `21`, `21b`: English learners 0 of 340 flagged (upper bound 1.12%); other attributes raw and prompt-adjusted in `results/21_fairness_by_group.csv` and `results/21b_fairness_adjusted.csv` and the model card. Grade-11 gap cannot be separated from prompt. About 14 comparisons; wide intervals. The PERSUADE raw files and per-essay mapping are git-ignored (`data/external/`); only aggregates are committed.
   - Housekeeping: training on battery is ~40% slower; `requirements-lock.txt` holds exact versions (`requirements.txt` stays loose); new model folders `distilroberta_aug_s42/43/44`, `distilroberta_orig_s43/s44` are git-ignored.
 
+- 2026-11-08 to 2026-11-10 — **The Jury** (branch `jury`; per-phase detail in `docs/jury_plan.md`, `docs/jury_phase2_declaration.md`, `docs/jury_22b_declaration.md`, notebooks `22_jury`, `22b_attack_final`):
+  - 17 new detectors (seeds 45-61) trained on the notebook-08 recipe; all 20 have val AUC >= 0.9997; fp16 serving copies in `models/jury_fp16/` (git-ignored; no juror's zones differ on more than 3 of 7,002 essays between fp16 and fp32).
+  - Each detector's mark is its own validation-human tail probability p; the page's one scale is -log10 p (ticks "1 in 10, 1 in 100"), ending at "higher than all 2,291 student essays we checked" (shown as an "Off the scale" box; "1 in 2,292" is never printed, tested).
+  - Notebook 22: students flagged by >=1 of 20 detectors 2.0% (unseen topics) vs 0.1% by all 20 vs official 0.7%; AI flagged by all 20 98.3% (test) and 77.4% for unseen AI models (descriptive); ranks agree 0.89 among students but 0.58 among AI essays; flag-line bootstrap and 5% typo jitter.
+  - Notebook 22b: attacks on the FINAL system (random samples). 5% typos remove the flag from 2.6% of flagged test AI essays and 28.9% for unseen AI models (12 of 12 and 73 of 82 land in "above usual"); the old notebook-13 figures belong to the old single-model 1% threshold only. Exploratory abstention rule (k=14, chosen on 4 validation students) is off the page.
+  - Decisions: one scale, Strict/Standard dropped (the strict point stays in MODEL_CARD.md), "Off the scale" box, marks by fill, no dark theme in this build (dark tokens and `contrast.csv` kept in `design/artboards/jury/`), "not flagged" never says "reads like a student's", a split jury means "less sure", "above usual" always named beside students.
+  - API: `POST /api/jury` (NDJSON), official verdict on `/api/score` is the ensemble, no-GPU path serves built-in examples from `results/22_jury_examples.json`, `GW_JURY_LAZY=1` loads jurors on demand; the trial runs in its own thread so a closed tab cannot hold the model lock.
+  - Tests: 95 pytest tests in one command (about 1 minute, peak 2.8 GB RAM: the fake jury is used everywhere except GPU tests that load jurors lazily), of which 6 are Playwright jury tests (9 browser tests passed 10 of 10 repeated runs); 50 front-end unit tests; motion audit passes (normal and reduced motion).
+
 **Not done**
 
 - Weeks 9–10: written report, slides, polish, viva rehearsal (use `docs/viva-demo.md` for the live demo).
@@ -253,9 +265,9 @@ Weeks 1–8 are done (split, baselines, embeddings, off-topic flag, BiLSTM/BiGRU
 
 Report and slides for the course, built from the README, `MODEL_CARD.md` and the Key takeaways of each notebook. Suggested storyline for the viva: the fake 100% → leakage-safe split → each model's honest score → what looked good but wasn't (topic shortcut, attribution, threshold shift) → the demo. Nothing further is needed from the modelling side. Storyline addition: fake 100% → leakage-safe split → honest scores → what looked good but was not (topic shortcut, attribution, threshold shift, augmentation) → error bars and the p scale → the held-out check → fairness by group → the demo. Possible extras if time allows: confirm that `radek_500` is GPT-3.5 (not verified), and the professor's answer on the BiLSTM-NER practical (decision 8).
 
-### Switch the demo to the final system (with the front-end work; approved in principle)
+### The demo now runs the final system (done 2026-11-10)
 
-Move the verdict to the three-seed ensemble on the p scale with the three zones (flagged / above usual / not flagged). Conditions: (1) show the zone, not a yes/no; (2) use the "above usual" wording above, and for flagged essays the numbers about 1 in 16 flagged essays being a student's at 10% AI share; (3) keep explanations from the seed-42 model and say so; (4) show per-seed agreement on borderline essays; (5) state the 94.9% unseen-generator figure beside the headline. **The Class page's expected-false-flag estimate must use the new rates** (0.70% pooled on unseen prompts at the 1% point, 1.60% on the hardest prompt; today it uses the single-model 2.3%/3.9%), and `/api/meta` must read them from the new results files. Three models per request cost about 3x the scoring time and three copies in 4 GB; if too heavy to host, keep the single model with a p-scale threshold calibrated on its own val humans and say the ensemble was not used.
+The web app shows the three-seed ensemble on the p scale with three zones, plus the jury; the single-model demo thresholds are gone from the page. Remaining for the jury work: merge `jury` into `main` and push (only when the owner says so). `demo/app.py` (the older Streamlit demo) still shows the single seed-42 model.
 
 - Load with `from src.data import load_splits` (after `sys.path.append('..')`); never read the CSVs directly, or the whitespace shortcut comes back.
 - Every model from here on will score ~1.0 on `test`. Compare models on the held-out slices and on fixed-threshold numbers (detection rate, false-positive rate), using `src/evaluate.py`.
